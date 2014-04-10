@@ -22,12 +22,12 @@ for my_list [e |
 ]
 
 for = [list lambda |
-    mutable i = 0
+    mutable i = 0;
     while [ret i != list.length] [
         lambda list@i i
         mutate i = i + 1
-    ]
-]
+    ];
+];
 
 mapwhile = [cond body |
     mutable result = ()
@@ -35,7 +35,7 @@ mapwhile = [cond body |
         result.push body!
     ]
     ret result
-]
+];
 
 all_matches = [regex str |
     mutable match = null
@@ -45,7 +45,7 @@ all_matches = [regex str |
     ] [
         ret match
     ]
-]
+];
 
 if x == 5 [
     return 6

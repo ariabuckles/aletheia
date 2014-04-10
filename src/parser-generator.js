@@ -10,7 +10,7 @@ var jison = require("jison");
 var grammar = {
     lex: {
         rules: [
-            ["\\s+",                "/* skip whitespace */"],
+            ["\\s+",                '/* skip whitespace */'],
             ["[0-9]+\\.?",          'return "NUMBER"'],
             ["([0-9]+)?\\.[0-9]+",  'return "NUMBER"'],
             ["\\*",                 'return "*"'],
@@ -20,13 +20,18 @@ var grammar = {
             ["\\^",                 'return "^"'],
             ["\\(",                 'return "("'],
             ["\\)",                 'return ")"'],
-            ["_",                   'return "_"'],
+            ["\\{",                 'return "}"'],
+            ["\\{",                 'return "}"'],
             ["\\|",                 'return "|"'],
+            ["\\[",                 'return "["'],
+            ["\\]",                 'return "]"'],
+            ["_",                   'return "_"'],
             ["\\!",                 'return "!"'],
             ["==|!=|<|>|<=|>=",     'return "SIGN"'],
             ["[a-zA-Z_$]",          'return yy.symbolLexer(yytext)'],
             ["$",                   'return "EOF"'],
-            [".",                   'return "INVALID"']
+            [".",                   'return "INVALID"'],
+            [";",                   'return "TERMINATOR"']
         ],
         options: {
             flex: true              // pick longest matching token
@@ -39,12 +44,23 @@ var grammar = {
         ["left", "UMINUS"],
         ["right", "^"]
     ],
-    start: "equation",
+    start: "program",
     bnf: {
-        "equation": [
-            ["expression SIGN expression EOF", "return new yy.Eq($1, $2, $3);"],
-            ["expression EOF", "return $1;"],
-            ["EOF", "return new yy.Add([]);"]
+        "program": [
+            ["statementList EOF", "return $1;"],
+            ["EOF", "return new yy.StatementList([]);"]
+        ],
+        "statementList": [
+            ["statement", "$$ = [$1]"],
+            ["statementList TERMINATOR statement", "$$ = $1; $1.push($3);"],
+            ["statementList TERMINATOR", "$$ = $1;"]
+        ],
+        "line": [
+
+        ],
+        "function": [
+            ["[ statementList ]", "$$ = new yy.Function([], $2);"],
+            ["[ argList | statementList ]", "$$ = new yy.Function($2, $4);"]
         ],
         "expression": [
             ["additive", "$$ = $1;"]
@@ -97,9 +113,6 @@ var grammar = {
             ["INT", "$$ = yy.Int.create(Number(yytext));"],
             ["FLOAT", "$$ = yy.Float.create(Number(yytext));"],
             ["( additive )", "$$ = $2.completeParse().addHint('parens');"] // this probably shouldn't be a hint...
-        ],
-        "function": [
-            ["FUNC", "$$ = yytext;"]
         ],
         "invocation": [
             ["sqrt ( additive )", "$$ = yy.Pow.sqrt($3);"],
