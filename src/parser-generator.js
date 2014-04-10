@@ -11,13 +11,15 @@ var grammar = {
     lex: {
         rules: [
             ["\\s+",                '/* skip whitespace */'],
-            ["[0-9]+\\.?",          'return "NUMBER"'],
-            ["([0-9]+)?\\.[0-9]+",  'return "NUMBER"'],
+
+            ["==|!=|<|>|<=|>=",     'return "SIGN"'],
+
             ["\\*",                 'return "*"'],
             ["\\/",                 'return "/"'],
             ["-",                   'return "-"'],
             ["\\+",                 'return "+"'],
-            ["\\^",                 'return "^"'],
+            ["\\%",                 'return "%"'],
+
             ["\\(",                 'return "("'],
             ["\\)",                 'return ")"'],
             ["\\{",                 'return "}"'],
@@ -25,13 +27,22 @@ var grammar = {
             ["\\|",                 'return "|"'],
             ["\\[",                 'return "["'],
             ["\\]",                 'return "]"'],
-            ["_",                   'return "_"'],
+
+            ["=",                   'return "="'],
+            ["\\n+",                'return "NEWLINE"'],
             ["\\!",                 'return "!"'],
-            ["==|!=|<|>|<=|>=",     'return "SIGN"'],
-            ["[a-zA-Z_$]",          'return yy.symbolLexer(yytext)'],
+            ["\\:",                 'return ":"'],
+
+            ["var",                 'return "VARKEYWORD"'],
+            ["mutate",              'return "MUTATE"'],
+
+            ['\\"(\\\\.|[^"\\\n])*\\"', 'return "STRING"'],
+            ["[0-9]+\\.?",          'return "NUMBER"'],
+            ["([0-9]+)?\\.[0-9]+",  'return "NUMBER"'],
+            ["[a-zA-Z_$][a-zA-Z0-9_$]*", 'return "IDENTIFIER"'],
+
             ["$",                   'return "EOF"'],
             [".",                   'return "INVALID"'],
-            [";",                   'return "TERMINATOR"']
         ],
         options: {
             flex: true              // pick longest matching token
@@ -52,18 +63,36 @@ var grammar = {
         ],
         "statementList": [
             ["statement", "$$ = [$1]"],
-            ["statementList TERMINATOR statement", "$$ = $1; $1.push($3);"],
-            ["statementList TERMINATOR", "$$ = $1;"]
+            ["statementList NEWLINE statement", "$$ = $1; $1.push($3);"],
+            ["statementList NEWLINE", "$$ = $1;"],
+            ["NEWLINE statementList", "$$ = $2;"]
         ],
-        "line": [
+        "statement": [
 
+        ],
+        "expression": [
+            ["function", "$$ = $1;"],
+            ["literal", "$$ = $1;"]
+        ],
+        "literal": [
+            ["NUMBER", "$$ = $1;"],
+            ["STRING", "$$ = $1;"]
+        ],
+        "table": [
+            ["{ }", "$$ = new yy.Table([]);"],
+            ["{ fieldList }", "$$ = new yy.Table([]);"]
+        ],
+        "fieldList": [
+            ["field", "$$ = [$1];"],
+            ["field NEWLINE field", "$$ = $1; $1.push($3);"]
+        ],
+        "field": [
+            ["expression", "$$ = new yy.Field(null, $1);"],
+            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
         ],
         "function": [
             ["[ statementList ]", "$$ = new yy.Function([], $2);"],
             ["[ argList | statementList ]", "$$ = new yy.Function($2, $4);"]
-        ],
-        "expression": [
-            ["additive", "$$ = $1;"]
         ],
         "additive": [
             ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
