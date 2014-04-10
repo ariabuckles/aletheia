@@ -68,28 +68,41 @@ var grammar = {
             ["NEWLINE statementList", "$$ = $2;"]
         ],
         "statement": [
-
+            ["IDENTIFIER = expression", "return new yy.Declaration(false, $1, $3);"],
+            ["VARKEYWORD IDENTIFIER = expression", "return new yy.Declaration(true, $2, $4);"],
+            ["MUTATE lvalue = expression"],
         ],
         "expression": [
+            ["lvalue", "$$ = $1"],
+            ["rvalue", "$$ = $1"]
+        ],
+        "lvalue": [
+            ["IDENTIFIER", "$$ = $1"],
+//            ["tableaccess", "$$ = $1"]
+        ],
+        "rvalue": [
             ["function", "$$ = $1;"],
             ["literal", "$$ = $1;"]
         ],
+//        "tableaccess": [
+//
+//        ],
         "literal": [
             ["NUMBER", "$$ = $1;"],
             ["STRING", "$$ = $1;"]
         ],
-        "table": [
-            ["{ }", "$$ = new yy.Table([]);"],
-            ["{ fieldList }", "$$ = new yy.Table([]);"]
-        ],
-        "fieldList": [
-            ["field", "$$ = [$1];"],
-            ["field NEWLINE field", "$$ = $1; $1.push($3);"]
-        ],
-        "field": [
-            ["expression", "$$ = new yy.Field(null, $1);"],
-            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
-        ],
+//        "table": [
+//            ["{ }", "$$ = new yy.Table([]);"],
+//            ["{ fieldList }", "$$ = new yy.Table([]);"]
+//        ],
+//        "fieldList": [
+//            ["field", "$$ = [$1];"],
+//            ["field NEWLINE field", "$$ = $1; $1.push($3);"]
+//        ],
+//        "field": [
+//            ["expression", "$$ = new yy.Field(null, $1);"],
+//            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
+//        ],
         "function": [
             ["[ statementList ]", "$$ = new yy.Function([], $2);"],
             ["[ argList | statementList ]", "$$ = new yy.Function($2, $4);"]
