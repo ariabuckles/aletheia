@@ -143,6 +143,7 @@ var grammar = {
 
 var prelude = "";
 var parser = (new jison.Parser(grammar, {debug: true})).generate({moduleType: "js"});
-var postlude = "\n\nmodule.exports = parser;\n";
+var postlude = "\n\nparser.yy = require('./nodes.js');\nmodule.exports = parser;\n";
 
 fs.writeFileSync(path.resolve(__dirname, "parser.js"), prelude + parser + postlude);
+
