@@ -38,15 +38,43 @@ for my_list [e |
     console.log e
 ]
 
+
+
+
+
+
+
+
+
+
+for = [list lambda |
+    mutable i = 0
+    mutable result = <>
+    while [ret i != list.length] [
+        result.push (lambda list@i i)
+        mutate i = i + 1
+    ]
+    ret result
+];
+
+
 for = [list lambda |
     mutable i = 0;
-    mutable result = ||;
+    mutable result = <>;
     while [ret i != list.length] [
         result.push (lambda list@i i);
         mutate i = i + 1;
     ];
     result
 ];
+
+
+
+
+
+
+
+
 
 obj = {
     key | "value"
