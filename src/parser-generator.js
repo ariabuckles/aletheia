@@ -49,11 +49,17 @@ var grammar = {
         }
     },
     operators: [
-        ["right", "|"],
+        ["precedence", "IDENTIFIER"],
+        ["precedence", "NUMBER"],
+        ["precedence", "STRING"],
+        ["precedence", "("],
+        ["precedence", "["],
         ["left", "+", "-"],
         ["left", "*", "/"],
-        ["left", "UMINUS"],
-        ["right", "^"]
+        ["nonassoc", "UMINUS"],
+        ["right", "^"],
+        ["precedence", "WRAP_EXPR"],
+        ["precedence", "STATEMENT_BODY"]
     ],
     start: "program",
     bnf: {
@@ -67,17 +73,17 @@ var grammar = {
         ],
         "statement": [
             ["NEWLINE", ""],  // discard
-            ["statementBody NEWLINE", "$$ = $1;"]
+            ["statementBody", "$$ = $1;"]
         ],
         "statementBody": [
             ["IDENTIFIER = expression", "return new yy.Declaration(false, $1, $3);"],
             ["VARKEYWORD IDENTIFIER = expression", "return new yy.Declaration(true, $2, $4);"],
             ["MUTATE lvalue = expression", "return new yy.Mutation($2, $3);"],
-            ["functionCall", "$$ = $1;"]
+            ["functionCall", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [
-            ["functionCall", "$$ = $1;"],
-            ["unitExpression", "$$ = $1;"],
+            ["functionCall", "$$ = $1;", {prec: "WRAP_EXPR"}],
+            ["unitExpression", "$$ = $1;", {prec: "WRAP_EXPR"}],
         ],
         "unitExpression": [
             ["( expression )", "$$ = [$1];"],
@@ -90,11 +96,8 @@ var grammar = {
 //            ["tableaccess", "$$ = $1"]
         ],
         "functionCall": [
-            ["IDENTIFIER args", "return new yy.FunctionCall($1, $2);"]
-        ],
-        "args": [
-            ["unitExpression", "$$ = [$1];"],
-            ["args unitExpression", "$$ = $1; $1.push($2);"]
+            ["unitExpression unitExpression", "$$ = [$1, $2];"],
+            ["functionCall unitExpression", "$$ = $1; $1.push($2);"]
         ],
 //        "tableaccess": [
 //
