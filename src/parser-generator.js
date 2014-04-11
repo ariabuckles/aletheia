@@ -59,11 +59,7 @@ var grammar = {
     bnf: {
         "program": [
             ["statementList EOF", "return $1;"],
-            ["endFile", "return new yy.StatementList([]);"]
-        ],
-        "endFile": [
-            ["EOF", "$$ = $1"],
-            ["NEWLINE EOF", "$$ = $2"]
+            ["EOF", "return new yy.StatementList([]);"]
         ],
         "statementList": [
             ["statement", "$$ = [$1]"],
@@ -110,12 +106,8 @@ var grammar = {
 //            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
 //        ],
         "function": [
-            ["[ statementList endFunction", "$$ = new yy.Function([], $2);"],
-            ["[ argList | statementList endFunction", "$$ = new yy.Function($2, $4);"]
-        ],
-        "endFunction": [
-            ["]", "$$ = $1"],
-            ["NEWLINE ]", "$$ = $2"]
+            ["[ statementList ]", "$$ = new yy.Function([], $2);"],
+            ["[ argList | statementList ]", "$$ = new yy.Function($2, $4);"]
         ],
         "additive": [
             ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
