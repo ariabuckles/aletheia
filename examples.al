@@ -8,13 +8,30 @@ if x == 1 [
 ]
 
 
-mutable i = 5
+mutable i = 5;
 while [
-    x = regex.match str
-    ret x != null
+    x = regex.match str;
+    x != null
 ] [
-    console.log i
-    mutate i = i - 1
+    console.log i;
+    kvector.add(
+        coord,
+        dist_vec
+    );
+
+    kvector.add
+        coord
+        dist_vec;
+    
+    [it.coord!]
+
+    ret (
+        kvector.add
+        coord
+        dist_vec
+    )
+
+    mutate i = i - 1;
 ]
 
 for my_list [e |
@@ -23,11 +40,44 @@ for my_list [e |
 
 for = [list lambda |
     mutable i = 0;
+    mutable result = ||;
     while [ret i != list.length] [
-        lambda list@i i
-        mutate i = i + 1
+        result.push (lambda list@i i);
+        mutate i = i + 1;
     ];
+    result
 ];
+
+obj = {
+    key | "value"
+    key: value
+    key = value
+}
+
+for = [list lambda |
+    mutable i = 0
+    mutable result = <>
+    r = (ReactComponent {
+                prop: 5
+            }
+        (Child1 ())
+    )
+    while [ret i != list.length] [
+        result.push (lambda list@i i)
+        mutate i = i + 1
+    ]
+    ret result
+]
+
+for = {list lambda |
+    mutable i = 0
+    mutable result = []
+    while {ret i != list.length} {
+        result.push (lambda list@i i)
+        mutate i = i + 1
+    }
+    ret result
+}
 
 mapwhile = [cond body |
     mutable result = ()
@@ -75,4 +125,26 @@ if (__result instanceof __return) {
     return 
 }
 
+
+myarray.sort [ _.coord () ]
+
+myarray:_.map [ _.coord() ]
+
+f = [a b | my_function foo a b]
+f = my_function:_.partial foo
+
+let x = (-> c (+ 3) (/ 2) (- 1))
+let x = (-> c (add 3) (div 2) (sub 1))
+
+x = c:add 3:div 2:sub 1
+
+
+
+return _.map(this.props.answerForms, form => formExamples[form](this.props));
+
+ret this.props.answerForms -> _.map [formExamples[it](this.props)]
+ret this.props.answerForms:_.map [formExamples[it](this.props)] : 
+
+[p.coord ()]
+p\coord
 
