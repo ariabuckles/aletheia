@@ -36,7 +36,7 @@ var grammar = {
             ["var",                 'return "VARKEYWORD"'],
             ["mutate",              'return "MUTATE"'],
 
-            ['\\"(\\\\.|[^"\\\n])*\\"', 'return "STRING"'],
+            ['\\"(\\\\.|[^"\\n])*\\"', 'return "STRING"'],
             ["[0-9]+\\.?",          'return "NUMBER"'],
             ["([0-9]+)?\\.[0-9]+",  'return "NUMBER"'],
             ["[a-zA-Z_$][a-zA-Z0-9_$]*", 'return "IDENTIFIER"'],
@@ -140,6 +140,6 @@ var grammar = {
 
 var prelude = "";
 var parser = (new jison.Parser(grammar, {debug: true})).generate({moduleType: "js"});
-var postlude = "\n\nexports.parser = parser;\n";
+var postlude = "\n\nmodule.exports = parser;\n";
 
 fs.writeFileSync(path.resolve(__dirname, "parser.js"), prelude + parser + postlude);
