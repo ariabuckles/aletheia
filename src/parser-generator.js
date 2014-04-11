@@ -76,9 +76,6 @@ var grammar = {
             ["functionCall", "$$ = $1;"]
         ],
         "expression": [
-            ["rvalue", "$$ = $1;"]
-        ],
-        "rvalue": [
             ["functionCall", "$$ = $1;"],
             ["unitExpression", "$$ = $1;"],
         ],
