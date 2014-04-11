@@ -66,14 +66,14 @@ var grammar = {
             ["NEWLINE EOF", "$$ = $2"]
         ],
         "statementList": [
-            ["statementListBody", "$$ = $1",],
-//            ["NEWLINE statementList", "$$ = $2"]
-        ],
-        "statementListBody": [
             ["statement", "$$ = [$1]"],
-            ["statementListBody NEWLINE statement", "$$ = $1; $1.push($3);"],
+            ["statementList statement", "$$ = $1; $1.push($2);"],
         ],
         "statement": [
+            ["NEWLINE", ""],  // discard
+            ["statementBody NEWLINE", "$$ = $1"]
+        ],
+        "statementBody": [
             ["IDENTIFIER = expression", "return new yy.Declaration(false, $1, $3);"],
             ["VARKEYWORD IDENTIFIER = expression", "return new yy.Declaration(true, $2, $4);"],
             ["MUTATE lvalue = expression", "return new yy.Mutation($2, $3)"],
