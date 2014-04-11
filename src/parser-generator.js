@@ -59,13 +59,19 @@ var grammar = {
     bnf: {
         "program": [
             ["statementList EOF", "return $1;"],
-            ["EOF", "return new yy.StatementList([]);"]
+            ["endFile", "return new yy.StatementList([]);"]
+        ],
+        "endFile": [
+            ["EOF", "$$ = $1"],
+            ["NEWLINE EOF", "$$ = $2"]
         ],
         "statementList": [
+            ["statementListBody", "$$ = $1",],
+//            ["NEWLINE statementList", "$$ = $2"]
+        ],
+        "statementListBody": [
             ["statement", "$$ = [$1]"],
-            ["statementList NEWLINE statement", "$$ = $1; $1.push($3);"],
-            ["statementList NEWLINE", "$$ = $1;"],
-            ["NEWLINE statementList", "$$ = $2;"]
+            ["statementListBody NEWLINE statement", "$$ = $1; $1.push($3);"],
         ],
         "statement": [
             ["IDENTIFIER = expression", "return new yy.Declaration(false, $1, $3);"],
@@ -104,8 +110,12 @@ var grammar = {
 //            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
 //        ],
         "function": [
-            ["[ statementList ]", "$$ = new yy.Function([], $2);"],
-            ["[ argList | statementList ]", "$$ = new yy.Function($2, $4);"]
+            ["[ statementList endFunction", "$$ = new yy.Function([], $2);"],
+            ["[ argList | statementList endFunction", "$$ = new yy.Function($2, $4);"]
+        ],
+        "endFunction": [
+            ["]", "$$ = $1"],
+            ["NEWLINE ]", "$$ = $2"]
         ],
         "additive": [
             ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
@@ -170,7 +180,7 @@ var grammar = {
 };
 
 var prelude = "";
-var parser = (new jison.Parser(grammar)).generate({moduleType: "js"});
+var parser = (new jison.Parser(grammar, {debug: true})).generate({moduleType: "js"});
 var postlude = "\n\nexports.parser = parser;\n";
 
 fs.writeFileSync(path.resolve(__dirname, "parser.js"), prelude + parser + postlude);
