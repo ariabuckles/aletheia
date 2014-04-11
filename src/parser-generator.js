@@ -70,7 +70,7 @@ var grammar = {
         "statement": [
             ["IDENTIFIER = expression", "return new yy.Declaration(false, $1, $3);"],
             ["VARKEYWORD IDENTIFIER = expression", "return new yy.Declaration(true, $2, $4);"],
-            ["MUTATE lvalue = expression"],
+            ["MUTATE lvalue = expression", "return new yy.Mutation($2, $3)"],
         ],
         "expression": [
             ["lvalue", "$$ = $1"],
