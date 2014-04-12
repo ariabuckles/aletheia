@@ -7,3 +7,7 @@ jison: src/parser-generator.js
 .PHONY: pegjs
 pegjs: src/parser.pegjs
 	./node_modules/.bin/pegjs src/parser.pegjs
+
+.PHONY: test
+test:
+	node test.js
