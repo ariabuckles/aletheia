@@ -33,7 +33,7 @@ var grammar = {
             ["\\!",                 'return "!"'],
             ["\\:",                 'return ":"'],
 
-            ["var",                 'return "VARKEYWORD"'],
+            ["mutable",             'return "MUTABLE"'],
             ["mutate",              'return "MUTATE"'],
 
             ['\\"(\\\\.|[^"\\n])*\\"', 'return "STRING"'],
@@ -64,36 +64,36 @@ var grammar = {
     start: "program",
     bnf: {
         "program": [
-            ["statementList EOF", "return $1;"],
-            ["EOF", "return new yy.StatementList([]);"]
+            ["statementList EOF", "console.log('statementList->program', $1); return $1;"],
+            ["EOF", "console.log('EOF->program'); return new yy.StatementList([]);"]
         ],
         "statementList": [
-            ["statement", "$$ = [$1]"],
-            ["statementList statement", "$$ = $1; $1.push($2);"],
+            ["statement", "console.log('statement->statementList'); $$ = [$1]"],
+            ["statementList statement", "console.log('push statementList'); $$ = $1; $1.push($2);"],
         ],
         "statement": [
             ["NEWLINE", ""],  // discard
-            ["statementBody", "$$ = $1;"]
+            ["statementBody", "console.log('statementBody->statement'); $$ = $1;"]
         ],
         "statementBody": [
-            ["IDENTIFIER = expression", "return new yy.Declaration(false, $1, $3);"],
-            ["VARKEYWORD IDENTIFIER = expression", "return new yy.Declaration(true, $2, $4);"],
-            ["MUTATE lvalue = expression", "return new yy.Mutation($2, $3);"],
+            ["IDENTIFIER = expression", "$$ = new yy.Declaration(false, $1, $3);"],
+            ["MUTABLE IDENTIFIER = expression", "$$ = new yy.Declaration(true, $2, $4);"],
+            ["MUTATE lvalue = expression", "$$ = new yy.Mutation($2, $3);"],
             ["functionCall", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [
-            ["functionCall", "$$ = $1;", {prec: "WRAP_EXPR"}],
-            ["unitExpression", "$$ = $1;", {prec: "WRAP_EXPR"}],
+            ["functionCall", "console.log('functionCall->expression'); $$ = $1;", {prec: "WRAP_EXPR"}],
+            ["unitExpression", "console.log('unitExpression->expression', $1); $$ = $1;", {prec: "WRAP_EXPR"}],
         ],
         "unitExpression": [
             ["( expression )", "$$ = [$1];"],
             ["function", "$$ = $1;"],
             ["literal", "$$ = $1;"],
-            ["lvalue", "$$ = $1"]
+            ["lvalue", "$$ = $1;"]
         ],
         "lvalue": [
-            ["IDENTIFIER", "$$ = $1"],
-//            ["tableaccess", "$$ = $1"]
+            ["IDENTIFIER", "$$ = $1;"],
+//            ["tableaccess", "$$ = $1;"]
         ],
         "functionCall": [
             ["unitExpression unitExpression", "$$ = [$1, $2];"],
@@ -119,7 +119,7 @@ var grammar = {
 //            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
 //        ],
         "function": [
-            ["[ statementList ]", "$$ = new yy.Function([], $2);"],
+            ["[ statementList ]", "console.log('func'); $$ = new yy.Function([], $2);"],
 //            ["[ argList | statementList ]", "$$ = new yy.Function($2, $4);"]
         ],
 //        "additive": [
