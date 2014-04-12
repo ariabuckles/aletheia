@@ -27,9 +27,20 @@ var Function_ = function(args, stmts) {
     this.stmts = stmts;
 };
 
+var FunctionCall = function(func, args) {
+    console.log("FunctionCall", func, args);
+    this.name = "FunctionCall";
+    this.func = func;
+    this.args = args;
+};
+FunctionCall.prototype.pushArg = function(arg) {
+    this.args.push(arg);
+};
+
 module.exports = {
     StatementList: StatementList,
     Declaration: Declaration,
     Mutation: Mutation,
-    Function: Function_
+    Function: Function_,
+    FunctionCall: FunctionCall
 };

@@ -58,6 +58,8 @@ var grammar = {
         ["left", "*", "/"],
         ["nonassoc", "UMINUS"],
         ["right", "^"],
+        ["precedence", "INIT_FUNC_CALL"],
+        ["precedence", "PUSH_FUNC_CALL"],
         ["precedence", "WRAP_EXPR"],
         ["precedence", "STATEMENT_BODY"]
     ],
@@ -86,7 +88,7 @@ var grammar = {
             ["unitExpression", "console.log('unitExpression->expression', $1); $$ = $1;", {prec: "WRAP_EXPR"}],
         ],
         "unitExpression": [
-            ["( expression )", "$$ = [$1];"],
+            ["( expression )", "$$ = $1;"],
             ["function", "$$ = $1;"],
             ["literal", "$$ = $1;"],
             ["lvalue", "$$ = $1;"]
@@ -96,8 +98,8 @@ var grammar = {
 //            ["tableaccess", "$$ = $1;"]
         ],
         "functionCall": [
-            ["unitExpression unitExpression", "$$ = [$1, $2];"],
-            ["functionCall unitExpression", "$$ = $1; $1.push($2);"]
+            ["unitExpression unitExpression", "$$ = new yy.FunctionCall($1, [$2]);", {prec: "INIT_FUNC_CALL"}],
+            ["functionCall unitExpression", "$$ = $1; $1.pushArg($2);", {prec: "PUSH_FUNC_CALL"}]
         ],
 //        "tableaccess": [
 //
