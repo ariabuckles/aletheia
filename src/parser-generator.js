@@ -49,6 +49,7 @@ var grammar = {
         }
     },
     operators: [
+        // Things at the bottom happen before things at the top
         ["precedence", "IDENTIFIER"],
         ["precedence", "NUMBER"],
         ["precedence", "STRING"],
@@ -58,10 +59,11 @@ var grammar = {
         ["left", "*", "/"],
         ["nonassoc", "UMINUS"],
         ["right", "^"],
-        ["precedence", "INIT_FUNC_CALL"],
-        ["precedence", "PUSH_FUNC_CALL"],
         ["precedence", "WRAP_EXPR"],
-        ["precedence", "STATEMENT_BODY"]
+        ["precedence", "STMT"],
+        ["precedence", "STMT_LIST"],
+        ["left", "FUNC_CALL"],
+        ["left", "_separator"],
     ],
     start: "program",
     bnf: {
@@ -70,14 +72,20 @@ var grammar = {
             ["EOF", "console.log('EOF->program'); return new yy.StatementList([]);"]
         ],
         "statementList": [
-            ["statement", "console.log('statement->statementList'); $$ = [$1]"],
-            ["statementList statement", "console.log('push statementList'); $$ = $1; $1.push($2);"],
+            ["statementListBody", "$$ = $1;"],
+            ["statementListBody separator", "$$ = $1;"],
+            ["separator statementListBody", "$$ = $2;"],
+            ["separator statementListBody separator", "$$ = $2;"]
+        ],
+        "statementListBody": [
+            ["statement", "$$ = [$1]", {prec: "STMT"}],
+            ["statementListBody separator statement", "$$ = $1; $1.push($2);", {prec: "STMT_LIST"}],
+        ],
+        "separator": [
+            ["NEWLINE", "", {prec: "_separator"}],
+            ["separator NEWLINE", "", {prec: "_separator"}]
         ],
         "statement": [
-            ["NEWLINE", ""],  // discard
-            ["statementBody", "console.log('statementBody->statement'); $$ = $1;"]
-        ],
-        "statementBody": [
             ["IDENTIFIER = expression", "$$ = new yy.Declaration(false, $1, $3);"],
             ["MUTABLE IDENTIFIER = expression", "$$ = new yy.Declaration(true, $2, $4);"],
             ["MUTATE lvalue = expression", "$$ = new yy.Mutation($2, $3);"],
@@ -98,8 +106,8 @@ var grammar = {
 //            ["tableaccess", "$$ = $1;"]
         ],
         "functionCall": [
-            ["unitExpression unitExpression", "$$ = new yy.FunctionCall($1, [$2]);", {prec: "INIT_FUNC_CALL"}],
-            ["functionCall unitExpression", "$$ = $1; $1.pushArg($2);", {prec: "PUSH_FUNC_CALL"}]
+            ["unitExpression unitExpression", "$$ = new yy.FunctionCall($1, [$2]);", {prec: "FUNC_CALL"}],
+            ["functionCall unitExpression", "$$ = $1; $1.pushArg($2);", {prec: "FUNC_CALL"}]
         ],
 //        "tableaccess": [
 //
