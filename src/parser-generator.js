@@ -10,7 +10,8 @@ var jison = require("jison");
 var grammar = {
     lex: {
         rules: [
-            ["\\s+",                '/* skip whitespace */'],
+            ["\\n\\s*",             'return "NEWLINE"'],
+            ["\\s+",                '/* skip other whitespace */'],
 
             ["==|!=|<|>|<=|>=",     'return "SIGN"'],
 
@@ -29,7 +30,6 @@ var grammar = {
             ["\\]",                 'return "]"'],
 
             ["=",                   'return "="'],
-            ["\\n+",                'return "NEWLINE"'],
             ["\\!",                 'return "!"'],
             ["\\:",                 'return ":"'],
 
@@ -79,7 +79,7 @@ var grammar = {
         ],
         "statementListBody": [
             ["statement", "$$ = [$1]", {prec: "STMT"}],
-            ["statementListBody separator statement", "$$ = $1; $1.push($2);", {prec: "STMT_LIST"}],
+            ["statementListBody separator statement", "$$ = $1; $1.push($3);", {prec: "STMT_LIST"}],
         ],
         "separator": [
             ["NEWLINE", "", {prec: "_separator"}],
