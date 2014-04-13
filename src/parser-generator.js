@@ -88,7 +88,7 @@ var grammar = {
         "statement": [
             ["IDENTIFIER = expression", "$$ = new yy.Declaration(false, $1, $3);"],
             ["MUTABLE IDENTIFIER = expression", "$$ = new yy.Declaration(true, $2, $4);"],
-            ["MUTATE lvalue = expression", "$$ = new yy.Mutation($2, $3);"],
+            ["MUTATE lvalue = expression", "$$ = new yy.Mutation($2, $4);"],
             ["functionCall", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [
