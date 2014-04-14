@@ -161,7 +161,7 @@ myarray:_.map [ _.coord() ]
 f = [a b | my_function foo a b]
 f = my_function:_.partial foo
 
-let x = (-> c (+ 3) (/ 2) (- 1))
+#let x = (-> c (+ 3) (/ 2) (- 1))
 let x = (-> c (add 3) (div 2) (sub 1))
 
 x = c:add 3:div 2:sub 1
@@ -175,4 +175,56 @@ ret this.props.answerForms:_.map [formExamples[it](this.props)] :
 
 [p.coord ()]
 p\coord
+
+
+########
+
+#coords = [it.coord() for it in my_list]
+ coords = map my_list [ it.coord () ]
+ coords = my_list -> map [ret it.coord ()]
+ coords = [it.coord ()] -> [map my_list it]
+
+
+switch (node.match ()) [ case |
+    case 1 2 var var [a b | console.log a b ],
+    case 1, 2,  [ ]
+]
+
+x = if (node == 4) [
+    ret 'a'
+] (node == 5) [
+    ret 'b'
+] (node == 6) [
+    ret 'c'
+]
+
+x = if (node == 4) ['a']
+       (node == 5) ['b']
+       (node == 6) ['c'];
+
+x = switch node 4 [
+    ret 'a'
+] 5 [
+    ret 'b'
+] 6 [
+    ret 'c'
+]
+
+for = [ list lambda |
+    var i = 0
+    var result = {}
+    while [i != list.length] [
+        result.push (lambda list@i i)
+    ]
+    ret result
+];
+
+for = [ list lambda |
+    var i = 0;
+    var result = {};
+    while [i != list.length] [
+        result.push (lambda list@i i);
+    ];
+    result
+];
 
