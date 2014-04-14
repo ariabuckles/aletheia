@@ -23,8 +23,8 @@ var grammar = {
 
             ["\\(",                 'return "("'],
             ["\\)",                 'return ")"'],
-            ["\\{",                 'return "}"'],
-            ["\\{",                 'return "}"'],
+            ["\\{",                 'return "{"'],
+            ["\\}",                 'return "}"'],
             ["\\|",                 'return "|"'],
             ["\\[",                 'return "["'],
             ["\\]",                 'return "]"'],
@@ -114,20 +114,27 @@ var grammar = {
 //        ],
         "literal": [
             ["NUMBER", "$$ = $1;"],
-            ["STRING", "$$ = $1;"]
+            ["STRING", "$$ = $1;"],
+            ["table", "$$ = $1;"]
         ],
-//        "table": [
-//            ["{ }", "$$ = new yy.Table([]);"],
-//            ["{ fieldList }", "$$ = new yy.Table([]);"]
-//        ],
-//        "fieldList": [
-//            ["field", "$$ = [$1];"],
-//            ["field NEWLINE field", "$$ = $1; $1.push($3);"]
-//        ],
-//        "field": [
-//            ["expression", "$$ = new yy.Field(null, $1);"],
-//            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
-//        ],
+        "table": [
+            ["{ : }", "$$ = new yy.Table([]);"],
+            ["{ fieldList }", "$$ = new yy.Table($2);"]
+        ],
+        "fieldList": [
+            ["fieldListBody", "$$ = $1;"],
+            ["fieldListBody separator", "$$ = $1;"],
+            ["separator fieldListBody", "$$ = $2;"],
+            ["separator fieldListBody separator", "$$ = $2;"],
+        ],
+        "fieldListBody": [
+            ["field", "$$ = [$1];"],
+            ["field separator field", "$$ = $1; $1.push($3);"]
+        ],
+        "field": [
+            ["expression", "$$ = new yy.Field(null, $1);"],
+            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
+        ],
         "function": [
             ["[ statementList ]", "console.log('func'); $$ = new yy.Function([], $2);"],
 //            ["[ argList | statementList ]", "$$ = new yy.Function($2, $4);"]
