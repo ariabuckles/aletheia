@@ -129,7 +129,7 @@ var grammar = {
         ],
         "fieldListBody": [
             ["field", "$$ = [$1];"],
-            ["field separator field", "$$ = $1; $1.push($3);"]
+            ["fieldListBody separator field", "$$ = $1; $1.push($3);"]
         ],
         "field": [
             ["expression", "$$ = new yy.Field(null, $1);"],
