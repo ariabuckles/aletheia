@@ -32,6 +32,7 @@ var grammar = {
             ["=",                   'return "="'],
             ["\\!",                 'return "!"'],
             ["\\:",                 'return ":"'],
+            ["\\.",                 'return "."'],
 
             ["mutable",             'return "MUTABLE"'],
             ["mutate",              'return "MUTATE"'],
@@ -103,15 +104,15 @@ var grammar = {
         ],
         "lvalue": [
             ["IDENTIFIER", "$$ = $1;"],
-//            ["tableaccess", "$$ = $1;"]
+            ["tableaccess", "$$ = $1;"]
         ],
         "functionCall": [
             ["unitExpression unitExpression", "$$ = new yy.FunctionCall($1, [$2]);", {prec: "FUNC_CALL"}],
             ["functionCall unitExpression", "$$ = $1; $1.pushArg($2);", {prec: "FUNC_CALL"}]
         ],
-//        "tableaccess": [
-//
-//        ],
+        "tableaccess": [
+            ["unitExpression . IDENTIFIER", "$$ = [$1, $3]"]
+        ],
         "literal": [
             ["NUMBER", "$$ = $1;"],
             ["STRING", "$$ = $1;"],
