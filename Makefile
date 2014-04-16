@@ -8,6 +8,10 @@ jison: src/parser-generator.js
 pegjs: src/parser.pegjs
 	./node_modules/.bin/pegjs src/parser.pegjs
 
+.PHONY: install
+install:
+	npm install
+
 .PHONY: test
 test:
 	node test.js

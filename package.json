@@ -22,6 +22,6 @@
     "browserify": "~3.40.0"
   },
   "dependencies": {
-    "underscore": "1.4.4+"
+    "underscore": ">=1.4.4"
   }
 }
