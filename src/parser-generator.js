@@ -132,17 +132,13 @@ var grammar = {
             ["fieldListBody separator field", "$$ = $1; $1.push($3);"]
         ],
         "field": [
-            ["expression", "$$ = new yy.Field(null, $1);"],
-            ["IDENTIFIER : expression", "$$ = new yy.Field($1, $3);"]
+            ["expression", "$$ = yy.Field(null, $1);"],
+            ["IDENTIFIER : expression", "$$ = yy.Field($1, $3);"]
         ],
         "function": [
-            ["[ statementList ]", "console.log('func'); $$ = new yy.Function([], $2);"],
-            ["[ unitList | statementList ]", "$$ = new yy.Function($2, $4);"],
-            ["[ unitExpression | statementList ]", "$$ = new yy.Function([$1], $4);"]
-        ],
-        "argList": [
-            ["IDENTIFIER", "$$ = [$1]"],
-            ["argList IDENTIFIER", "$$ = $1; $1.push($3);"]
+            ["[ statementList ]", "console.log('func'); $$ = yy.Lambda([], $2);"],
+            ["[ unitList | statementList ]", "$$ = yy.Lambda($2.units, $4);"],
+            ["[ unitExpression | statementList ]", "$$ = yy.Lambda([$1], $4);"]
         ],
 //        "additive": [
 //            ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
