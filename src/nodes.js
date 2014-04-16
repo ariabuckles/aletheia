@@ -48,6 +48,12 @@ var Field = function(key, value) {
     this.value = value;
 };
 
+var TableAccess = function(table, key) {
+    this.type = "TableAccess";
+    this.table = table;
+    this.key = key;
+};
+
 module.exports = {
     StatementList: StatementList,
     Declaration: Declaration,
@@ -55,5 +61,6 @@ module.exports = {
     Function: Function_,
     FunctionCall: FunctionCall,
     Table: Table,
-    Field: Field
+    Field: Field,
+    TableAccess: TableAccess
 };

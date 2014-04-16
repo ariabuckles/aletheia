@@ -111,7 +111,7 @@ var grammar = {
             ["functionCall unitExpression", "$$ = $1; $1.pushArg($2);", {prec: "FUNC_CALL"}]
         ],
         "tableaccess": [
-            ["unitExpression . IDENTIFIER", "$$ = [$1, $3]"]
+            ["unitExpression . IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
         ],
         "literal": [
             ["NUMBER", "$$ = $1;"],
@@ -138,7 +138,11 @@ var grammar = {
         ],
         "function": [
             ["[ statementList ]", "console.log('func'); $$ = new yy.Function([], $2);"],
-//            ["[ argList | statementList ]", "$$ = new yy.Function($2, $4);"]
+            ["[ statement | statementList ]", "$$ = new yy.Function($2, $4);"]
+        ],
+        "argList": [
+            ["IDENTIFIER", "$$ = [$1]"],
+            ["argList IDENTIFIER", "$$ = $1; $1.push($3);"]
         ],
 //        "additive": [
 //            ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
