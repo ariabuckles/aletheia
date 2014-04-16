@@ -69,8 +69,8 @@ var grammar = {
     start: "program",
     bnf: {
         "program": [
-            ["statementList EOF", "console.log('statementList->program', $1); return $1;"],
-            ["EOF", "console.log('EOF->program'); return new yy.StatementList([]);"]
+            ["statementList EOF", "return $1;"],
+            ["EOF", "return [];"]
         ],
         "statementList": [
             ["statementListBody", "$$ = $1;"],
@@ -87,14 +87,13 @@ var grammar = {
             ["separator NEWLINE", "", {prec: "_separator"}]
         ],
         "statement": [
-            ["IDENTIFIER = expression", "$$ = new yy.Declaration(false, $1, $3);"],
-            ["MUTABLE IDENTIFIER = expression", "$$ = new yy.Declaration(true, $2, $4);"],
-            ["MUTATE lvalue = expression", "$$ = new yy.Mutation($2, $4);"],
+            ["IDENTIFIER = expression", "$$ = yy.Assignment(null, $1, $3);"],
+            ["IDENTIFIER IDENTIFIER = expression", "$$ = yy.Assignment($1, $2, $4);"],
             ["functionCall", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [
-            ["functionCall", "console.log('functionCall->expression'); $$ = $1;", {prec: "WRAP_EXPR"}],
-            ["unitExpression", "console.log('unitExpression->expression', $1); $$ = $1;", {prec: "WRAP_EXPR"}],
+            ["functionCall", "$$ = $1;", {prec: "WRAP_EXPR"}],
+            ["unitExpression", "$$ = $1;", {prec: "WRAP_EXPR"}],
         ],
         "unitExpression": [
             ["( expression )", "$$ = $1;"],
@@ -107,8 +106,8 @@ var grammar = {
             ["tableaccess", "$$ = $1;"]
         ],
         "functionCall": [
-            ["unitExpression unitExpression", "$$ = new yy.FunctionCall($1, [$2]);", {prec: "FUNC_CALL"}],
-            ["functionCall unitExpression", "$$ = $1; $1.pushArg($2);", {prec: "FUNC_CALL"}]
+            ["unitExpression unitExpression", "$$ = yy.UnitList([$1, $2]);", {prec: "FUNC_CALL"}],
+            ["functionCall unitExpression", "$$ = $1; $1.push($2);", {prec: "FUNC_CALL"}]
         ],
         "tableaccess": [
             ["unitExpression . IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
@@ -165,7 +164,7 @@ var grammar = {
 
 var prelude = "";
 var parser = (new jison.Parser(grammar, {debug: true})).generate({moduleType: "js"});
-var postlude = "\n\nparser.yy = require('./nodes.js');\nmodule.exports = parser;\n";
+var postlude = "\n\nparser.yy = require('./parse-tree.js');\nmodule.exports = parser;\n";
 
 fs.writeFileSync(path.resolve(__dirname, "parser.js"), prelude + parser + postlude);
 
