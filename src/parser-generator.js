@@ -137,7 +137,8 @@ var grammar = {
         ],
         "function": [
             ["[ statementList ]", "console.log('func'); $$ = new yy.Function([], $2);"],
-            ["[ unitList | statementList ]", "$$ = new yy.Function($2, $4);"]
+            ["[ unitList | statementList ]", "$$ = new yy.Function($2, $4);"],
+            ["[ unitExpression | statementList ]", "$$ = new yy.Function([$1], $4);"]
         ],
         "argList": [
             ["IDENTIFIER", "$$ = [$1]"],
