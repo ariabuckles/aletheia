@@ -89,10 +89,10 @@ var grammar = {
         "statement": [
             ["IDENTIFIER = expression", "$$ = yy.Assignment(null, $1, $3);"],
             ["IDENTIFIER IDENTIFIER = expression", "$$ = yy.Assignment($1, $2, $4);"],
-            ["functionCall", "$$ = $1;", {prec: "STATEMENT_BODY"}]
+            ["unitList", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [
-            ["functionCall", "$$ = $1;", {prec: "WRAP_EXPR"}],
+            ["unitList", "$$ = $1;", {prec: "WRAP_EXPR"}],
             ["unitExpression", "$$ = $1;", {prec: "WRAP_EXPR"}],
         ],
         "unitExpression": [
@@ -105,9 +105,9 @@ var grammar = {
             ["IDENTIFIER", "$$ = $1;"],
             ["tableaccess", "$$ = $1;"]
         ],
-        "functionCall": [
+        "unitList": [
             ["unitExpression unitExpression", "$$ = yy.UnitList([$1, $2]);", {prec: "FUNC_CALL"}],
-            ["functionCall unitExpression", "$$ = $1; $1.push($2);", {prec: "FUNC_CALL"}]
+            ["unitList unitExpression", "$$ = $1; $1.push($2);", {prec: "FUNC_CALL"}]
         ],
         "tableaccess": [
             ["unitExpression . IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
@@ -137,7 +137,7 @@ var grammar = {
         ],
         "function": [
             ["[ statementList ]", "console.log('func'); $$ = new yy.Function([], $2);"],
-            ["[ statement | statementList ]", "$$ = new yy.Function($2, $4);"]
+            ["[ unitList | statementList ]", "$$ = new yy.Function($2, $4);"]
         ],
         "argList": [
             ["IDENTIFIER", "$$ = [$1]"],
