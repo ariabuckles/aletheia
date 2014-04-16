@@ -43,10 +43,11 @@ var ParseTree = {
         });
     },
 
-    Table: function(fields) {
+    Table: function(fields, forceObject) {
         return new ParseNode({
             type: "table",
-            fields: fields
+            fields: fields,
+            forceObject: forceObject
         });
     },
 
