@@ -1,26 +1,26 @@
 assert = require("assert");
 _ = require("underscore");
 
-var ParseNode = function(options) {
-    if (!(this instanceof ParseNode)) {
-        return new ParseNode(options);
+var SyntaxNode = function(options) {
+    if (!(this instanceof SyntaxNode)) {
+        return new SyntaxNode(options);
     }
     assert(options.type != null);
     _.extend(this, options);
 };
 
-var ParseTree = {
-    ParseNode: ParseNode,
+var SyntaxTree = {
+    SyntaxNode: SyntaxNode,
 
     StatementList: function(statements) {
-        return new ParseNode({
+        return new SyntaxNode({
             type: "statement-list",
             statements: statements
         });
     },
 
     Assignment: function(modifier, left, right) {
-        return new ParseNode({
+        return new SyntaxNode({
             type: "assignment",
             modifier: modifier,
             left: left,
@@ -29,7 +29,7 @@ var ParseTree = {
     },
 
     Lambda: function(args, stmts) {
-        return new ParseNode({
+        return new SyntaxNode({
             type: "lambda",
             arguments: args,
             statements: statements
@@ -37,21 +37,21 @@ var ParseTree = {
     },
 
     UnitList: function(units) {
-        return new ParseNode({
+        return new SyntaxNode({
             type: "unit-list",
             units: units
         });
     },
 
     Table: function(fields) {
-        return new ParseNode({
+        return new SyntaxNode({
             type: "table",
             fields: fields
         });
     },
 
     Field: function(key, value) {
-        return new ParseNode({
+        return new SyntaxNode({
             type: "field",
             key: key,
             value: value
@@ -59,7 +59,7 @@ var ParseTree = {
     },
 
     TableAccess: function(table, key) {
-        return new ParseNode({
+        return new SyntaxNode({
             type: "table-access",
             table: table,
             key: key
@@ -67,4 +67,4 @@ var ParseTree = {
     }
 };
 
-module.exports = ParseTree;
+module.exports = SyntaxTree;
