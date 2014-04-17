@@ -18,6 +18,27 @@ var getPreamble = function() {
     return new SourceNode(null, null, null, preambleStr);
 };
 
+// Does something like Array::join, but returns a new
+// array with the value interleaved, rather than a
+// string.
+//
+// Used to interleave ", " commas between parameters
+//
+// > interleave(array, value).join("") === array.join(value)
+var interleave = function(array, value, trailingValue) {
+    var result = [];
+    _.each(array, function(elem, i) {
+        result.push(elem);
+        if (i + 1 !== array.length || trailingValue) {
+            result.push(value);
+        }
+    });
+    return result;
+};
+//#test interleave [
+//  #assert interleave(array, value).join("") === array.join(value)
+//]
+
 var compile = function(node) {
     if (_.isArray(node)) {
         return new SourceNode(null, null, "source.al", _.map(node, compile));
@@ -29,14 +50,21 @@ var compile = function(node) {
     }
 };
 _.extend(compile, {
+    "statement-list": function(statements) {
+        return interleave(_.map(statements, compile), ";\n", true);
+    },
+
     assignment: function(assign) {
         return new SourceNode(null, null, "source.al", [
             "var ",
             compile(assign.left),
             " = ",
-            compile(assign.right),
-            ";\n"
+            compile(assign.right)
         ]);
+    },
+
+    "lambda-args": function(args) {
+        return interleave(_.map(args, compile), ", ");
     },
 
     lambda: function(lambda) {
@@ -45,16 +73,9 @@ _.extend(compile, {
         var result = new SourceNode(null, null, "source.al");
 
         result.add("(function(");
-
-        _.each(args, function(arg, i) {
-            result.add(compile(arg));
-            if (i + 1 !== args.length) {
-                result.add(', ');
-            }
-        });
-
+        result.add(compile["lambda-args"](args));
         result.add(") {\n");
-        result.add(compile(statements));
+        result.add(compile["statement-list"](statements));
         result.add("})");
 
         return result;
@@ -86,7 +107,10 @@ _.extend(compile, {
 var compileWithPreamble = function(fileNode) {
     return new SourceNode(null, null, "source.al", [
         getPreamble(),
-        compile(fileNode)
+        "\n",
+        new SourceNode(null, null, "source.al",
+            compile["statement-list"](fileNode)
+        )
     ]);
 };
 
