@@ -1,5 +1,5 @@
-assert = require("assert");
-_ = require("underscore");
+var assert = require("assert");
+var _ = require("underscore");
 
 var SyntaxNode = function(options) {
     if (!(this instanceof SyntaxNode)) {

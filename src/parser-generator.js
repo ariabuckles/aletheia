@@ -136,7 +136,7 @@ var grammar = {
             ["IDENTIFIER : expression", "$$ = yy.Field($1, $3);"]
         ],
         "function": [
-            ["[ statementList ]", "console.log('func'); $$ = yy.Lambda([], $2);"],
+            ["[ statementList ]", "$$ = yy.Lambda([], $2);"],
             ["[ unitList | statementList ]", "$$ = yy.Lambda($2.units, $4);"],
             ["[ unitExpression | statementList ]", "$$ = yy.Lambda([$1], $4);"]
         ],
