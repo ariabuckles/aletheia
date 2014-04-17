@@ -51,7 +51,9 @@ var compile = function(node) {
 };
 _.extend(compile, {
     "statement-list": function(statements) {
-        return interleave(_.map(statements, compile), ";\n", true);
+        return new SourceNode(null, null, "source.al",
+            interleave(_.map(statements, compile), ";\n", true)
+        );
     },
 
     assignment: function(assign) {
@@ -64,7 +66,9 @@ _.extend(compile, {
     },
 
     "lambda-args": function(args) {
-        return interleave(_.map(args, compile), ", ");
+        return new SourceNode(null, null, "source.al",
+            interleave(_.map(args, compile), ", ")
+        );
     },
 
     lambda: function(lambda) {
@@ -73,6 +77,8 @@ _.extend(compile, {
         var result = new SourceNode(null, null, "source.al");
 
         result.add("(function(");
+        console.log("lambda.arguments", args);
+        console.log("args",compile["lambda-args"](args).toString());
         result.add(compile["lambda-args"](args));
         result.add(") {\n");
         result.add(compile["statement-list"](statements));
@@ -101,6 +107,14 @@ _.extend(compile, {
         result.add(")");
 
         return result;
+    },
+
+    "table-access": function(tableAccess) {
+        return new SourceNode(null, null, "source.al", [
+            compile(tableAccess.table),
+            ".",
+            compile(tableAccess.key)
+        ]);
     }
 });
 
@@ -108,9 +122,7 @@ var compileWithPreamble = function(fileNode) {
     return new SourceNode(null, null, "source.al", [
         getPreamble(),
         "\n",
-        new SourceNode(null, null, "source.al",
-            compile["statement-list"](fileNode)
-        )
+        compile["statement-list"](fileNode)
     ]);
 };
 

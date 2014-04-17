@@ -138,7 +138,7 @@ var grammar = {
         "function": [
             ["[ statementList ]", "$$ = yy.Lambda([], $2);"],
             ["[ unitList | statementList ]", "$$ = yy.Lambda($2.units, $4);"],
-            ["[ unitExpression | statementList ]", "$$ = yy.Lambda([$1], $4);"]
+            ["[ unitExpression | statementList ]", "$$ = yy.Lambda([$2], $4);"]
         ],
 //        "additive": [
 //            ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
