@@ -1,0 +1,8 @@
+We probably want a second transformation step after "normalization"
+(where macros are run), where we translate the AST into something
+easier to code-gen.
+Alternatively, code-gen can call the appropriate compile[type] sub-
+command for things expected to be arrays.
+^ This might work well because we'd ideally like to have array literals
+be arrays as well, so that compile-time constant array literals can be
+accessed/returned by macros.
