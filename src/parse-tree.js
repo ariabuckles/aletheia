@@ -1,5 +1,5 @@
-assert = require("assert");
-_ = require("underscore");
+var assert = require("assert");
+var _ = require("underscore");
 
 var ParseNode = function(options) {
     if (!(this instanceof ParseNode)) {
@@ -28,7 +28,7 @@ var ParseTree = {
         });
     },
 
-    Lambda: function(args, stmts) {
+    Lambda: function(args, statements) {
         return new ParseNode({
             type: "lambda",
             arguments: args,
