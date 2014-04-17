@@ -181,7 +181,7 @@ p\coord
 
 #coords = [it.coord() for it in my_list]
  coords = map my_list [ it.coord () ]
- coords = my_list -> map [ret it.coord ()]
+ coords = my_list -> _.map [it.coord ()]
  coords = [it.coord ()] -> [map my_list it]
 
 
