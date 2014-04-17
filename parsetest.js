@@ -11,8 +11,19 @@ console.log('\n');
 
 var parseTree = parser.parse(program);
 var ast = normalize(parseTree);
-var code = compile(ast);
+var gen = compile(ast);
 
-console.log(code.toString());
+var code = gen.toString();
+console.log(code);
+fs.writeFileSync("./output.js", code, {encoding: 'utf-8'});
+
+console.log("\n==== INPUT ====");
+console.log(program);
+
+console.log("\n==== OUTPUT ====");
+console.log(code);
+
+console.log("\n==== EXECUTING ====");
+require("./output.js");
 
 module.exports = ast;
