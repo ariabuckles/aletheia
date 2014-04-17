@@ -58,6 +58,28 @@ _.extend(compile, {
         result.add("})");
 
         return result;
+    },
+
+    "unit-list": function(unitList) {
+        // If we got here, we're a function call, since
+        // unit-lists as lambda parameters get code-gen'd in `lambda`
+        var result = new SourceNode(null, null, "source.al");
+
+        result.add(compile(_.first(unitList.units)));
+
+        result.add("(");
+
+        var params = _.rest(unitList.units);
+        _.each(params, function(unit, i) {
+            result.add(compile(unit));
+            if (i + 1 !== params.length) {
+                result.add(", ");
+            }
+        });
+
+        result.add(")");
+
+        return result;
     }
 });
 
