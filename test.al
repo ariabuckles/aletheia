@@ -1,5 +1,5 @@
-a = [
-    b = 7
+f = [ x |
+    console.log x
 ]
 
-a 6
+f 6
