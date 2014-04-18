@@ -75,6 +75,13 @@ var ParseTree = {
             left: left,
             right: right
         });
+    },
+
+    Variable: function(name) {
+        return new ParseNode({
+            type: "variable",
+            name: name
+        });
     }
 };
 

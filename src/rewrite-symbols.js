@@ -15,16 +15,20 @@ var rewrite = function(node) {
     } else if (node instanceof SyntaxNode) {
         return rewrite[node.type](node);
     } else {
-        if (typeof node === "string") {
-            if (translateSymbols[node] != null) {
-                return translateSymbols[node];
-            }
-        }
         return node;
     }
 };
 
 _.extend(rewrite, {
+    variable: function(variable) {
+        var optTranslate = translateSymbols[variable.name];
+        var name = optTranslate ? optTranslate : variable.name;
+        return new SyntaxNode({
+            type: "variable",
+            name: name
+        });
+    },
+
     assignment: function(assign) {
         return new SyntaxNode({
             type: "assignment",
