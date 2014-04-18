@@ -128,26 +128,21 @@ _.extend(compile, {
         var right = new SourceNode(null, null, "source.al", compile(comp.right));
         var sign = comp.sign;
         if (sign === "==") {
-            return new SourceNode(null, null, "source.al", [
-                left,
-                " === ",
-                right
-            ]);
+            sign = "===";
         } else if (sign === "!=") {
-            return new SourceNode(null, null, "source.al", [
-                left,
-                " !== ",
-                right
-            ]);
-        } else {
-            return new SourceNode(null, null, "source.al", [
-                left,
-                " ",
-                sign,
-                " ",
-                right
-            ]);
+            sign = "!==";
         }
+        return new SourceNode(null, null, "source.al", [
+            left,
+            " ",
+            sign,
+            " ",
+            right
+        ]);
+    },
+
+    "variable": function(variable) {
+        return new SourceNode(null, null, "source.al", variable.name);
     }
 });
 

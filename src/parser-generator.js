@@ -88,8 +88,8 @@ var grammar = {
             ["separator NEWLINE", "", {prec: "_separator"}]
         ],
         "statement": [
-            ["IDENTIFIER = expression", "$$ = yy.Assignment(null, $1, $3);"],
-            ["IDENTIFIER IDENTIFIER = expression", "$$ = yy.Assignment($1, $2, $4);"],
+            ["IDENTIFIER = expression", "$$ = yy.Assignment(null, yy.Variable($1), $3);"],
+            ["IDENTIFIER IDENTIFIER = expression", "$$ = yy.Assignment($1, yy.Variable($2), $4);"],
             ["unitList", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [
@@ -104,7 +104,7 @@ var grammar = {
             ["unitExpression SIGN unitExpression", "$$ = yy.Comparison($1, $2, $3);", {prec: "COMPARISON"}]
         ],
         "lvalue": [
-            ["IDENTIFIER", "$$ = $1;"],
+            ["IDENTIFIER", "$$ = yy.Variable($1);"],
             ["tableaccess", "$$ = $1;"]
         ],
         "unitList": [
