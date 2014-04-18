@@ -66,6 +66,15 @@ var ParseTree = {
             table: table,
             key: key
         });
+    },
+
+    Comparison: function(left, sign, right) {
+        return new ParseNode({
+            type: "comparison",
+            sign: sign,
+            left: left,
+            right: right
+        });
     }
 };
 
