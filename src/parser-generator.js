@@ -13,7 +13,7 @@ var grammar = {
             ["\\n\\s*",             'return "NEWLINE"'],
             ["\\s+",                '/* skip other whitespace */'],
 
-            ["==|!=|<|>|<=|>=",     'return "SIGN"'],
+            ["=="/*|!=|<|>|<=|>="*/,     'return "SIGN"'],
 
             ["\\*",                 'return "*"'],
             ["\\/",                 'return "/"'],
@@ -32,7 +32,7 @@ var grammar = {
             ["=",                   'return "="'],
             ["\\!",                 'return "!"'],
             ["\\:",                 'return ":"'],
-            ["\\.",                 'return "."'],
+            ["\\.",                 'return "DOT"'],
 
             ["mutable",             'return "MUTABLE"'],
             ["mutate",              'return "MUTATE"'],
@@ -59,7 +59,8 @@ var grammar = {
         ["left", "+", "-"],
         ["left", "*", "/"],
         ["nonassoc", "UMINUS"],
-        ["right", "^"],
+        ["nonassoc", "SIGN", "COMPARISON"],
+        ["left", "DOT"],
         ["precedence", "WRAP_EXPR"],
         ["precedence", "STMT"],
         ["precedence", "STMT_LIST"],
@@ -99,7 +100,8 @@ var grammar = {
             ["( expression )", "$$ = $1;"],
             ["function", "$$ = $1;"],
             ["literal", "$$ = $1;"],
-            ["lvalue", "$$ = $1;"]
+            ["lvalue", "$$ = $1;"],
+            ["unitExpression SIGN unitExpression", "$$ = yy.Comparison($1, $2, $3);", {prec: "COMPARISON"}]
         ],
         "lvalue": [
             ["IDENTIFIER", "$$ = $1;"],
@@ -110,7 +112,7 @@ var grammar = {
             ["unitList unitExpression", "console.log('unitlist'); $$ = $1; $1.units.push($2);", {prec: "FUNC_CALL"}]
         ],
         "tableaccess": [
-            ["unitExpression . IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
+            ["unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
         ],
         "literal": [
             ["NUMBER", "$$ = $1;"],

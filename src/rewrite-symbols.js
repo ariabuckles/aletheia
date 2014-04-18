@@ -54,6 +54,15 @@ _.extend(rewrite, {
             type: "unit-list",
             units: _.map(unitList.units, rewrite)
         });
+    },
+
+    "comparison": function(comp) {
+        return new SyntaxNode({
+            type: "comparison",
+            sign: comp.sign,
+            left: rewrite(comp.left),
+            right: rewrite(comp.right)
+        });
     }
 });
 

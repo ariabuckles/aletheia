@@ -115,6 +115,21 @@ _.extend(compile, {
             ".",
             compile(tableAccess.key)
         ]);
+    },
+
+    "comparison": function(comp) {
+        var left = new SourceNode(null, null, "source.al", compile(comp.left));
+        var right = new SourceNode(null, null, "source.al", compile(comp.right));
+        var sign = comp.sign;
+        if (sign === "==") {
+            return new SourceNode(null, null, "source.al", [
+                left,
+                " === ",
+                right
+            ]);
+        } else {
+            throw new Error("Unrecognized sign: " + sign);
+        }
     }
 });
 
