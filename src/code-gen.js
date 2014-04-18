@@ -6,9 +6,15 @@ var SyntaxTree = require("./syntax-tree.js");
 var SyntaxNode = SyntaxTree.SyntaxNode;
 
 var preambleStr = [
-    "var _if = function(condition, lambda) {",
-    "    if (condition) {",
-    "        lambda.call(undefined);",
+    "var _else = {identifier: 'else'};",
+    "var _if = function(condition, trueLambda, optionalElse, falseLambda) {",
+    "    if (optionalElse != null && optionalElse != _else) {",
+    "        throw new Error('if called with third parameter != else');",
+    "    }",
+    "    if (condition != null && condition !== false) {",
+    "        return trueLambda.call(undefined);",
+    "    } else if (falseLambda != null) {",
+    "        return falseLambda.call(undefined);",
     "    }",
     "};",
     ""
@@ -127,8 +133,20 @@ _.extend(compile, {
                 " === ",
                 right
             ]);
+        } else if (sign === "!=") {
+            return new SourceNode(null, null, "source.al", [
+                left,
+                " !== ",
+                right
+            ]);
         } else {
-            throw new Error("Unrecognized sign: " + sign);
+            return new SourceNode(null, null, "source.al", [
+                left,
+                " ",
+                sign,
+                " ",
+                right
+            ]);
         }
     }
 });
