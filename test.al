@@ -2,4 +2,6 @@ f = [ x |
     console.log x
 ]
 
-f 6
+if 1 [
+    f 6
+]
