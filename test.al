@@ -2,6 +2,8 @@ f = [ x |
     console.log x
 ]
 
-if 1 == 0 [
-    f 6
+if 2 < 1 [
+    f 5
+] else [
+    f 42
 ]

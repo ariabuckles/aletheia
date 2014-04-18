@@ -4,6 +4,7 @@ var SyntaxNode = SyntaxTree.SyntaxNode;
 
 var translateSymbols = {
     if: '_if',
+    else: '_else',
     while: '_while',
     for: '_for'
 };

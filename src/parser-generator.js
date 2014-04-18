@@ -13,7 +13,7 @@ var grammar = {
             ["\\n\\s*",             'return "NEWLINE"'],
             ["\\s+",                '/* skip other whitespace */'],
 
-            ["=="/*|!=|<|>|<=|>="*/,     'return "SIGN"'],
+            ["==|!=|<|>|<=|>=",     'return "SIGN"'],
 
             ["\\*",                 'return "*"'],
             ["\\/",                 'return "/"'],
