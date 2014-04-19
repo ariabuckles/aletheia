@@ -141,13 +141,15 @@ _.extend(compile, {
             op = "!==";
         }
         return new SourceNode(null, null, "source.al", [
+            "(",
             // TODO(jack) we'll need to use something other than null here so
             // that we can use a null literal for compile time macros
             (left != null ? left : ""),
             " ",
             op,
             " ",
-            (right != null ? right : "")
+            (right != null ? right : ""),
+            ")"
         ]);
     },
 

@@ -1,4 +1,4 @@
-mutable i = 0
-console.log i
-mutate i = i + 1
-console.log i
+x = 4
+if (x + 1 == 5) [
+    console.log x
+]
