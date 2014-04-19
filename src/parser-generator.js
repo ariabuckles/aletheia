@@ -34,9 +34,6 @@ var grammar = {
             ["\\:",                 'return ":"'],
             ["\\.",                 'return "DOT"'],
 
-            ["mutable",             'return "MUTABLE"'],
-            ["mutate",              'return "MUTATE"'],
-
             ['\\"(\\\\.|[^"\\n])*\\"', 'return "STRING"'],
             ["[0-9]+\\.?",          'return "NUMBER"'],
             ["([0-9]+)?\\.[0-9]+",  'return "NUMBER"'],
