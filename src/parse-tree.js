@@ -68,11 +68,11 @@ var ParseTree = {
         });
     },
 
-    Comparison: function(left, sign, right) {
+    Operation: function(left, op, right) {
         return new ParseNode({
-            type: "comparison",
-            sign: sign,
+            type: "operation",
             left: left,
+            operation: op,
             right: right
         });
     },
