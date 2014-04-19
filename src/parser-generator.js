@@ -51,17 +51,14 @@ var grammar = {
     },
     operators: [
         // Things at the bottom happen before things at the top
-        ["precedence", "IDENTIFIER"],
-        ["precedence", "NUMBER"],
-        ["precedence", "STRING"],
+        ["precedence", "IDENTIFIER", "NUMBER", "STRING"],
         ["nonassoc", "SIGN", "COMPARISON"],
         ["left", "+", "-"],
         ["nonassoc", "REDUCE_TO_ADDITIVE"],
         ["left", "*", "/"],
         ["nonassoc", "UMINUS"],
         ["left", "DOT"],
-        ["precedence", "("],
-        ["precedence", "["],
+        ["precedence", "(", "[", "{"],
         ["precedence", "WRAP_EXPR"],
         ["precedence", "STMT"],
         ["precedence", "STMT_LIST"],
@@ -89,23 +86,23 @@ var grammar = {
             ["separator NEWLINE", "", {prec: "_separator"}]
         ],
         "statement": [
-            ["IDENTIFIER = expression", "$$ = yy.Assignment(null, yy.Variable($1), $3);"],
-            ["IDENTIFIER IDENTIFIER = expression", "$$ = yy.Assignment($1, yy.Variable($2), $4);"],
+            ["lvalue = expression", "$$ = yy.Assignment(null, $1, $3);"],
+            ["IDENTIFIER lvalue = expression", "$$ = yy.Assignment($1, $2, $4);"],
             ["unitList", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [
             ["unitList", "$$ = $1;", {prec: "WRAP_EXPR"}],
             ["additive", "$$ = $1;", {prec: "WRAP_EXPR"}],
+            ["additive SIGN additive", "$$ = yy.Operation($1, $2, $3);", {prec: "COMPARISON"}],
         ],
         "unitExpression": [
             ["( expression )", "$$ = $2;"],
             ["function", "$$ = $1;"],
             ["literal", "$$ = $1;"],
             ["lvalue", "$$ = $1;"],
-            ["additive SIGN additive", "$$ = yy.Operation($1, $2, $3);", {prec: "COMPARISON"}]
         ],
         "lvalue": [
-            ["IDENTIFIER", "$$ = yy.Variable($1);"],
+            ["IDENTIFIER", "$$ = yy.Variable($1);", {prec: "WRAP_EXPR"}],
             ["tableaccess", "$$ = $1;"]
         ],
         "unitList": [
