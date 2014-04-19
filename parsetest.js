@@ -22,11 +22,11 @@ fs.writeFileSync("./output.js", code, {encoding: 'utf-8'});
 console.log("\n==== INPUT ====");
 console.log(program);
 
-//console.log("\n==== PARSED ====");
-//console.log(JSON.stringify(parseTree, null, 4));
+console.log("\n==== PARSED ====");
+console.log(JSON.stringify(parseTree, null, 4));
 
-//console.log("\n==== REWRITTEN ====");
-//console.log(JSON.stringify(rewritten, null, 4));
+console.log("\n==== REWRITTEN ====");
+console.log(JSON.stringify(rewritten, null, 4));
 
 console.log("\n==== OUTPUT ====");
 console.log(code);

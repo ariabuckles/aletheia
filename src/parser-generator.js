@@ -54,13 +54,14 @@ var grammar = {
         ["precedence", "IDENTIFIER"],
         ["precedence", "NUMBER"],
         ["precedence", "STRING"],
-        ["precedence", "("],
-        ["precedence", "["],
+        ["nonassoc", "SIGN", "COMPARISON"],
         ["left", "+", "-"],
+        ["nonassoc", "REDUCE_TO_ADDITIVE"],
         ["left", "*", "/"],
         ["nonassoc", "UMINUS"],
-        ["nonassoc", "SIGN", "COMPARISON"],
         ["left", "DOT"],
+        ["precedence", "("],
+        ["precedence", "["],
         ["precedence", "WRAP_EXPR"],
         ["precedence", "STMT"],
         ["precedence", "STMT_LIST"],
@@ -97,7 +98,7 @@ var grammar = {
             ["additive", "$$ = $1;", {prec: "WRAP_EXPR"}],
         ],
         "unitExpression": [
-            ["( expression )", "$$ = $1;"],
+            ["( expression )", "$$ = $2;"],
             ["function", "$$ = $1;"],
             ["literal", "$$ = $1;"],
             ["lvalue", "$$ = $1;"],
@@ -143,7 +144,7 @@ var grammar = {
             ["[ unitExpression | statementList ]", "$$ = yy.Lambda([$2], $4);"]
         ],
         "additive": [
-            ["unitExpression", "$$ = $1;", {prec: "+"}],
+            ["unitExpression", "$$ = $1;", {prec: "REDUCE_TO_ADDITIVE"}],
             ["additive + additive", "$$ = yy.Operation($1, $2, $3);"],
         ],
 //        "additive": [
