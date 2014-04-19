@@ -144,6 +144,7 @@ _.extend(compile, {
     },
 
     "variable": function(variable) {
+        console.log("VARIABLE:", JSON.stringify(variable));
         return new SourceNode(null, null, "source.al", variable.name);
     }
 });
