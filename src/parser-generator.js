@@ -94,14 +94,14 @@ var grammar = {
         ],
         "expression": [
             ["unitList", "$$ = $1;", {prec: "WRAP_EXPR"}],
-            ["unitExpression", "$$ = $1;", {prec: "WRAP_EXPR"}],
+            ["additive", "$$ = $1;", {prec: "WRAP_EXPR"}],
         ],
         "unitExpression": [
             ["( expression )", "$$ = $1;"],
             ["function", "$$ = $1;"],
             ["literal", "$$ = $1;"],
             ["lvalue", "$$ = $1;"],
-            ["unitExpression SIGN unitExpression", "$$ = yy.Comparison($1, $2, $3);", {prec: "COMPARISON"}]
+            ["additive SIGN additive", "$$ = yy.Operation($1, $2, $3);", {prec: "COMPARISON"}]
         ],
         "lvalue": [
             ["IDENTIFIER", "$$ = yy.Variable($1);"],
@@ -142,14 +142,16 @@ var grammar = {
             ["[ unitList | statementList ]", "$$ = yy.Lambda($2.units, $4);"],
             ["[ unitExpression | statementList ]", "$$ = yy.Lambda([$2], $4);"]
         ],
+        "additive": [
+            ["unitExpression", "$$ = $1;", {prec: "+"}],
+            ["additive + additive", "$$ = yy.Operation($1, $2, $3);"],
+        ],
 //        "additive": [
 //            ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
 //            ["additive - multiplicative", "$$ = yy.Add.createOrAppend($1, yy.Mul.handleNegative($3, \"subtract\"));"],
 //            ["multiplicative", "$$ = $1;", {prec: "+"}]
 //        ],
 //        "multiplicative": [
-//            // the second term in an implicit multiplication cannot be negative
-//            ["multiplicative triglog", "$$ = yy.Mul.fold(yy.Mul.createOrAppend($1, $2));"],
 //            ["multiplicative * negative", "$$ = yy.Mul.fold(yy.Mul.createOrAppend($1, $3));"],
 //            ["multiplicative / negative", "$$ = yy.Mul.fold(yy.Mul.handleDivide($1, $3));"],
 //            ["negative", "$$ = $1;"]

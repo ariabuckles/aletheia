@@ -32,7 +32,7 @@ var normalizationTable = {
     "unit-list": syntaxWithSameFields,
     "table-access": syntaxWithSameFields,
     field: syntaxWithSameFields,
-    comparison: syntaxWithSameFields,
+    operation: syntaxWithSameFields,
     variable: syntaxWithSameFields,
 
     table: function(table) {

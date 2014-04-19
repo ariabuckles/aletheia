@@ -123,21 +123,23 @@ _.extend(compile, {
         ]);
     },
 
-    "comparison": function(comp) {
+    "operation": function(comp) {
         var left = new SourceNode(null, null, "source.al", compile(comp.left));
         var right = new SourceNode(null, null, "source.al", compile(comp.right));
-        var sign = comp.sign;
-        if (sign === "==") {
-            sign = "===";
-        } else if (sign === "!=") {
-            sign = "!==";
+        var op = comp.operation;
+        if (op === "==") {
+            op = "===";
+        } else if (op === "!=") {
+            op = "!==";
         }
         return new SourceNode(null, null, "source.al", [
-            left,
+            // TODO(jack) we'll need to use something other than null here so
+            // that we can use a null literal for compile time macros
+            (left != null ? left : ""),
             " ",
-            sign,
+            op,
             " ",
-            right
+            (right != null ? right : "")
         ]);
     },
 

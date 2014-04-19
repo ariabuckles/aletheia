@@ -61,11 +61,11 @@ _.extend(rewrite, {
         });
     },
 
-    "comparison": function(comp) {
+    "operation": function(comp) {
         return new SyntaxNode({
-            type: "comparison",
-            sign: comp.sign,
+            type: "operation",
             left: rewrite(comp.left),
+            operation: comp.operation,
             right: rewrite(comp.right)
         });
     }
