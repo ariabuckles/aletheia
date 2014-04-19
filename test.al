@@ -1,9 +1,5 @@
-f = [ x |
-    console.log x
-]
-
-if 2 < 1 [
-    f 5
-] else [
-    f 42
+x = 6 + 1
+y = (x == 7)
+if (y) [
+    console.log "Hello, world!"
 ]
