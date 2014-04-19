@@ -63,12 +63,20 @@ _.extend(compile, {
     },
 
     assignment: function(assign) {
-        return new SourceNode(null, null, "source.al", [
-            "var ",
-            compile(assign.left),
-            " = ",
-            compile(assign.right)
-        ]);
+        var modifier = assign.modifier;
+        var left = compile(assign.left);
+        var right = compile(assign.right);
+        if (modifier === null || modifier === "mutable") {
+            return new SourceNode(null, null, "source.al", [
+                "var ", left, " = ", right
+            ]);
+        } else if (modifier === "mutate") {
+            return new SourceNode(null, null, "source.al", [
+                left, " = ", right
+            ]);
+        } else {
+            throw new Error("Invalid assignment modifier: " + modifier);
+        }
     },
 
     "lambda-args": function(args) {

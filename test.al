@@ -1,8 +1,4 @@
-f = [ x |
-    console.log x
-    if (x != 10) [
-        f (x + 1)
-    ]
-]
-
-f 0
+mutable i = 0
+console.log i
+mutate i = i + 1
+console.log i

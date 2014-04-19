@@ -83,8 +83,8 @@ var grammar = {
             ["separator NEWLINE", "", {prec: "_separator"}]
         ],
         "statement": [
-            ["lvalue = expression", "$$ = yy.Assignment(null, $1, $3);"],
-            ["IDENTIFIER lvalue = expression", "$$ = yy.Assignment($1, $2, $4);"],
+            ["lvalue = expression", "$$ = yy.Declaration($1, $3);"],
+            ["unitList = expression", "$$ = yy.Assignment($1, $3);"],
             ["unitList", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [

@@ -19,11 +19,28 @@ var ParseTree = {
         });
     },
 
-    Assignment: function(modifier, left, right) {
+    Declaration: function(left, right) {
         return new ParseNode({
             type: "assignment",
-            modifier: modifier,
+            modifier: null,
             left: left,
+            right: right
+        });
+    },
+
+    Assignment: function(leftUnitList, right) {
+        units = leftUnitList.units;
+        if (units.length !== 2) {
+            throw new Error("Variable assignment may have a single " +
+                "modifier; got " + JSON.stringify(leftList));
+        }
+        if (units[0].type !== "variable") {
+            throw new Error("Variable assignment may only have a word identifier");
+        }
+        return new ParseNode({
+            type: "assignment",
+            modifier: units[0].name,
+            left: units[1],
             right: right
         });
     },
