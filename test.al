@@ -1,4 +1,3 @@
-x = 4
-if {:} [
-    console.log x
+if true [
+    console.log undefined
 ]
