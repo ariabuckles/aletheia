@@ -1,4 +1,4 @@
 x = 4
-if (x + 1 == 5) [
+if {:} [
     console.log x
 ]

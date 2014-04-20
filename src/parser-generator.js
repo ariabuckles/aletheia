@@ -110,13 +110,13 @@ var grammar = {
             ["unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
         ],
         "literal": [
-            ["NUMBER", "$$ = $1;"],
-            ["STRING", "$$ = $1;"],
+            ["NUMBER", "$$ = Number($1);"],
+            ["STRING", "$$ = $1.slice(1, -1);"],
             ["table", "$$ = $1;"]
         ],
         "table": [
-            ["{ : }", "$$ = new yy.Table([]);"],
-            ["{ fieldList }", "$$ = new yy.Table($2);"]
+            ["{ : }", "$$ = new yy.Table([], true);"],
+            ["{ fieldList }", "$$ = new yy.Table($2, false);"]
         ],
         "fieldList": [
             ["fieldListBody", "$$ = $1;"],

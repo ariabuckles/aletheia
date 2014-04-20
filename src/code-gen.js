@@ -52,10 +52,43 @@ var compile = function(node) {
         return compile[node.type](node);
     } else {
         // compile time constant
-        return new SourceNode(null, null, "source.al", String(node));
+        return compile[typeof node](node);
     }
 };
 _.extend(compile, {
+    "number": function(num) {
+        return new SourceNode(null, null, "source.al", String(num));
+    },
+
+    "string": function(str) {
+        return new SourceNode(null, null, "source.al", [
+            '"', str, '"'
+        ]);
+    },
+
+    "object": function(obj) {
+        if (obj == null) {
+            return new SourceNode(null, null, "source.al", "null");
+        } else {
+            var fields = _.map(obj, function(value, key) {
+                return [key, ': ', compile(value)];
+            });
+            return new SourceNode(null, null, "source.al", _.flatten([
+                "{\n",
+                interleave(fields, ",\n", false),
+                "\n}"
+            ]));
+        }
+    },
+
+    "undefined": function(undef) {
+        return new SourceNode(null, null, "source.al", "undefined");
+    },
+
+    "boolean": function(boolVal) {
+        return new SourceNode(null, null, "source.al", String(boolVal));
+    },
+
     "statement-list": function(statements) {
         return new SourceNode(null, null, "source.al",
             interleave(_.map(statements, compile), ";\n", true)
@@ -127,7 +160,7 @@ _.extend(compile, {
         return new SourceNode(null, null, "source.al", [
             compile(tableAccess.table),
             ".",
-            compile(tableAccess.key)
+            tableAccess.key
         ]);
     },
 
