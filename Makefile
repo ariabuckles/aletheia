@@ -1,12 +1,16 @@
+build: jison copyjs
+
 js/parser.js: jison
 
-.PHONY: jison
-jison: js/parser-generator.js
-	node js/parser-generator.js
+.PHONY: copyjs
+copyjs:
+	mkdir -p ./build
+	cp -R js/* build/
 
-.PHONY: pegjs
-pegjs: js/parser.pegjs
-	./node_modules/.bin/pegjs js/parser.pegjs
+.PHONY: jison
+jison: jison/parser-generator.js
+	mkdir -p ./build
+	node jison/parser-generator.js -o build/parser.js
 
 .PHONY: install
 install:
@@ -15,3 +19,8 @@ install:
 .PHONY: test
 test:
 	node test.js
+
+.PHONY: clean
+clean:
+	-rm -rf ./build/
+

@@ -6,6 +6,13 @@
 var fs = require("fs");
 var path = require("path");
 var jison = require("jison");
+var outputFile = (function(args) {
+    var index = args.indexOf("-o") + 1;
+    if (index === 0 || index === args.length) {
+        throw new Error("Must supply an output file name with a -o option");
+    }
+    return args[index];
+})(process.argv);
 
 var grammar = {
     lex: {
@@ -162,5 +169,5 @@ var prelude = "";
 var parser = (new jison.Parser(grammar, {debug: true})).generate({moduleType: "js"});
 var postlude = "\n\nparser.yy = require('./parse-tree.js');\nmodule.exports = parser;\n";
 
-fs.writeFileSync(path.resolve(__dirname, "parser.js"), prelude + parser + postlude);
+fs.writeFileSync(outputFile, prelude + parser + postlude);
 
