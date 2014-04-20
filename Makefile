@@ -17,8 +17,8 @@ install:
 	npm install
 
 .PHONY: test
-test:
-	node test.js
+test: build
+	mocha build/*-test.js
 
 .PHONY: clean
 clean:
