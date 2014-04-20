@@ -1,9 +1,9 @@
 var fs = require("fs");
 
-var parser = require("./src/parser.js");
-var normalize = require("./src/normalize.js");
-var rewrite = require("./src/rewrite-symbols.js");
-var compile = require("./src/code-gen.js");
+var parser = require("./js/parser.js");
+var normalize = require("./js/normalize.js");
+var rewrite = require("./js/rewrite-symbols.js");
+var compile = require("./js/code-gen.js");
 
 var program = fs.readFileSync("./test.al", {encoding: 'utf8'});
 

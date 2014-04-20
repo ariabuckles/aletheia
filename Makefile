@@ -1,12 +1,12 @@
-src/parser.js: jison
+js/parser.js: jison
 
 .PHONY: jison
-jison: src/parser-generator.js
-	node src/parser-generator.js
+jison: js/parser-generator.js
+	node js/parser-generator.js
 
 .PHONY: pegjs
-pegjs: src/parser.pegjs
-	./node_modules/.bin/pegjs src/parser.pegjs
+pegjs: js/parser.pegjs
+	./node_modules/.bin/pegjs js/parser.pegjs
 
 .PHONY: install
 install:
