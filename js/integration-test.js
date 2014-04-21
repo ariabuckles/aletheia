@@ -40,6 +40,29 @@ describe("aletheia", function() {
         });
     });
 
+    describe("while", function() {
+        it("should count to 10", function() {
+            var result = [];
+            var callback = function(param) {
+                result.push(param);
+            };
+            var endResult;
+            var endCallback = function(param) {
+                endResult = param;
+            };
+            var prgm = [
+                "mutable i = 0",
+                "while (i < 10) [",
+                "    callback i",
+                "]",
+                "endCallback i"
+            ];
+            exec(prgm, {callback: callback, endCallback: endCallback});
+            assert.deepEqual(result, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            assert.deepEqual(endResult, 10);
+        });
+    });
+
     describe("table literal", function() {
         it("should compile a simple table literal", function() {
             var result;
