@@ -8,7 +8,8 @@ copyjs:
 	cp -R js/* build/
 
 .PHONY: jison
-jison: jison/parser-generator.js
+jison: build/parser.js
+build/parser.js: jison/parser-generator.js
 	mkdir -p ./build
 	node jison/parser-generator.js -o build/parser.js
 
