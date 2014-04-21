@@ -111,7 +111,7 @@ var grammar = {
         ],
         "unitList": [
             ["unitExpression unitExpression", "$$ = yy.UnitList([$1, $2]);", {prec: "FUNC_CALL"}],
-            ["unitList unitExpression", "console.log('unitlist'); $$ = $1; $1.units.push($2);", {prec: "FUNC_CALL"}]
+            ["unitList unitExpression", "$$ = $1; $1.units.push($2);", {prec: "FUNC_CALL"}]
         ],
         "tableaccess": [
             ["unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
@@ -147,6 +147,7 @@ var grammar = {
         "additive": [
             ["unitExpression", "$$ = $1;", {prec: "REDUCE_TO_ADDITIVE"}],
             ["additive + additive", "$$ = yy.Operation($1, $2, $3);"],
+            ["additive - additive", "$$ = yy.Operation($1, $2, $3);"],
         ],
 //        "additive": [
 //            ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],

@@ -1,0 +1,7 @@
+TODO:
+========
+[x] subtraction
+[x] make 1-2 work (make -2 be parsed as - 2)
+[ ] handle negative literals: -2
+[ ] multiplication
+[ ] division
