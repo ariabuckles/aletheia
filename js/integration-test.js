@@ -62,6 +62,38 @@ describe("aletheia", function() {
             assert.deepEqual(result, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
             assert.deepEqual(endResult, 10);
         });
+
+        it("should be able to count in fibonacci", function() {
+            var fib;
+            var storeResult = function(setFib) {
+                fib = setFib;
+            };
+            var prgm = [
+                "fib = [ n |",
+                "    mutable a = 1",
+                "    mutable b = 0",
+                "    mutable i = 0",
+                "    while [ret (i < n)] [",
+                "        old_b = b",
+                "        mutate b = a + b",
+                "        mutate a = old_b",
+                "        mutate i = i + 1",
+                "    ]",
+                "    ret b",
+                "]",
+                "storeResult fib"
+            ];
+            exec(prgm, {storeResult: storeResult});
+            assert.equal(fib(0), 0);
+            assert.equal(fib(1), 1);
+            assert.equal(fib(2), 1);
+            assert.equal(fib(3), 2);
+            assert.equal(fib(4), 3);
+            assert.equal(fib(5), 5);
+            assert.equal(fib(6), 8);
+            assert.equal(fib(7), 13);
+            assert.equal(fib(8), 21);
+        });
     });
 
     describe("table literal", function() {
