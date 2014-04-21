@@ -6,7 +6,8 @@ var translateSymbols = {
     if: '_if',
     else: '_else',
     while: '_while',
-    for: '_for'
+    for: '_for',
+    ret: 'return'
 };
 
 var rewrite = function(node) {

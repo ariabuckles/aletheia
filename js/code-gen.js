@@ -6,6 +6,7 @@ var SyntaxTree = require("./syntax-tree.js");
 var SyntaxNode = SyntaxTree.SyntaxNode;
 
 var preambleStr = [
+    // preamble if
     "var _else = {identifier: 'else'};",
     "var _if = function(condition, trueLambda, optionalElse, falseLambda) {",
     "    if (optionalElse != null && optionalElse != _else) {",
@@ -17,6 +18,12 @@ var preambleStr = [
     "        return falseLambda.call(undefined);",
     "    }",
     "};",
+    // preamble while
+    "var _while = function(conditionLambda, bodyLambda) {",
+    "    while (conditionLambda.call(undefined)) {",
+    "        bodyLambda.call(undefined);",
+    "    }",
+    "}",
     ""
 ].join("\n");
 
