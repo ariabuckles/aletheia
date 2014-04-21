@@ -97,5 +97,15 @@ describe("aletheia", function() {
             exec(prgm, {callback: callback});
             assert.deepEqual(result, -2);
         }); 
+
+        it("should handle negating expressions", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = ["callback (-(1 + 3))"];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, -4);
+        }); 
     });
 });
