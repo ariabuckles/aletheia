@@ -46,7 +46,6 @@ var ParseTree = {
     },
 
     Lambda: function(args, statements) {
-        console.log("Lambda", args);
         return new ParseNode({
             type: "lambda",
             arguments: args,

@@ -124,8 +124,6 @@ _.extend(compile, {
         var result = new SourceNode(null, null, "source.al");
 
         result.add("(function(");
-        console.log("lambda.arguments", args);
-        console.log("args",compile["lambda-args"](args).toString());
         result.add(compile["lambda-args"](args));
         result.add(") {\n");
         result.add(compile["statement-list"](statements));
@@ -187,7 +185,6 @@ _.extend(compile, {
     },
 
     "variable": function(variable) {
-        console.log("VARIABLE:", JSON.stringify(variable));
         return new SourceNode(null, null, "source.al", variable.name);
     }
 });

@@ -57,4 +57,45 @@ describe("aletheia", function() {
         }); 
     });
 
+    describe("arithmetic", function() {
+        it("should evaluate addition", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = ["callback (1 + 2)"];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, 3);
+        }); 
+
+        it("should evaluate subtraction", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = ["callback (1 - 2)"];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, -1);
+        }); 
+
+        it("should evaluate subtraction without spaces", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = ["callback (1-2)"];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, -1);
+        }); 
+
+        it("should handle negative literals", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = ["callback -2"];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, -2);
+        }); 
+    });
 });
