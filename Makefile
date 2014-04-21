@@ -11,6 +11,7 @@ copyjs:
 jison: build/parser.js
 build/parser.js: jison/parser-generator.js
 	mkdir -p ./build
+	-rm -f ./build/parser.js
 	node jison/parser-generator.js -o build/parser.js
 
 .PHONY: install

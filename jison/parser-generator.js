@@ -22,6 +22,11 @@ var grammar = {
 
             ["==|!=|<|>|<=|>=",     'return "SIGN"'],
 
+            ["-[0-9]+\\.?",         'return "NEG_NUMBER"'],
+            ["-([0-9]+)?\\.[0-9]+", 'return "NEG_NUMBER"'],
+            ["[0-9]+\\.?",          'return "NUMBER"'],
+            ["([0-9]+)?\\.[0-9]+",  'return "NUMBER"'],
+
             ["\\*",                 'return "*"'],
             ["\\/",                 'return "/"'],
             ["-",                   'return "-"'],
@@ -42,8 +47,6 @@ var grammar = {
             ["\\.",                 'return "DOT"'],
 
             ['\\"(\\\\.|[^"\\n])*\\"', 'return "STRING"'],
-            ["[0-9]+\\.?",          'return "NUMBER"'],
-            ["([0-9]+)?\\.[0-9]+",  'return "NUMBER"'],
             ["[a-zA-Z_$][a-zA-Z0-9_$]*", 'return "IDENTIFIER"'],
 
             ["$",                   'return "EOF"'],
@@ -57,12 +60,10 @@ var grammar = {
         // Things at the bottom happen before things at the top
         ["precedence", "IDENTIFIER", "NUMBER", "STRING"],
         ["nonassoc", "SIGN", "COMPARISON"],
-        ["left", "+", "-"],
+        ["left", "+", "-", "NEG_NUMBER"],
         ["nonassoc", "REDUCE_TO_ADDITIVE"],
         ["left", "*", "/"],
         ["precedence", "UMINUS"],
-        ["precedence", "REDUCE_TO_NUMBER_LITERAL"],
-        ["precedence", "UMINUS_LITERAL"],
         ["left", "DOT"],
         ["precedence", "(", "[", "{"],
         ["precedence", "WRAP_EXPR"],
@@ -119,8 +120,8 @@ var grammar = {
             ["unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
         ],
         "literal": [
-            ["NUMBER", "$$ = Number($1);", {prec: "REDUCE_TO_NUMBER_LITERAL"}],
-            ["- NUMBER", "$$ = Number('-' + $2);", {prec: "UMINUS_LITERAL"}],
+            ["NUMBER", "$$ = Number($1);"],
+            ["NEG_NUMBER", "$$ = Number($1);"],
             ["STRING", "$$ = $1.slice(1, -1);"],
             ["table", "$$ = $1;"]
         ],
@@ -148,9 +149,10 @@ var grammar = {
             ["[ unitExpression | statementList ]", "$$ = yy.Lambda([$2], $4);"]
         ],
         "additive": [
-            ["unitExpression", "$$ = $1;", {prec: "REDUCE_TO_ADDITIVE"}],
+            ["negative", "$$ = $1;", {prec: "REDUCE_TO_ADDITIVE"}],
             ["additive + additive", "$$ = yy.Operation($1, $2, $3);"],
             ["additive - additive", "$$ = yy.Operation($1, $2, $3);"],
+            ["additive NEG_NUMBER", "$$ = yy.Operation($1, '+', Number($2));"],
 //            ["- additive", "$$ = yy.Operation(null, $1, $2);", {prec: "UMINUS"}],
         ],
 //        "additive": [
@@ -163,15 +165,15 @@ var grammar = {
 //            ["multiplicative / negative", "$$ = yy.Mul.fold(yy.Mul.handleDivide($1, $3));"],
 //            ["negative", "$$ = $1;"]
 //        ],
-//        "negative": [
-//            ["- negative", "$$ = yy.Mul.handleNegative($2);", {prec: "UMINUS"}],
-//            ["triglog", "$$ = $1;"]
-//        ],
+        "negative": [
+            ["- negative", "$$ = yy.Operation(null, $1, $2);", {prec: "UMINUS"}],
+            ["unitExpression", "$$ = $1;", {prec: "UMINUS"}]
+        ],
     }
 };
 
 var prelude = "";
-var parser = (new jison.Parser(grammar, {debug: true, verbose: true})).generate({moduleType: "js"});
+var parser = (new jison.Parser(grammar, {debug: false})).generate({moduleType: "js"});
 var postlude = "\n\nparser.yy = require('./parse-tree.js');\nmodule.exports = parser;\n";
 
 fs.writeFileSync(outputFile, prelude + parser + postlude);
