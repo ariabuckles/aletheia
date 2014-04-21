@@ -60,7 +60,9 @@ var grammar = {
         ["left", "+", "-"],
         ["nonassoc", "REDUCE_TO_ADDITIVE"],
         ["left", "*", "/"],
-        ["nonassoc", "UMINUS"],
+        ["precedence", "UMINUS"],
+        ["precedence", "REDUCE_TO_NUMBER_LITERAL"],
+        ["precedence", "UMINUS_LITERAL"],
         ["left", "DOT"],
         ["precedence", "(", "[", "{"],
         ["precedence", "WRAP_EXPR"],
@@ -117,7 +119,8 @@ var grammar = {
             ["unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
         ],
         "literal": [
-            ["NUMBER", "$$ = Number($1);"],
+            ["NUMBER", "$$ = Number($1);", {prec: "REDUCE_TO_NUMBER_LITERAL"}],
+            ["- NUMBER", "$$ = Number('-' + $2);", {prec: "UMINUS_LITERAL"}],
             ["STRING", "$$ = $1.slice(1, -1);"],
             ["table", "$$ = $1;"]
         ],
@@ -148,6 +151,7 @@ var grammar = {
             ["unitExpression", "$$ = $1;", {prec: "REDUCE_TO_ADDITIVE"}],
             ["additive + additive", "$$ = yy.Operation($1, $2, $3);"],
             ["additive - additive", "$$ = yy.Operation($1, $2, $3);"],
+//            ["- additive", "$$ = yy.Operation(null, $1, $2);", {prec: "UMINUS"}],
         ],
 //        "additive": [
 //            ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
@@ -167,7 +171,7 @@ var grammar = {
 };
 
 var prelude = "";
-var parser = (new jison.Parser(grammar, {debug: true})).generate({moduleType: "js"});
+var parser = (new jison.Parser(grammar, {debug: true, verbose: true})).generate({moduleType: "js"});
 var postlude = "\n\nparser.yy = require('./parse-tree.js');\nmodule.exports = parser;\n";
 
 fs.writeFileSync(outputFile, prelude + parser + postlude);
