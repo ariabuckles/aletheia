@@ -3,17 +3,20 @@ TODO for self-hosting
 [x] subtraction
 [x] make 1-2 work (make -2 be parsed as - 2)
 [x] handle negative literals: -2
-[ ] preamble while
+[x] preamble while
 [ ] preamble for
 [ ] multiplication
 [ ] division
 [ ] array literals
 [ ] what to do about commas
+[ ] make `ret` not compile into a function call
 
 TODO to make usable
 [ ] add an errors compiler pass
 [ ] enforce mutable/mutate
 [ ] enforce const
+[ ] return from outer block
+[ ] single line lambdas auto-return?
 
 TODO to make everyone happy
 ================
@@ -21,3 +24,4 @@ TODO to make everyone happy
 [ ] source maps
 [ ] destructuring
 [ ] pattern matching
+[ ] figure out what to do with all the parens?
