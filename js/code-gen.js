@@ -161,6 +161,13 @@ _.extend(compile, {
         return result;
     },
 
+    "ret": function(retCall) {
+        return new SourceNode(null, null, "source.al", [
+            "return ",
+            compile(retCall.value)
+        ]);
+    },
+
     "table-access": function(tableAccess) {
         return new SourceNode(null, null, "source.al", [
             compile(tableAccess.table),
