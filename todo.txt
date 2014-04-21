@@ -1,7 +1,23 @@
-TODO:
-========
+TODO for self-hosting
+================
 [x] subtraction
 [x] make 1-2 work (make -2 be parsed as - 2)
-[ ] handle negative literals: -2
+[x] handle negative literals: -2
+[ ] preamble while
+[ ] preamble for
 [ ] multiplication
 [ ] division
+[ ] array literals
+[ ] what to do about commas
+
+TODO to make usable
+[ ] add an errors compiler pass
+[ ] enforce mutable/mutate
+[ ] enforce const
+
+TODO to make everyone happy
+================
+[ ] macros
+[ ] source maps
+[ ] destructuring
+[ ] pattern matching
