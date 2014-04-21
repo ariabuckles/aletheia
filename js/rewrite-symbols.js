@@ -6,8 +6,7 @@ var translateSymbols = {
     if: '_if',
     else: '_else',
     while: '_while',
-    for: '_for',
-    ret: 'return'
+    for: '_for'
 };
 
 var rewrite = function(node) {
@@ -56,6 +55,23 @@ _.extend(rewrite, {
     },
 
     "unit-list": function(unitList) {
+        var units = unitList.units;
+        var func = _.first(units);
+        if (func.type === 'variable' && func.name === 'ret') {
+            var value;
+            if (units.length === 2) {
+                value = units[1];
+            } else {
+                value = new SyntaxNode({
+                    type: "unit-list",
+                    units: _.rest(units)
+                });
+            }
+            return new SyntaxNode({
+                type: "ret",
+                value: rewrite(value)
+            });
+        }
         return new SyntaxNode({
             type: "unit-list",
             units: _.map(unitList.units, rewrite)

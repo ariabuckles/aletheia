@@ -4,12 +4,12 @@ TODO for self-hosting
 [x] make 1-2 work (make -2 be parsed as - 2)
 [x] handle negative literals: -2
 [x] preamble while
+[x] make `ret` not compile into a function call
 [ ] preamble for
 [ ] multiplication
 [ ] division
 [ ] array literals
 [ ] what to do about commas
-[ ] make `ret` not compile into a function call
 
 TODO to make usable
 [ ] add an errors compiler pass
