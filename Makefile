@@ -19,7 +19,7 @@ install:
 
 .PHONY: test
 test: build
-	mocha build/*-test.js
+	mocha -R spec build/*-test.js
 
 .PHONY: clean
 clean:
