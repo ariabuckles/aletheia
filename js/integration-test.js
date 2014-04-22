@@ -145,6 +145,19 @@ describe("aletheia", function() {
             exec(prgm, {callback: callback});
             assert.equal(result, 6);
         }); 
+
+        it("should be able to access expressions with @ notation", function() {
+            var result;
+            var array = [1, 3, 6, 10, 15];
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                'callback array@(1+2)'
+            ];
+            exec(prgm, {array: array, callback: callback});
+            assert.equal(result, 10);
+        }); 
     });
 
     describe("arithmetic", function() {
