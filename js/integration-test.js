@@ -113,6 +113,40 @@ describe("aletheia", function() {
         }); 
     });
 
+    describe("table access", function() {
+        it("should be able to access with dot notation", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                "table = {",
+                "    a: 5",
+                "    b: 6",
+                "}",
+                "callback table.a"
+            ];
+            exec(prgm, {callback: callback});
+            assert.equal(result, 5);
+        }); 
+
+        it("should be able to access with @ notation", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                "table = {",
+                "    a: 5",
+                "    b: 6",
+                "}",
+                'callback table@"b"'
+            ];
+            exec(prgm, {callback: callback});
+            assert.equal(result, 6);
+        }); 
+    });
+
     describe("arithmetic", function() {
         it("should evaluate addition", function() {
             var result;
