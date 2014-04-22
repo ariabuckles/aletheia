@@ -169,11 +169,20 @@ _.extend(compile, {
     },
 
     "table-access": function(tableAccess) {
-        return new SourceNode(null, null, "source.al", [
-            compile(tableAccess.table),
-            ".",
-            tableAccess.key
-        ]);
+        if (typeof tableAccess.key === "string") {
+            return new SourceNode(null, null, "source.al", [
+                compile(tableAccess.table),
+                ".",
+                tableAccess.key
+            ]);
+        } else {
+            return new SourceNode(null, null, "source.al", [
+                compile(tableAccess.table),
+                "[",
+                compile(tableAccess.key),
+                "]"
+            ]);
+        }
     },
 
     "operation": function(comp) {
