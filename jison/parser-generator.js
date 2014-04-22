@@ -32,6 +32,7 @@ var grammar = {
             ["-",                   'return "-"'],
             ["\\+",                 'return "+"'],
             ["\\%",                 'return "%"'],
+            ["@",                   'return "@"'],
 
             ["\\(",                 'return "("'],
             ["\\)",                 'return ")"'],
@@ -64,6 +65,7 @@ var grammar = {
         ["nonassoc", "REDUCE_TO_ADDITIVE"],
         ["left", "*", "/"],
         ["precedence", "UMINUS"],
+        ["left", "@"],
         ["left", "DOT"],
         ["precedence", "(", "[", "{"],
         ["precedence", "WRAP_EXPR"],
@@ -117,7 +119,8 @@ var grammar = {
             ["unitList unitExpression", "$$ = $1; $1.units.push($2);", {prec: "FUNC_CALL"}]
         ],
         "tableaccess": [
-            ["unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);"]
+            ["unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);", {prec: "DOT"}],
+            ["unitExpression @ unitExpression", "$$ = new yy.TableAccess($1, $3);", {prec: "@"}]
         ],
         "literal": [
             ["NUMBER", "$$ = Number($1);"],
@@ -173,7 +176,7 @@ var grammar = {
 };
 
 var prelude = "";
-var parser = (new jison.Parser(grammar, {debug: false})).generate({moduleType: "js"});
+var parser = (new jison.Parser(grammar, {debug: true})).generate({moduleType: "js"});
 var postlude = "\n\nparser.yy = require('./parse-tree.js');\nmodule.exports = parser;\n";
 
 fs.writeFileSync(outputFile, prelude + parser + postlude);
