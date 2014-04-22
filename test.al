@@ -1,14 +1,31 @@
-fib = [ n |
-    mutable a = 1
-    mutable b = 0
-    mutable i = 0
-    while [ret (i < n)] [
-        old_b = b
-        mutate b = a + b
-        mutate a = old_b
-        mutate i = i + 1
+binary_search = [ array target lower upper comparator |
+    mid = (lower + upper + 1) / 2
+    ret if (lower >= upper) [
+        ret lower
+    ] (comparator mid) [
+        ret binary_search array target lower (mid - 1) comparator
+    ] else [
+        ret binary_search array target mid upper comparator
     ]
-    ret b
 ]
 
-console.log (fib 7)
+find_mountain_index_of = [ array target |
+    peak = binary_search array Infinity 0 (array.length - 1) [ index |
+        ret index > 0 and array@(index - 1) > array@index
+    ]
+
+    left = binary_search array target 0 peak [ index |
+        ret target < array@index
+    ]
+    right = binary_search array target peak array.length - 1 [ index |
+        ret target > array@index
+    ]
+
+    ret if (array@left == target) [
+        ret left
+    ] (array@right == target) [
+        ret right
+    ] else [
+        ret -1
+    ]
+]
