@@ -53,9 +53,7 @@ var interleave = function(array, value, trailingValue) {
 //]
 
 var compile = function(node) {
-    if (_.isArray(node)) {
-        return new SourceNode(null, null, "source.al", _.map(node, compile));
-    } else if (node instanceof SyntaxNode) {
+    if (node instanceof SyntaxNode) {
         return compile[node.type](node);
     } else {
         // compile time constant
@@ -76,6 +74,13 @@ _.extend(compile, {
     "object": function(obj) {
         if (obj == null) {
             return new SourceNode(null, null, "source.al", "null");
+        } else if (_.isArray(obj)) {
+            var fields = _.map(obj, compile);
+            return new SourceNode(null, null, "source.al", _.flatten([
+                "[",
+                interleave(fields, ",\n", false),
+                "]"
+            ]));
         } else {
             var fields = _.map(obj, function(value, key) {
                 return [key, ': ', compile(value)];

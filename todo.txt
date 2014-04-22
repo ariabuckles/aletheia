@@ -5,8 +5,8 @@ TODO for self-hosting
 [x] handle negative literals: -2
 [x] preamble while
 [x] make `ret` not compile into a function call
+[x] array indexing
 [ ] array literals
-[ ] array indexing
 [ ] and
 [ ] or
 [ ] preamble for
