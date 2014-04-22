@@ -20,7 +20,7 @@ var grammar = {
             ["\\n\\s*",             'return "NEWLINE"'],
             ["\\s+",                '/* skip other whitespace */'],
 
-            ["==|!=|<|>|<=|>=",     'return "SIGN"'],
+            ["==|!=|<=|>=|<|>",     'return "SIGN"'],
 
             ["-[0-9]+\\.?",         'return "NEG_NUMBER"'],
             ["-([0-9]+)?\\.[0-9]+", 'return "NEG_NUMBER"'],

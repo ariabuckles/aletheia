@@ -6,15 +6,17 @@ TODO for self-hosting
 [x] preamble while
 [x] make `ret` not compile into a function call
 [x] array indexing
-[ ] array literals
+[x] array literals
 [ ] and
 [ ] or
+[ ] if-else
 [ ] preamble for
 [ ] multiplication
 [ ] division
 [ ] what to do about commas
 
 TODO to make usable
+[ ] array literals with commas
 [ ] add an errors compiler pass
 [ ] enforce mutable/mutate
 [ ] enforce const
@@ -23,6 +25,7 @@ TODO to make usable
 
 TODO to make everyone happy
 ================
+[ ] lazy if-else?
 [ ] macros
 [ ] source maps
 [ ] destructuring
