@@ -111,6 +111,22 @@ describe("aletheia", function() {
             exec(prgm, {callback: callback});
             assert.deepEqual(result, {a: 5, b: 6});
         }); 
+
+        it("should compile a newline-delimited array literal", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                "callback {",
+                "    4",
+                "    5",
+                "    6",
+                "}"
+            ];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, [4, 5, 6]);
+        }); 
     });
 
     describe("table access", function() {
