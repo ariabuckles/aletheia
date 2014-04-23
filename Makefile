@@ -6,7 +6,7 @@ alc: jison copyjs
 	echo '#!/usr/bin/env node' > build/alc
 	cat build/alc.js >> build/alc
 	chmod u+x build/alc
-	rm ./alc
+	-rm -f ./alc
 	ln -s ./build/alc ./alc
 
 js/parser.js: jison
