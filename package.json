@@ -4,7 +4,7 @@
   "description": "aletheia ========",
   "main": "index.js",
   "scripts": {
-    "install": "make build"
+    "install": "make build",
     "test": "make test"
   },
   "repository": {
