@@ -201,7 +201,82 @@ describe("aletheia", function() {
                 exec(prgm, {callback: callback});
                 assert.equal(result, false);
             });
+
+            it("should return false for a truth and a falsehood", function() {
+                var result;
+                var callback = function(value) {
+                    result = value;
+                };
+                var prgm = [
+                    "callback (1 + 1 == 2 and 3 + 3 == 5)"
+                ];
+                exec(prgm, {callback: callback});
+                assert.equal(result, false);
+            });
+
+            it("should return false for a falsehood and a truth", function() {
+                var result;
+                var callback = function(value) {
+                    result = value;
+                };
+                var prgm = [
+                    "callback (1 + 1 == 5 and 3 + 3 == 6)"
+                ];
+                exec(prgm, {callback: callback});
+                assert.equal(result, false);
+            });
         });
+
+        describe("or", function() {
+            it("should return true for two truths", function() {
+                var result;
+                var callback = function(value) {
+                    result = value;
+                };
+                var prgm = [
+                    "callback (1 + 1 == 2 or 3 + 3 == 6)"
+                ];
+                exec(prgm, {callback: callback});
+                assert.equal(result, true);
+            });
+
+            it("should return false for two falsehoods", function() {
+                var result;
+                var callback = function(value) {
+                    result = value;
+                };
+                var prgm = [
+                    "callback (1 + 1 == 5 or 3 + 3 == 5)"
+                ];
+                exec(prgm, {callback: callback});
+                assert.equal(result, false);
+            });
+
+            it("should return true for a truth and a falsehood", function() {
+                var result;
+                var callback = function(value) {
+                    result = value;
+                };
+                var prgm = [
+                    "callback (1 + 1 == 2 or 3 + 3 == 5)"
+                ];
+                exec(prgm, {callback: callback});
+                assert.equal(result, true);
+            });
+
+            it("should return true for a falsehood and a truth", function() {
+                var result;
+                var callback = function(value) {
+                    result = value;
+                };
+                var prgm = [
+                    "callback (1 + 1 == 5 or 3 + 3 == 6)"
+                ];
+                exec(prgm, {callback: callback});
+                assert.equal(result, true);
+            });
+        });
+
     });
 
     describe("arithmetic", function() {
