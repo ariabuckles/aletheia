@@ -1,3 +1,4 @@
+console.log(__filename);
 var ast = require("./parsetest.js");
 
 console.log('\n');
