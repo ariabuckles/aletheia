@@ -22,6 +22,9 @@ var grammar = {
 
             ["==|!=|<=|>=|<|>",     'return "SIGN"'],
 
+            ["and",                 'return "AND"'],
+            ["or",                  'return "OR"'],
+
             ["-[0-9]+\\.?",         'return "NEG_NUMBER"'],
             ["-([0-9]+)?\\.[0-9]+", 'return "NEG_NUMBER"'],
             ["[0-9]+\\.?",          'return "NUMBER"'],
@@ -102,6 +105,30 @@ var grammar = {
         "expression": [
             ["unitList", "$$ = $1;", {prec: "WRAP_EXPR"}],
             ["additive", "$$ = $1;", {prec: "WRAP_EXPR"}],
+            ["booleanOp", "$$ = $1", {prec: "WRAP_EXPR"}],
+        ],
+        "booleanOp": [
+            ["comparison", "$$ = $1"],
+            ["booleanAndOp", "$$ = $1"],
+            ["booleanOrOp", "$$ = $1"],
+        ],
+        "booleanAndOp": [
+            ["comparison AND comparison", "$$ = yy.Operation($1, $2, $3);"],
+            ["comparison AND unitExpression", "$$ = yy.Operation($1, $2, $3);"],
+            ["unitExpression AND comparison", "$$ = yy.Operation($1, $2, $3);"],
+            ["unitExpression AND unitExpression", "$$ = yy.Operation($1, $2, $3);"],
+            ["booleanAndOp AND comparison", "$$ = yy.Operation($1, $2, $3);"],
+            ["booleanAndOp AND unitExpression", "$$ = yy.Operation($1, $2, $3);"],
+        ],
+        "booleanOrOp": [
+            ["comparison OR comparison", "$$ = yy.Operation($1, $2, $3);"],
+            ["comparison OR unitExpression", "$$ = yy.Operation($1, $2, $3);"],
+            ["unitExpression OR comparison", "$$ = yy.Operation($1, $2, $3);"],
+            ["unitExpression OR unitExpression", "$$ = yy.Operation($1, $2, $3);"],
+            ["booleanOrOp OR comparison", "$$ = yy.Operation($1, $2, $3);"],
+            ["booleanOrOp OR unitExpression", "$$ = yy.Operation($1, $2, $3);"],
+        ],
+        "comparison": [
             ["additive SIGN additive", "$$ = yy.Operation($1, $2, $3);", {prec: "COMPARISON"}],
         ],
         "unitExpression": [

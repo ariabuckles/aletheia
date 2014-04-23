@@ -9,6 +9,11 @@ var translateSymbols = {
     for: '_for'
 };
 
+var translateOperations = {
+    and: '&&',
+    or: '||'
+};
+
 var rewrite = function(node) {
     if (_.isArray(node)) {
         return _.map(node, rewrite);
@@ -79,10 +84,11 @@ _.extend(rewrite, {
     },
 
     "operation": function(comp) {
+        var op = translateOperations[comp.operation] || comp.operation;
         return new SyntaxNode({
             type: "operation",
             left: rewrite(comp.left),
-            operation: comp.operation,
+            operation: op,
             right: rewrite(comp.right)
         });
     }
