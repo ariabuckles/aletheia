@@ -14,9 +14,9 @@ var translateOperations = {
     or: '||'
 };
 
-var js_keyword_functions = {
-    ret: true,
-    new: true
+var translateKeywordFunctions = {
+    ret: "return",
+    new: "new"
 };
 
 var rewrite = function(node) {
@@ -67,7 +67,7 @@ _.extend(rewrite, {
     "unit-list": function(unitList) {
         var units = unitList.units;
         var func = _.first(units);
-        if (func.type === 'variable' && js_keyword_functions[func.name]) {
+        if (func.type === 'variable' && translateKeywordFunctions[func.name]) {
             var value;
             if (units.length === 2) {
                 value = units[1];
@@ -79,7 +79,7 @@ _.extend(rewrite, {
             }
             return new SyntaxNode({
                 type: "keyword-function",
-                name: func.name,
+                name: translateKeywordFunctions[func.name],
                 value: rewrite(value)
             });
         }
