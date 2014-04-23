@@ -166,10 +166,11 @@ _.extend(compile, {
         return result;
     },
 
-    "ret": function(retCall) {
+    "keyword-function": function(keyword) {
         return new SourceNode(null, null, "source.al", [
-            "return ",
-            compile(retCall.value)
+            keyword.name,
+            " ",
+            compile(keyword.value)
         ]);
     },
 
