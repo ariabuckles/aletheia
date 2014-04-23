@@ -14,6 +14,11 @@ var translateOperations = {
     or: '||'
 };
 
+var js_keyword_functions = {
+    ret: true,
+    new: true
+};
+
 var rewrite = function(node) {
     if (_.isArray(node)) {
         return _.map(node, rewrite);
@@ -62,7 +67,7 @@ _.extend(rewrite, {
     "unit-list": function(unitList) {
         var units = unitList.units;
         var func = _.first(units);
-        if (func.type === 'variable' && func.name === 'ret') {
+        if (func.type === 'variable' && js_keyword_functions[func.name]) {
             var value;
             if (units.length === 2) {
                 value = units[1];
@@ -73,7 +78,8 @@ _.extend(rewrite, {
                 });
             }
             return new SyntaxNode({
-                type: "ret",
+                type: "keyword-function",
+                name: func.name,
                 value: rewrite(value)
             });
         }
