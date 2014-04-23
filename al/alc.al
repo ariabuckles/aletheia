@@ -7,9 +7,9 @@ rewrite = require "./rewrite-symbols.js"
 compile = require "./code-gen.js"
 
 this_program_regex = new RegExp "alc$"
-exe_index = _.indexOf _.map process.argv [
+exe_index = _.indexOf (_.map process.argv [
     ret this_program_regex.test(arg)
-] true
+]) true
 input_file = process.argv @ (exe_index + 1)
 output_file = process.argv @ (exe_index + 2)
 debug = process.argv @ (exe_index + 3) == "--debug"
