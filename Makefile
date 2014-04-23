@@ -1,14 +1,16 @@
 build: alc
 
 EXTERNALS := -x fs -x assert -x process
-AL_COMPILER := ./node_modules/aletheia/alc
+AL_COMPILER := ./compiler/alc
+
+compiler: build
+	-rm -rf ./compiler/
+	cp -R ./build ./compiler
 
 alc: jison copyjs compileal
 	echo '#!/usr/bin/env node' > build/alc
 	cat build/alc.js >> build/alc
 	chmod u+x build/alc
-	-rm -f ./alc
-	ln -s ./build/alc ./alc
 
 js/parser.js: jison
 
@@ -19,9 +21,9 @@ copyjs:
 
 AL_SOURCE_FILES := $(wildcard al/*.al)
 .PHONY: compileal
-compileal: build/alc_new.js
+compileal: build/alc.js
 
-build/alc_new.js: al/alc.al
+build/alc.js: al/alc.al
 	$(AL_COMPILER) $< $@
 
 .PHONY: jison

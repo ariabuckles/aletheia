@@ -19,8 +19,7 @@
   "devDependencies": {
     "jison": "~0.4.13",
     "mocha": "~1.18.2",
-    "browserify": "~3.4.0",
-    "aletheia": "git://github.com/jacktoole1/aletheia.git"
+    "browserify": "~3.4.0"
   },
   "dependencies": {
     "underscore": ">=1.4.4",
