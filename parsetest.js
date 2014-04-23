@@ -23,7 +23,7 @@ var gen = compile(rewritten);
 var code = gen.toString();
 console.log(code);
 
-fs.writeFileSync("./output.js", code, {encoding: 'utf-8'});
+fs.writeFileSync("./output.js", code, {encoding: 'utf8'});
 
 console.log("\n==== EXECUTING ====");
 require("./output.js");

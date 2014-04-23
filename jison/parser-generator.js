@@ -150,10 +150,13 @@ var grammar = {
             ["unitExpression @ unitExpression", "$$ = new yy.TableAccess($1, $3);", {prec: "@"}]
         ],
         "literal": [
+            ["tableNameLiteral", "$$ = $1;"],
+            ["table", "$$ = $1;"]
+        ],
+        "tableNameLiteral": [
             ["NUMBER", "$$ = Number($1);"],
             ["NEG_NUMBER", "$$ = Number($1);"],
             ["STRING", "$$ = $1.slice(1, -1);"],
-            ["table", "$$ = $1;"]
         ],
         "table": [
             ["{ : }", "$$ = new yy.Table([], true);"],
@@ -171,7 +174,8 @@ var grammar = {
         ],
         "field": [
             ["expression", "$$ = yy.Field(null, $1);"],
-            ["IDENTIFIER : expression", "$$ = yy.Field($1, $3);"]
+            ["IDENTIFIER : expression", "$$ = yy.Field($1, $3);"],
+            ["tableNameLiteral : expression", "$$ = yy.Field($1, $3);"]
         ],
         "function": [
             ["[ statementList ]", "$$ = yy.Lambda([], $2);"],
