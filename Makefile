@@ -1,4 +1,12 @@
-build: jison copyjs
+build: alc
+
+EXTERNALS := -x fs -x assert -x process
+
+alc: jison copyjs
+	echo '#!/usr/bin/env node' > build/alc
+	cat build/alc.js >> build/alc
+	chmod u+x build/alc
+	ln -s ./build/alc ./alc
 
 js/parser.js: jison
 

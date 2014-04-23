@@ -112,6 +112,21 @@ describe("aletheia", function() {
             assert.deepEqual(result, {a: 5, b: 6});
         }); 
 
+        it("should compile a table literal with quoted field names", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                'callback {',
+                '    "a": 5',
+                '    "b": 6',
+                '}'
+            ];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, {a: 5, b: 6});
+        }); 
+
         it("should compile a newline-delimited array literal", function() {
             var result;
             var callback = function(param) {
