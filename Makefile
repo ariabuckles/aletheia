@@ -19,7 +19,7 @@ copyjs:
 
 AL_SOURCE_FILES := $(wildcard al/*.al)
 .PHONY: compileal
-compileal: build/alc.js
+compileal: build/alc_new.js
 
 build/alc_new.js: al/alc.al
 	$(AL_COMPILER) $< $@

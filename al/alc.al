@@ -14,7 +14,7 @@ input_file = process.argv @ (exe_index + 1)
 output_file = process.argv @ (exe_index + 2)
 debug = process.argv @ (exe_index + 3) == "--debug"
 
-if (input_file == undefined or output_file == undefined) [
+if (exe_index < 0 or input_file == undefined or output_file == undefined) [
     console.log "usage: alc input_file.al output_file.js"
     process.exit 1
 ]
