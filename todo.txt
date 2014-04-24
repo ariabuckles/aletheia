@@ -10,7 +10,8 @@ TODO for self-hosting
 [x] and
 [x] or
 [x] quoted table access
-[?] output a compiler program
+[x] output a compiler program
+[ ] not
 [ ] if-else
 [ ] preamble for
 [ ] multiplication
