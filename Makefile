@@ -14,12 +14,15 @@ clean:
 	-rm -rf ./build/
 
 # ./lib updating
-compiler: build
-	-rm -rf ./compiler/
-	cp -R ./build ./compiler
+.PHONY: compiler
+compiler: lib/aletheia
+lib/aletheia: build
+	@mkdir -p ./lib
+	-rm -rf ./lib/aletheia
+	cp -R ./build ./lib/aletheia
 
 # Compilation variables
-AL_COMPILER := ./compiler/alc
+AL_COMPILER := ./lib/aletheia/alc
 AL_SOURCE_FILES := $(wildcard al/*.al)
 JS_SOURCE_FILES := $(wildcard js/*.js)
 AL_OUTPUT_FILES := $(AL_SOURCE_FILES:al/%.al=build/%.js)
