@@ -20,11 +20,11 @@ TODO for self-hosting
 
 TODO to make usable
 [ ] array literals with commas
+[ ] single line lambdas auto-return
 [ ] add an errors compiler pass
 [ ] enforce mutable/mutate
 [ ] enforce const
 [ ] return from outer block
-[ ] single line lambdas auto-return?
 
 TODO to make everyone happy
 ================
