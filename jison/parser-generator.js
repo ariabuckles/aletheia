@@ -65,8 +65,7 @@ var grammar = {
         ["precedence", "IDENTIFIER", "NUMBER", "STRING"],
         ["nonassoc", "SIGN", "COMPARISON"],
         ["left", "+", "-", "NEG_NUMBER"],
-        ["nonassoc", "REDUCE_TO_ADDITIVE"],
-        ["left", "*", "/"],
+        ["left", "*", "/", "%"],
         ["precedence", "UMINUS"],
         ["left", "@"],
         ["left", "DOT"],
@@ -183,11 +182,17 @@ var grammar = {
             ["[ unitExpression | statementList ]", "$$ = yy.Lambda([$2], $4);"]
         ],
         "additive": [
-            ["negative", "$$ = $1;", {prec: "REDUCE_TO_ADDITIVE"}],
+            ["multiplicative", "$$ = $1;", {prec: "+"}],
             ["additive + additive", "$$ = yy.Operation($1, $2, $3);"],
             ["additive - additive", "$$ = yy.Operation($1, $2, $3);"],
-            ["additive NEG_NUMBER", "$$ = yy.Operation($1, '+', Number($2));"],
+//            ["additive NEG_NUMBER", "$$ = yy.Operation($1, '+', Number($2));"], // breaks f -1
 //            ["- additive", "$$ = yy.Operation(null, $1, $2);", {prec: "UMINUS"}],
+        ],
+        "multiplicative": [
+            ["negative", "$$ = $1;"],
+            ["multiplicative * multiplicative", "$$ = yy.Operation($1, $2, $3);"],
+            ["multiplicative / multiplicative", "$$ = yy.Operation($1, $2, $3);"],
+            ["multiplicative % multiplicative", "$$ = yy.Operation($1, $2, $3);"],
         ],
 //        "additive": [
 //            ["additive + multiplicative", "$$ = yy.Add.createOrAppend($1, $3);"],
