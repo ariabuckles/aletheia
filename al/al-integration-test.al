@@ -17,7 +17,7 @@ exec = [ source context |
     ast = normalize parseTree
     rewritten = rewrite ast
     gen = compile rewritten
-    js = gen.toString undefined
+    js = gen.toString()
 
     prelude = (_.map context [value key |
         ret ("var " + key + " = context." + key + ";\n")
