@@ -144,7 +144,7 @@ var grammar = {
         ],
         "unitList": [
             ["unitExpression unitExpression", "$$ = yy.UnitList([$1, $2]);", {prec: "FUNC_CALL"}],
-            ["unitList unitExpression", "$$ = $1; $1.units.push($2);", {prec: "FUNC_CALL"}]
+            ["unitExpression unitList", "$$ = $2; $2.units.unshift($1);", {prec: "FUNC_CALL"}]
         ],
         "singleUnitList": [
             ["unitExpression ( )", "$$ = yy.UnitList([$1]);"],
