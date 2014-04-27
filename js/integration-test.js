@@ -23,6 +23,22 @@ var exec = function(source, context) {
 };
 
 describe("aletheia", function() {
+    describe("function call parsing", function() {
+        it("new Function should parse", function() {
+            var prgm = [
+                'f = new Function "context" (prelude + js)',
+            ];
+            exec(prgm, {prelude: "", js: "return 4;"});
+        });
+
+        it("calling a function with two arguments", function() {
+            var prgm = [
+                "f 1 (1 + 2)",
+            ];
+            exec(prgm, {f: function() { }});
+        });
+    });
+
     describe("if", function() {
         it("should execute for true", function() {
             var called = false;

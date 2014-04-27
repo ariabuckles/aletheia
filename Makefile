@@ -16,7 +16,7 @@ clean:
 # ./lib updating
 .PHONY: compiler
 compiler: lib/aletheia
-lib/aletheia: build
+lib/aletheia: clean build
 	@mkdir -p ./lib
 	-rm -rf ./lib/aletheia
 	cp -R ./build ./lib/aletheia
