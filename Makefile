@@ -45,7 +45,7 @@ build/parser.js: jison/parser-generator.js
 
 # Al meta-rule
 .PHONY: compileal
-compileal: $(AL_OUTPUT_FILES)
+compileal: $(AL_OUTPUT_FILES) $(AL_COMPILER)
 
 $(AL_OUTPUT_FILES): build/%.js: al/%.al
 	$(AL_COMPILER) $< $@

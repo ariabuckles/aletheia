@@ -27,7 +27,7 @@ exec = [ source context |
     jsFunc context
 ]
 
-describe "aletheia" [
+describe "aletheia-in-aletheia" [
     describe "function calls" [
         it "should execute a zero-arg call" [
             mutable called = undefined
