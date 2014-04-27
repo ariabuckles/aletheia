@@ -18,12 +18,11 @@ var exec = function(source, context) {
     var prelude = _.map(context, function(value, key) {
         return "var " + key + " = context." + key + ";\n";
     }).join("");
-    jsFunc = new Function('context', prelude + js);
+    var jsFunc = new Function('context', prelude + js);
     jsFunc(context);
 };
 
 describe("aletheia", function() {
-
     describe("if", function() {
         it("should execute for true", function() {
             var called = false;
@@ -378,6 +377,26 @@ describe("aletheia", function() {
             var prgm = ["callback (4 * 5)"];
             exec(prgm, {callback: callback});
             assert.deepEqual(result, 20);
+        });
+
+        it("should evaluate division", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = ["callback (1 / 2)"];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, 0.5);
+        });
+
+        it("should evaluate modulus", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = ["callback (7 % 2)"];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, 1);
         });
     });
 });
