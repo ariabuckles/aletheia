@@ -69,11 +69,11 @@ var grammar = {
         ["precedence", "UMINUS"],
         ["left", "@"],
         ["left", "DOT"],
+        ["left", "FUNC_CALL"],
         ["precedence", "(", "[", "{"],
         ["precedence", "WRAP_EXPR"],
         ["precedence", "STMT"],
         ["precedence", "STMT_LIST"],
-        ["left", "FUNC_CALL"],
         ["left", "_separator"],
     ],
     start: "program",
@@ -89,7 +89,7 @@ var grammar = {
             ["separator statementListBody separator", "$$ = $2;"]
         ],
         "statementListBody": [
-            ["statement", "$$ = [$1]", {prec: "STMT"}],
+            ["statement", "$$ = [$1];", {prec: "STMT"}],
             ["statementListBody separator statement", "$$ = $1; $1.push($3);", {prec: "STMT_LIST"}],
         ],
         "separator": [
@@ -99,7 +99,8 @@ var grammar = {
         "statement": [
             ["lvalue = expression", "$$ = yy.Declaration($1, $3);"],
             ["unitList = expression", "$$ = yy.Assignment($1, $3);"],
-            ["unitList", "$$ = $1;", {prec: "STATEMENT_BODY"}]
+            ["unitList", "$$ = $1;", {prec: "STATEMENT_BODY"}],
+            ["unitExpression", "$$ = $1;", {prec: "STATEMENT_BODY"}]
         ],
         "expression": [
             ["unitList", "$$ = $1;", {prec: "WRAP_EXPR"}],
@@ -135,6 +136,7 @@ var grammar = {
             ["function", "$$ = $1;"],
             ["literal", "$$ = $1;"],
             ["lvalue", "$$ = $1;"],
+            ["singleUnitList", "$$ = $1;"],
         ],
         "lvalue": [
             ["IDENTIFIER", "$$ = yy.Variable($1);", {prec: "WRAP_EXPR"}],
@@ -143,6 +145,9 @@ var grammar = {
         "unitList": [
             ["unitExpression unitExpression", "$$ = yy.UnitList([$1, $2]);", {prec: "FUNC_CALL"}],
             ["unitList unitExpression", "$$ = $1; $1.units.push($2);", {prec: "FUNC_CALL"}]
+        ],
+        "singleUnitList": [
+            ["unitExpression ( )", "$$ = yy.UnitList([$1]);"],
         ],
         "tableaccess": [
             ["unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);", {prec: "DOT"}],
