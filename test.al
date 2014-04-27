@@ -1,7 +1,3 @@
-g = [ console.log "g" ]
+callback = [ console.log it ]
 
-f = [
-    console.log "hello, world!"
-]
-
-g f ( )
+console.log { callback: callback }
