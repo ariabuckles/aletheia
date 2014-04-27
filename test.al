@@ -1,3 +1,7 @@
-a = 5
-b = 6
-console.log (not (a == b))
+g = [ console.log "g" ]
+
+f = [
+    console.log "hello, world!"
+]
+
+g f ( )

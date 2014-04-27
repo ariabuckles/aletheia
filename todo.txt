@@ -5,6 +5,7 @@ TODO for self-hosting
 [x] handle negative literals: -2
 [x] preamble while
 [x] make `ret` not compile into a function call
+[x] if-else
 [x] array indexing
 [x] array literals
 [x] and
@@ -12,15 +13,16 @@ TODO for self-hosting
 [x] quoted table access
 [x] output a compiler program
 [x] not
-[ ] if-else
+[x] multiplication
+[x] division
+[ ] call a function with no arguments
 [ ] preamble for
-[ ] multiplication
-[ ] division
 [ ] what to do about commas
-
-TODO to make usable
 [ ] array literals with commas
 [ ] single line lambdas auto-return
+[ ] multi-if
+
+TODO to make usable
 [ ] add an errors compiler pass
 [ ] enforce mutable/mutate
 [ ] enforce const
