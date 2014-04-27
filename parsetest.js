@@ -13,8 +13,11 @@ console.log("\n==== PARSED ====");
 var parseTree = parser.parse(program);
 console.log(JSON.stringify(parseTree, null, 4));
 
-console.log("\n==== REWRITTEN ====");
+console.log("\n==== NORMALIZED ====");
 var ast = normalize(parseTree);
+console.log(JSON.stringify(ast, null, 4));
+
+console.log("\n==== REWRITTEN ====");
 var rewritten = rewrite(ast);
 console.log(JSON.stringify(rewritten, null, 4));
 
