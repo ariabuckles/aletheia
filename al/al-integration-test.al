@@ -41,4 +41,30 @@ describe "aletheia-in-aletheia" [
             assert called
         ]
     ]
+
+    describe "inline javascript" [
+        it "should be able to be used as a statement" [
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "```callback(5)```"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result 5
+        ]
+
+        it "should be able to be used in an expression" [
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "callback ```3 + 3```"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result 6
+        ]
+    ]
 ]

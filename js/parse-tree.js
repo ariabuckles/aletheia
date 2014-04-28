@@ -98,6 +98,13 @@ var ParseTree = {
             type: "variable",
             name: name
         });
+    },
+
+    Javascript: function(source) {
+        return new ParseNode({
+            name: "javascript",
+            source: source
+        });
     }
 };
 

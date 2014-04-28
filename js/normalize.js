@@ -34,6 +34,7 @@ var normalizationTable = {
     field: syntaxWithSameFields,
     operation: syntaxWithSameFields,
     variable: syntaxWithSameFields,
+    javascript: syntaxWithSameFields,
 
     table: function(table) {
         var fields = table.fields;

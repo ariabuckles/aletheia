@@ -53,6 +53,8 @@ var grammar = {
             ['\\"(\\\\.|[^"\\n])*\\"', 'return "STRING"'],
             ["[a-zA-Z_$][a-zA-Z0-9_$]*", 'return "IDENTIFIER"'],
 
+            ["```.*```",            'return "JAVASCRIPT";'],
+
             ["$",                   'return "EOF"'],
             [".",                   'return "INVALID"'],
         ],
@@ -137,6 +139,7 @@ var grammar = {
             ["literal", "$$ = $1;"],
             ["lvalue", "$$ = $1;"],
             ["singleUnitList", "$$ = $1;"],
+            ["JAVASCRIPT", "$$ = yy.Javascript($1.slice(3, -3));"]
         ],
         "lvalue": [
             ["IDENTIFIER", "$$ = yy.Variable($1);", {prec: "WRAP_EXPR"}],
