@@ -27,6 +27,7 @@ AL_SOURCE_FILES := $(wildcard al/*.al)
 JS_SOURCE_FILES := $(wildcard js/*.js)
 AL_OUTPUT_FILES := $(AL_SOURCE_FILES:al/%.al=build/%.js)
 JS_OUTPUT_FILES := $(JS_SOURCE_FILES:js/%.js=build/%.js)
+OUTPUT_FILES := build/parser.js $(JS_OUTPUT_FILES) $(AL_OUTPUT_FILES)
 
 # JS meta-rule
 .PHONY: copyjs
@@ -48,10 +49,11 @@ build/parser.js: jison/parser-generator.js
 compileal: $(AL_OUTPUT_FILES) $(AL_COMPILER)
 
 $(AL_OUTPUT_FILES): build/%.js: al/%.al
+	@mkdir -p ./build
 	$(AL_COMPILER) $< $@
 
 # CLI meta-rule
-build/alc: jison copyjs compileal
+build/alc: $(OUTPUT_FILES)
 	echo '#!/usr/bin/env node' > build/alc
 	cat build/alc.js >> build/alc
 	chmod u+x build/alc
