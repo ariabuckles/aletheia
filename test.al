@@ -1,3 +1,1 @@
-console.log {
-    "a-b": 5
-}
+callback (-(1 + 3))
