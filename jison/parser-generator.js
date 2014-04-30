@@ -17,46 +17,47 @@ var outputFile = (function(args) {
 var grammar = {
     lex: {
         rules: [
-            ["\\n\\s*",             'return "NEWLINE"'],
-            ["\\s+",                '/* skip other whitespace */'],
+            ["(\\r\\n?|\\n)",       'return "NEWLINE";'],
+            ["[^\\S\\r\\n]+",       '/* skip other whitespace */'],
+            ["\\/\\/.*(\\r\\n?|\\n)",'return "NEWLINE"; /* skip comments */'],
 
-            ["==|!=|<=|>=|<|>",     'return "SIGN"'],
+            ["==|!=|<=|>=|<|>",     'return "SIGN";'],
 
-            ["and",                 'return "AND"'],
-            ["or",                  'return "OR"'],
+            ["and",                 'return "AND";'],
+            ["or",                  'return "OR";'],
 
-            ["-[0-9]+\\.?",         'return "NEG_NUMBER"'],
-            ["-([0-9]+)?\\.[0-9]+", 'return "NEG_NUMBER"'],
-            ["[0-9]+\\.?",          'return "NUMBER"'],
-            ["([0-9]+)?\\.[0-9]+",  'return "NUMBER"'],
+            ["-[0-9]+\\.?",         'return "NEG_NUMBER";'],
+            ["-([0-9]+)?\\.[0-9]+", 'return "NEG_NUMBER";'],
+            ["[0-9]+\\.?",          'return "NUMBER";'],
+            ["([0-9]+)?\\.[0-9]+",  'return "NUMBER";'],
 
-            ["\\*",                 'return "*"'],
-            ["\\/",                 'return "/"'],
-            ["-",                   'return "-"'],
-            ["\\+",                 'return "+"'],
-            ["\\%",                 'return "%"'],
-            ["@",                   'return "@"'],
+            ["\\*",                 'return "*";'],
+            ["\\/",                 'return "/";'],
+            ["-",                   'return "-";'],
+            ["\\+",                 'return "+";'],
+            ["\\%",                 'return "%";'],
+            ["@",                   'return "@";'],
 
-            ["\\(",                 'return "("'],
-            ["\\)",                 'return ")"'],
-            ["\\{",                 'return "{"'],
-            ["\\}",                 'return "}"'],
-            ["\\|",                 'return "|"'],
-            ["\\[",                 'return "["'],
-            ["\\]",                 'return "]"'],
+            ["\\(",                 'return "(";'],
+            ["\\)",                 'return ")";'],
+            ["\\{",                 'return "{";'],
+            ["\\}",                 'return "}";'],
+            ["\\|",                 'return "|";'],
+            ["\\[",                 'return "[";'],
+            ["\\]",                 'return "]";'],
 
-            ["=",                   'return "="'],
-            ["\\!",                 'return "!"'],
-            ["\\:",                 'return ":"'],
-            ["\\.",                 'return "DOT"'],
+            ["=",                   'return "=";'],
+            ["\\!",                 'return "!";'],
+            ["\\:",                 'return ":";'],
+            ["\\.",                 'return "DOT";'],
 
-            ['\\"(\\\\.|[^"\\n])*\\"', 'return "STRING"'],
-            ["[a-zA-Z_$][a-zA-Z0-9_$]*", 'return "IDENTIFIER"'],
+            ['\\"(\\\\.|[^"\\n])*\\"', 'return "STRING";'],
+            ["[a-zA-Z_$][a-zA-Z0-9_$]*", 'return "IDENTIFIER";'],
 
             ["```.*```",            'return "JAVASCRIPT";'],
 
-            ["$",                   'return "EOF"'],
-            [".",                   'return "INVALID"'],
+            ["$",                   'return "EOF";'],
+            [".",                   'return "INVALID";'],
         ],
         options: {
             flex: true              // pick longest matching token

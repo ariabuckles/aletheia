@@ -67,4 +67,16 @@ describe "aletheia-in-aletheia" [
             assert.strictEqual result 6
         ]
     ]
+
+    describe "comments" [
+        it "should ignore comments in parsing" [
+            prgm = {
+                "// our first program!"
+                "a = 5"
+                "b = a + a  // or something"
+                "a = b"
+            }
+            exec prgm {:}
+        ]
+    ]
 ]
