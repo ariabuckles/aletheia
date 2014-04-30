@@ -32,7 +32,7 @@ var ParseTree = {
         units = leftUnitList.units;
         if (units.length !== 2) {
             throw new Error("Variable assignment may have a single " +
-                "modifier; got " + JSON.stringify(leftList));
+                "modifier; got " + JSON.stringify(leftUnitList));
         }
         if (units[0].type !== "variable") {
             throw new Error("Variable assignment may only have a word identifier");
