@@ -102,7 +102,7 @@ var ParseTree = {
 
     Javascript: function(source) {
         return new ParseNode({
-            name: "javascript",
+            type: "javascript",
             source: source
         });
     }
