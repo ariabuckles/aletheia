@@ -20,17 +20,34 @@ var translateKeywordFunctions = {
     not: "!"
 };
 
+var mapObject = function(obj, func) {
+    var result = {};
+    _.each(obj, function(value, key) {
+        result[key] = func(value);
+    });
+    return result;
+};
+
 var rewrite = function(node) {
     if (_.isArray(node)) {
         return _.map(node, rewrite);
     } else if (node instanceof SyntaxNode) {
         return rewrite[node.type](node);
+    } else if (rewrite[typeof node]) {
+        return rewrite[typeof node](node);
     } else {
         return node;
     }
 };
 
 _.extend(rewrite, {
+    object: function(obj) {
+        if (obj == null) {
+            return null;
+        }
+        return mapObject(obj, rewrite);
+    },
+
     variable: function(variable) {
         var optTranslate = translateSymbols[variable.name];
         var name = optTranslate ? optTranslate : variable.name;
