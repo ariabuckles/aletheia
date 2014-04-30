@@ -84,7 +84,6 @@ _.extend(compile, {
         } else {
             var fields = _.map(obj, function(value, key) {
                 var result = [compile["table-key"](key), ': ', compile(value)];
-                console.log("FIELD", result);
                 return result;
             });
             return new SourceNode(null, null, "source.al", _.flatten([
