@@ -8,17 +8,19 @@ var SyntaxNode = SyntaxTree.SyntaxNode;
 var preambleStr = [
     // preamble if
     "var _else = {identifier: 'else'};",
-    "var _if = function(condition, trueLambda, optionalElse, falseLambda) {",
-    "    if (optionalElse != null && optionalElse != _else) {",
-    "        throw new Error('if called with third parameter != else');",
+    "var _if = function(cond1, lambda1, cond2, lambda2) {",
+    "    if (arguments.length % 2 !== 0) {",
+    "        throw new Error('if called with an odd number of arguments');",
     "    }",
-    "    if (condition != null && condition !== false) {",
-    "        return trueLambda.call(undefined);",
-    "    } else if (falseLambda != null) {",
-    "        return falseLambda.call(undefined);",
+    "    var i = 0;",
+    "    for (var i = 0; i < arguments.length; i += 2) {",
+    "        var condition = arguments[i];",
+    "        if (condition != null && condition !== false) {",
+    "            return arguments[i + 1].call(undefined);",
+    "        }",
     "    }",
     "};",
-    // preamble while
+    "", // preamble while
     "var _while = function(conditionLambda, bodyLambda) {",
     "    while (conditionLambda.call(undefined)) {",
     "        bodyLambda.call(undefined);",

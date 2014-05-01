@@ -228,3 +228,10 @@ for = [ list lambda |
     result
 ];
 
+
+v = kvector.add |
+    {1 2}
+    {3 4}
+|
+
+
