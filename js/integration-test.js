@@ -53,6 +53,24 @@ describe("aletheia", function() {
             exec(prgm, {callback: callback});
             assert(called);
         });
+
+        it("multi-if with false false true should execute lambda 3", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                "if false [",
+                "    callback 1",
+                "] false [",
+                "    callback 2",
+                "] true [",
+                "    callback 3",
+                "]"
+            ];
+            exec(prgm, {callback: callback});
+            assert.strictEqual(result, 3);
+        });
     });
 
     describe("while", function() {

@@ -15,12 +15,13 @@ TODO for self-hosting
 [x] not
 [x] multiplication
 [x] division
-[ ] call a function with no arguments
+[x] call a function with no arguments
+[x] multi-if
 [ ] preamble for
+[ ] what to do about multi-line function calls
 [ ] what to do about commas
 [ ] array literals with commas
 [ ] single line lambdas auto-return
-[ ] multi-if
 
 TODO to make usable
 [ ] add an errors compiler pass
