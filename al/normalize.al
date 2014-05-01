@@ -42,33 +42,32 @@ normalizationTable = {
         fields = table.fields
         forceObject = table.forceObject
 
-        // Array literals
-        //  == false is a hack for not being broken :(
-        isStrictArray = ((forceObject == false) and (_.all fields [ field |
+        isStrictArray = (not forceObject) and (_.all fields [ field |
             ret (field.key == null or field.key == undefined)
-        ]))
+        ])
+
+        isStrictObject = _.all fields [ field |
+            ret (field.key != null and field.key != undefined and (isConstant field.key))
+        ]
+
         ret if (isStrictArray) [
+            // Array literals
             ret _.pluck fields "value"
+
+        ] isStrictObject [
+            // Object literals
+            mutable result = {:}
+            _.each fields [ field |
+                mutate result@(field.key) = normalize field.value
+            ]
+            ret result
+
         ] else [
-
-            // ObjectLiterals
-            isStrictObject = _.all fields [ field |
-                ret (field.key != null and field.key != undefined and (isConstant field.key))
-            ]
-            ret if isStrictObject [
-                mutable result = {:}
-                _.each fields [ field |
-                    mutate result@(field.key) = normalize field.value
-                ]
-                ret result
-            ] else [
-
-                // else: dynamically keyed objects, or mixed array/object keys
-                ret SyntaxNode {
-                    type: "table"
-                    fields: normalize(fields)
-                }
-            ]
+            // dynamically keyed objects, or mixed array/object keys
+            ret SyntaxNode {
+                type: "table"
+                fields: normalize(fields)
+            }
         ]
     ]
 }
@@ -80,19 +79,17 @@ mutate normalize = [ parsed |
         // A generic list, process it as such
         ret _.map parsed normalize
 
-    ] else [
-        ret if (is_instance parsed ParseNode) [
-            // A single node; dispatch to our normalization table of
-            // functions
-            type = parsed.type
-            ret normalizationTable@type parsed
+    ] (is_instance parsed ParseNode) [
+        // A single node; dispatch to our normalization table of
+        // functions
+        type = parsed.type
+        ret normalizationTable@type parsed
 
-        ] else [
-            // A compile-time constant.
-            // Mostly, these are literals, like numbers or strings,
-            // but it could also be a compile-time table
-            ret parsed
-        ]
+    ] else [
+        // A compile-time constant.
+        // Mostly, these are literals, like numbers or strings,
+        // but it could also be a compile-time table
+        ret parsed
     ]
 ]
 
