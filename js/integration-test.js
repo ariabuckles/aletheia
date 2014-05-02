@@ -463,5 +463,20 @@ describe("aletheia", function() {
             exec(prgm, {callback: callback});
             assert.deepEqual(result.a, true);
         });
+
+        it("should handle `return new` appropriately", function() {
+            var result;
+            var MyClass = function() { };
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                "callback [",
+                "    ret new MyClass()",
+                "]()"
+            ];
+            exec(prgm, {MyClass: MyClass, callback: callback});
+            assert(result instanceof MyClass);
+        });
     });
 });
