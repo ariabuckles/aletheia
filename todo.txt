@@ -20,6 +20,7 @@ TODO for self-hosting
 [ ] preamble for
 
 TODO to make usable
+[ ] `rewrite@(node.type) (node)` syntax doesn't work
 [ ] multi-line statements (skip newline parse in `(`)
 [ ] what to do about multi-line function calls
 [ ] what to do about commas
@@ -29,6 +30,7 @@ TODO to make usable
 [ ] enforce mutable/mutate
 [ ] enforce const
 [ ] return from outer block
+[ ] keywords and/or useable as table keys
 
 TODO to make everyone happy
 ================
