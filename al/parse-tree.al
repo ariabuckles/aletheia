@@ -4,11 +4,16 @@ _ = require "underscore"
 is_instance = [a A | ret ```a instanceof A```]
 
 ParseNode = [ options |
-    if (not (is_instance this ParseNode)) [
+    self = this
+    res = if (not (is_instance self ParseNode)) [
         ret new ParseNode options
+    ] else [
+        assert (options.type != null)
+        _.extend self options
+        ret self
     ]
-    assert (options.type != null)
-    _.extend this options
+    console.log "ParseNode:" res (is_instance res ParseNode)
+    ret res
 ]
 
 ParseTree = {

@@ -75,6 +75,7 @@ normalizationTable = {
 
 // Converts a parse tree to a syntax tree
 mutate normalize = [ parsed |
+    console.log "parsed:" parsed (is_instance parsed ParseNode)
     ret if (_.isArray parsed) [
         // A generic list, process it as such
         ret _.map parsed normalize
