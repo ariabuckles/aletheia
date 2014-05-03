@@ -4,11 +4,14 @@ _ = require "underscore"
 is_instance = [a A | ret ```a instanceof A```]
 
 SyntaxNode = [ options |
-    if (not (is_instance this SyntaxNode)) [
+    self = this
+    ret if (not (is_instance self SyntaxNode)) [
         ret new SyntaxNode options
+    ] else [
+        assert (options.type != null)
+        _.extend self options
+        ret self
     ]
-    assert (options.type != null)
-    _.extend this options
 ]
 
 SyntaxTree = {
