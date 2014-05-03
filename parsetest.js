@@ -1,5 +1,6 @@
 var fs = require("fs");
 
+var ParseNode = require("./build/parse-tree.js").ParseNode;
 var parser = require("./build/parser.js");
 var normalize = require("./build/normalize.js");
 var rewrite = require("./build/rewrite-symbols.js");
@@ -11,7 +12,6 @@ console.log(program);
 
 console.log("\n==== PARSED ====");
 var parseTree = parser.parse(program);
-console.log(parseTree);
 console.log(JSON.stringify(parseTree, null, 4));
 
 console.log("\n==== NORMALIZED ====");

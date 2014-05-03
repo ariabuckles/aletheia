@@ -12,7 +12,6 @@ ParseNode = [ options |
         _.extend self options
         ret self
     ]
-    console.log "ParseNode:" res (is_instance res ParseNode)
     ret res
 ]
 
