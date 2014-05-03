@@ -11,6 +11,7 @@ console.log(program);
 
 console.log("\n==== PARSED ====");
 var parseTree = parser.parse(program);
+console.log(parseTree);
 console.log(JSON.stringify(parseTree, null, 4));
 
 console.log("\n==== NORMALIZED ====");

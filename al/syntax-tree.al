@@ -1,0 +1,72 @@
+assert = require "assert"
+_ = require "underscore"
+
+is_instance = [a A | ret ```a instanceof A```]
+
+SyntaxNode = [ options |
+    if (not (is_instance this SyntaxNode)) [
+        ret new SyntaxNode options
+    ]
+    assert (options.type != null)
+    _.extend this options
+]
+
+SyntaxTree = {
+    SyntaxNode: SyntaxNode
+
+    StatementList: [ statements |
+        ret new SyntaxNode {
+            type: "statement-list"
+            statements: statements
+        }
+    ]
+
+    Assignment: [ modifier left right |
+        ret new SyntaxNode {
+            type: "assignment"
+            modifier: modifier
+            left: left
+            right: right
+        }
+    ]
+
+    Lambda: [ args stmts |
+        ret new SyntaxNode {
+            type: "lambda"
+            arguments: args
+            statements: statements
+        }
+    ]
+
+    UnitList: [ units |
+        ret new SyntaxNode {
+            type: "unit-list"
+            units: units
+        }
+    ]
+
+    Table: [ fields |
+        ret new SyntaxNode {
+            type: "table"
+            fields: fields
+        }
+    ]
+
+    Field: [ key value |
+        ret new SyntaxNode {
+            type: "field"
+            key: key
+            value: value
+        }
+    ]
+
+    TableAccess: [ table key |
+        ret new SyntaxNode {
+            type: "table-access"
+            table: table
+            key: key
+        }
+    ]
+}
+
+mutate module.exports = SyntaxTree
