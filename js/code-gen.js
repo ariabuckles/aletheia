@@ -5,6 +5,8 @@ var SourceNode = SourceMap.SourceNode;
 var SyntaxTree = require("./syntax-tree.js");
 var SyntaxNode = SyntaxTree.SyntaxNode;
 
+var IDENTIFIER_REGEX = /^[_a-zA-Z0-9]+$/;
+
 var preambleStr = [
     // preamble if
     "var _else = {identifier: 'else'};",
@@ -97,7 +99,7 @@ _.extend(compile, {
     },
 
     "table-key": function(key) {
-        if (/^[_a-zA-Z0-9]+$/.test(key)) {
+        if (IDENTIFIER_REGEX.test(key)) {
             return key;
         } else {
             return '"' + key.replace('"', '\\"') + '"';
@@ -186,7 +188,7 @@ _.extend(compile, {
     },
 
     "table-access": function(tableAccess) {
-        if (typeof tableAccess.key === "string") {
+        if (typeof tableAccess.key === "string" && IDENTIFIER_REGEX.test(tableAccess.key)) {
             return new SourceNode(null, null, "source.al", [
                 compile(tableAccess.table),
                 ".",
