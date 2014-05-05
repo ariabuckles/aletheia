@@ -52,7 +52,7 @@ normalizationTable = {
 
         ret if (isStrictArray) [
             // Array literals
-            ret _.pluck fields "value"
+            ret _.map fields [field | ret normalize field.value]
 
         ] isStrictObject [
             // Object literals
