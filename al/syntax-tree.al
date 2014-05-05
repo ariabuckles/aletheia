@@ -9,6 +9,8 @@ SyntaxNode = [ options |
         ret new SyntaxNode options
     ] else [
         assert (options.type != null)
+        // for occasional debugging
+        // mutate self.__ = "SyntaxNode"
         _.extend self options
         ret self
     ]

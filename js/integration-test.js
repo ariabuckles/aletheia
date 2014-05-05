@@ -479,4 +479,33 @@ describe("aletheia", function() {
             assert(result instanceof MyClass);
         });
     });
+
+    describe("inline javascript", function() {
+        it("should work for quotes", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                "callback ```'\"'```"
+            ];
+            exec(prgm, {callback: callback});
+            assert.strictEqual(result, '"');
+        });
+        it("should work for quotes in arrays", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                "callback {",
+                "   (```'\"'```)",
+                "   \"hi\"",
+                "   (```'\"'```)",
+                "}"
+            ];
+            exec(prgm, {callback: callback});
+            assert.deepEqual(result, ['"', "hi", '"']);
+        });
+    });
 });
