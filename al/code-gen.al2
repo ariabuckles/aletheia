@@ -66,7 +66,7 @@ compile = [ node |
 ]
 _.extend compile {
     "number": [ num |
-        ret new SourceNode null null "source.al" String(num)
+        ret new SourceNode null null "source.al" (String num)
     ]
 
     "string": [ str |
@@ -117,7 +117,7 @@ _.extend compile {
     ]
 
     "boolean": [ boolVal |
-        ret new SourceNode null null "source.al" String(boolVal)
+        ret new SourceNode null null "source.al" (String boolVal)
     ]
 
     "statement-list": [ statements |
