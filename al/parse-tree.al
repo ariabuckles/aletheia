@@ -36,12 +36,12 @@ ParseTree = {
 
     Assignment: [ leftUnitList right |
         units = leftUnitList.units
-        if (units.length != 2) {
-            throw new Error ("Variable assignment may have a single " + "modifier; got " + (JSON.stringify leftUnitList))
-        }
-        if ((units@0).type != "variable") {
-            throw new Error "Variable assignment may only have a word identifier"
-        }
+        if (units.length != 2) [
+            ```throw new Error``` ("Variable assignment may have a single " + "modifier; got " + (JSON.stringify leftUnitList))
+        ]
+        if ((units@0).type != "variable") [
+            ```throw new Error``` "Variable assignment may only have a word identifier"
+        ]
         ret new ParseNode {
             type: "assignment"
             modifier: (units@0).name
