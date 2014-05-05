@@ -20,6 +20,8 @@ TODO for self-hosting
 [x] fix normalize in arrays
 [ ] fix empty array literal
 [ ] allow "s in strings
+[ ] add `throw`
+[ ] fix ``` multiple times
 
 TODO to make usable
 [ ] 'strings'
