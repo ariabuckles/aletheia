@@ -19,7 +19,7 @@ var grammar = {
         rules: [
             ["(\\r\\n?|\\n)",       'return "NEWLINE";'],
             ["[^\\S\\r\\n]+",       '/* skip other whitespace */'],
-            ["\\/\\/.*(\\r\\n?|\\n)",'return "NEWLINE"; /* skip comments */'],
+            ["\\/\\/.*?(\\r\\n?|\\n)",'return "NEWLINE"; /* skip comments */'],
 
             ["==|!=|<=|>=|<|>",     'return "SIGN";'],
 
@@ -51,17 +51,16 @@ var grammar = {
             ["\\:",                 'return ":";'],
             ["\\.",                 'return "DOT";'],
 
-            ['\\"(\\\\.|[^"\\n])*\\"', 'return "STRING";'],
+            ['\\"(\\\\.|[^"\\n])*?\\"', 'return "STRING";'],
+            ["\\'(\\\\.|[^'\\n])*?\\'", 'return "STRING";'],
             ["[a-zA-Z_$][a-zA-Z0-9_$]*", 'return "IDENTIFIER";'],
 
-            ["```.*```",            'return "JAVASCRIPT";'],
+            ["```.*?```",           'return "JAVASCRIPT";'],
 
             ["$",                   'return "EOF";'],
             [".",                   'return "INVALID";'],
         ],
-        options: {
-            flex: true              // pick longest matching token
-        }
+        options: {}
     },
     operators: [
         // Things at the bottom happen before things at the top

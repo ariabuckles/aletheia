@@ -18,13 +18,13 @@ TODO for self-hosting
 [x] call a function with no arguments
 [x] multi-if
 [x] fix normalize in arrays
+[x] fix ``` multiple times
+[x] add 'single quote strings'
 [ ] fix empty array literal
-[ ] allow "s in strings
+[ ] allow escaping "s in strings
 [ ] add `throw`
-[ ] fix ``` multiple times
 
 TODO to make usable
-[ ] 'strings'
 [ ] regexes
 [ ] preamble for
 [ ] `rewrite@(node.type) (node)` syntax doesn't work
