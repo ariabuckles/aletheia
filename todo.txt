@@ -21,10 +21,11 @@ TODO for self-hosting
 [x] fix ``` multiple times
 [x] add 'single quote strings'
 [x] fix empty array literal
-[ ] allow escaping "s in strings
 [ ] add `throw`
+[ ] single-line array literals
 
 TODO to make usable
+[ ] allow escaping "s in strings
 [ ] have `if` check for `else` or `if` in incorrect positions
 [ ] regexes
 [ ] preamble for
@@ -49,3 +50,4 @@ TODO to make everyone happy
 [ ] destructuring
 [ ] pattern matching
 [ ] figure out what to do with all the parens?
+[ ] alformat / alc -f
