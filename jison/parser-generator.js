@@ -166,6 +166,7 @@ var grammar = {
             ["STRING", "$$ = $1.slice(1, -1);"],
         ],
         "table": [
+            ["{ }", "$$ = new yy.Table([], false);"],
             ["{ : }", "$$ = new yy.Table([], true);"],
             ["{ fieldList }", "$$ = new yy.Table($2, false);"]
         ],
