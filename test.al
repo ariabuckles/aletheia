@@ -1,5 +1,3 @@
-console.log {
-    ```'"'```
-    "hi"
-    ```'"'```
-}
+if true [
+    console.log (2 + 3)
+]

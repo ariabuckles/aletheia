@@ -80,13 +80,13 @@ _.extend compile {
     "object": [ obj |
         ret if (obj == null) [
             ret new SourceNode null null "source.al" "null"
-        ] else if (_.isArray obj) [
+        ] (_.isArray obj) [
             fields = _.map obj compile
-            ret new SourceNode null null "source.al" _.flatten {
+            ret new SourceNode null null "source.al" (_.flatten {
                 "["
                 (interleave fields ",\n" false)
                 "]"
-            }
+            })
         ] else [
             fields = _.map obj [ value key |
                 result = {
@@ -96,11 +96,11 @@ _.extend compile {
                 }
                 ret result
             ]
-            ret new SourceNode null null "source.al" _.flatten {
+            ret new SourceNode null null "source.al" (_.flatten {
                 "{\n"
                 (interleave fields ",\n" false)
                 "\n}"
-            }
+            })
         ]
     ]
 
@@ -138,7 +138,7 @@ _.extend compile {
                 " = "
                 right
             }
-        ] else if (modifier == "mutate") [
+        ] (modifier == "mutate") [
             ret new SourceNode null null "source.al" {
                 left
                 " = "
@@ -163,7 +163,7 @@ _.extend compile {
         result.add (compile@("lambda-args") args)
         result.add ") {\n"
         result.add (compile@("statement-list") statements)
-        result.add "])"
+        result.add "})"
 
         ret result
     ]
@@ -221,7 +221,7 @@ _.extend compile {
         mutable op = comp.operation
         if (op == "==") [
             mutate op = "==="
-        ] else if (op == "!=") [
+        ] (op == "!=") [
             mutate op = "!=="
         ]
 
@@ -233,7 +233,7 @@ _.extend compile {
             " "
             op
             " "
-            (if right [ret left] else [ret ""])
+            (if right [ret right] else [ret ""])
             ")"
         }
     ]
