@@ -2,9 +2,11 @@
   "name": "aletheia",
   "version": "0.0.0",
   "description": "aletheia ========",
+  "bin": {
+    "alc": "./lib/aletheia/alc"
+  },
   "main": "index.js",
   "scripts": {
-    "install": "make build",
     "test": "make test"
   },
   "repository": {
