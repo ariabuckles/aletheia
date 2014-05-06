@@ -15,9 +15,7 @@ Aletheia is an experimental compiled-to-javascript programming language.
 
 ##### Aletheia (and this page) is quite alpha. We're still missing some basic things:
  * one line array literals
- * comments (oops!)
  * for loops (but you could write your own!)
- * a nice structure for `elseif`s
  * compile time enforcement of immutability, references, or well, anything, yet :)
  * `return`ing from a function inside an if-block
  * macros
@@ -26,7 +24,7 @@ Aletheia is an experimental compiled-to-javascript programming language.
 ## Examples
 ### if statements
 
-    if (1 + 1 == 2) [
+    if ((1 + 1) == 2) [
         console.log "correct!"
     ]
     
@@ -35,7 +33,7 @@ Aletheia is an experimental compiled-to-javascript programming language.
     mutable i = 0
     while [ret (i < 10)] [  // this is not the final syntax
         console.log i
-        i = i + 1
+        mutate i = i + 1
     ]
 
 ### function calls
@@ -66,10 +64,15 @@ Aletheia is an experimental compiled-to-javascript programming language.
 
 Aletheia is quite unstable currently, but if you'd like to play with it (which I pretty much don't recommend at this point), the setup instructions are:
 
-To run the library compiler:
+To install the current (unstable) library version of the compiler
+
+    npm install -g git://github.com/jacktoole1/aletheia.git
+    alc <input_file.al> <output_file.js>
+
+To run the library compiler from the git repo:
 
     git clone https://github.com/jacktoole1/aletheia.git
-    ./aletheia/lib/aletheia/alc [source .al input file] [destination .js output file]  # the precompiled compiler
+    ./aletheia/lib/aletheia/alc <source .al input file> <destination .js output file>
 
 To create the latest bootstrapped compiler:
 
