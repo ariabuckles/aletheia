@@ -20,7 +20,7 @@ TODO for self-hosting
 [x] fix normalize in arrays
 [x] fix ``` multiple times
 [x] add 'single quote strings'
-[ ] fix empty array literal
+[x] fix empty array literal
 [ ] allow escaping "s in strings
 [ ] add `throw`
 
