@@ -35,6 +35,8 @@ getPreamble = [
     ret new SourceNode null null null preambleStr
 ]
 
+IDENTIFIER_REGEX = ```/^[_a-zA-Z0-9]+$/```
+
 // Does something like Array::join, but rets a new
 // array with the value interleaved, rather than a
 // string.
@@ -105,7 +107,7 @@ _.extend compile {
     ]
 
     "table-key": [ key |
-        ret if (```/^[_a-zA-Z0-9]+$/```.test key) [
+        ret if (IDENTIFIER_REGEX.test key) [
             ret key
         ] else [
             ret (```'"'``` + (key.replace ```'"'``` ```'\\"'```) + ```'"'```)
@@ -199,7 +201,7 @@ _.extend compile {
     ]
 
     "table-access": [ tableAccess |
-        ret if ((typeof tableAccess.key) == "string") [
+        ret if ((typeof tableAccess.key) == "string" and (IDENTIFIER_REGEX.test tableAccess.key)) [
             ret new SourceNode null null "source.al" {
                 (compile tableAccess.table)
                 "."
