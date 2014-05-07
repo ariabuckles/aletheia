@@ -20,6 +20,7 @@ translateOperations = {
 translateKeywordFunctions = {
     ret: "return"
     new: "new"
+    throw: "throw"
     not: "!"
 }
 
