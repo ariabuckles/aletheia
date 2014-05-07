@@ -45,7 +45,7 @@ IDENTIFIER_REGEX = ```/^[_a-zA-Z0-9]+$/```
 //
 // > interleave(array, value).join("") === array.join(value)
 interleave = [ array value trailingValue |
-    mutable result = ```[]```
+    mutable result = {}
     _.each array [ elem i |
         result.push elem
         if (i + 1 != array.length or trailingValue) [
@@ -147,7 +147,7 @@ _.extend compile {
                 right
             }
         ] else [
-            ```throw new Error``` ("Invalid assignment modifier: " + modifier)
+            throw new Error ("Invalid assignment modifier: " + modifier)
         ]
     ]
 
