@@ -23,6 +23,7 @@ TODO for self-hosting
 [x] fix empty array literal
 [ ] add `throw`
 [ ] single-line array literals
+[ ] escape string contents correctly so '"' works
 
 TODO to make usable
 [ ] allow escaping "s in strings
@@ -43,6 +44,7 @@ TODO to make usable
 
 TODO to make everyone happy
 ================
+[ ] a repl
 [ ] lazy if-else?
 [ ] dashes in table field names?
 [ ] macros
