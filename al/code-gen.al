@@ -74,7 +74,7 @@ _.extend compile {
     "string": [ str |
         ret new SourceNode null null "source.al" {
             ```'"'```
-            str
+            (str.replace ```'"'``` ```'\\"'```)
             ```'"'```
         }
     ]
