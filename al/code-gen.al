@@ -74,7 +74,7 @@ _.extend compile {
     "string": [ str |
         ret new SourceNode null null "source.al" {
             '"'
-            (str.replace '"' '\\"')
+            (str.replace ```/"/g``` '\\"')
             '"'
         }
     ]
@@ -110,7 +110,7 @@ _.extend compile {
         ret if (IDENTIFIER_REGEX.test key) [
             ret key
         ] else [
-            ret ('"' + (key.replace '"' '\\"') + '"')
+            ret ('"' + (key.replace ```/"/g``` '\\"') + '"')
         ]
     ]
 
