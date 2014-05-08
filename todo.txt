@@ -22,8 +22,9 @@ TODO for self-hosting
 [x] add 'single quote strings'
 [x] fix empty array literal
 [x] add `throw`
+[x] escape quotes in strings
 [ ] single-line array literals
-[ ] escape string contents correctly so '"' works
+[ ] escape string contents correctly so any escape sequence works
 
 TODO to make usable
 [ ] `rewrite@(node.type) (node)` syntax doesn't work
