@@ -23,7 +23,8 @@ TODO for self-hosting
 [x] fix empty array literal
 [x] add `throw`
 [x] escape quotes in strings
-[ ] single-line array literals
+[x] single-line array literals
+[ ] rewrite jison/parser-generator.js
 
 TODO to make usable
 [ ] unescape strings for macros, and 

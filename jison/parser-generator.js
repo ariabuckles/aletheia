@@ -50,6 +50,7 @@ var grammar = {
             ["\\!",                 'return "!";'],
             ["\\:",                 'return ":";'],
             ["\\.",                 'return "DOT";'],
+            [",",                   'return ",";'],
 
             ['\\"(\\\\.|[^"\\n])*?\\"', 'return "STRING";'],
             ["\\'(\\\\.|[^'\\n])*?\\'", 'return "STRING";'],
@@ -178,7 +179,9 @@ var grammar = {
         ],
         "fieldListBody": [
             ["field", "$$ = [$1];"],
-            ["fieldListBody separator field", "$$ = $1; $1.push($3);"]
+            ["fieldListBody , field", "$$ = $1; $1.push($3);"],
+            ["fieldListBody separator field", "$$ = $1; $1.push($3);"],
+            ["fieldListBody , separator field", "$$ = $1; $1.push($4);"],
         ],
         "field": [
             ["expression", "$$ = yy.Field(null, $1);"],
