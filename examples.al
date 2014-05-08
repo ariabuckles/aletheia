@@ -235,3 +235,21 @@ v = kvector.add |
 |
 
 
+================================
+
+// arguments are separated by parens, but lambdas can go after/before/between
+// parens:
+
+if (a == b) [
+    console.log("hi", "bye")
+]
+
+this.setState({
+    thing: 5,
+    that: 6
+}) [
+    // some callback
+    console.log("string")
+]
+
+
