@@ -1,6 +1,6 @@
 {
   "name": "aletheia",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "aletheia ========",
   "bin": {
     "alc": "./lib/aletheia/alc"
