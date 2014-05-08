@@ -39,10 +39,15 @@ $(JS_OUTPUT_FILES): build/%.js: js/%.js
 # Jison meta-rule
 .PHONY: jison
 jison: build/parser.js
-build/parser.js: jison/parser-generator.js
+
+build/parser.js: build/parser-generator.js
 	@mkdir -p ./build
 	-rm -f ./build/parser.js
-	node jison/parser-generator.js -o build/parser.js
+	node build/parser-generator.js -o build/parser.js
+
+build/parser-generator.js: jison/parser-generator.al
+	@mkdir -p ./build
+	$(AL_COMPILER) $< $@
 
 # Al meta-rule
 .PHONY: compileal
