@@ -1,6 +1,8 @@
 assert = require "assert"
 _ = require "underscore"
 
+strings = require "./strings"
+
 is_instance = [a A | ret ```a instanceof A```]
 
 ParseNode = [ options |
@@ -17,6 +19,7 @@ ParseNode = [ options |
 
 ParseTree = {
     ParseNode: ParseNode
+    String: [ escapedStr | ret strings.unescape escapedStr ]
 
     StatementList: [ statements |
         ret new ParseNode {

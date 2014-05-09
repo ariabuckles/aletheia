@@ -4,6 +4,7 @@ SourceNode = SourceMap.SourceNode
 
 SyntaxTree = require "./syntax-tree.js"
 SyntaxNode = SyntaxTree.SyntaxNode
+strings = require "./strings"
 
 is_instance = [a A | ret ```a instanceof A```]
 
@@ -59,12 +60,13 @@ interleave = [ array value trailingValue |
 //]
 
 compile = [ node |
-    ret if (is_instance node SyntaxNode) [
+    res = if (is_instance node SyntaxNode) [
         ret compile@(node.type) node
     ] else [
         // compile time constant
         ret compile@(typeof node) node
     ]
+    ret res
 ]
 _.extend compile {
     "number": [ num |
@@ -72,11 +74,7 @@ _.extend compile {
     ]
 
     "string": [ str |
-        ret new SourceNode null null "source.al" {
-            '"'
-            (str.replace ```/"/g``` '\\"')
-            '"'
-        }
+        ret new SourceNode null null "source.al" (strings.escape str)
     ]
 
     "object": [ obj |
@@ -110,7 +108,7 @@ _.extend compile {
         ret if (IDENTIFIER_REGEX.test key) [
             ret key
         ] else [
-            ret ('"' + (key.replace ```/"/g``` '\\"') + '"')
+            ret (strings.escape key)
         ]
     ]
 
