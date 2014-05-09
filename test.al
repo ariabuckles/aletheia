@@ -1,3 +1,1 @@
-if true [
-    console.log {}
-]
+console.log "hi"

@@ -162,7 +162,7 @@ grammar = {
         "tableNameLiteral": {
             {"NUMBER", "$$ = Number($1);"}
             {"NEG_NUMBER", "$$ = Number($1);"}
-            {"STRING", "$$ = $1.slice(1, -1);"}
+            {"STRING", "$$ = yy.String($1);"}
         }
         "table": {
             {"{ }", "$$ = new yy.Table([], false);"}
