@@ -37,6 +37,7 @@ normalizationTable = {
     operation: syntaxWithSameFields
     variable: syntaxWithSameFields
     javascript: syntaxWithSameFields
+    regex: syntaxWithSameFields
 
     table: [ table |
         fields = table.fields

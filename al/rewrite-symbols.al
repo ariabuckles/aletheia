@@ -127,6 +127,8 @@ _.extend rewrite {
     "javascript": [ js |
         ret js
     ]
+
+    regex: [ regexNode | ret regexNode ]
 }
 
 mutate module.exports = rewrite

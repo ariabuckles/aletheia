@@ -29,6 +29,8 @@ grammar = {
             {"[0-9]+\\.?",          'return "NUMBER";'}
             {"([0-9]+)?\\.[0-9]+",  'return "NUMBER";'}
 
+            {"\\/(\\\\.|[^\\/\\n])*\\/", 'return "REGEX";'}
+
             {"\\*",                 'return "*";'}
             {"\\/",                 'return "/";'}
             {"-",                   'return "-";'}
@@ -158,6 +160,7 @@ grammar = {
         "literal": {
             {"tableNameLiteral", "$$ = $1;"}
             {"table", "$$ = $1;"}
+            {"REGEX", "$$ = yy.Regex($1);"}
         }
         "tableNameLiteral": {
             {"NUMBER", "$$ = Number($1);"}

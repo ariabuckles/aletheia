@@ -21,6 +21,13 @@ ParseTree = {
     ParseNode: ParseNode
     String: [ escapedStr | ret strings.unescape escapedStr ]
 
+    Regex: [ str |
+        ret new ParseNode {
+            type: "regex"
+            string: str
+        }
+    ]
+
     StatementList: [ statements |
         ret new ParseNode {
             type: "statement-list"
