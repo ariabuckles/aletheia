@@ -187,7 +187,9 @@ grammar = {
         "field": {
             {"expression", "$$ = yy.Field(null, $1);"}
             {"IDENTIFIER : expression", "$$ = yy.Field($1, $3);"}
+            {"IDENTIFIER = expression", "$$ = yy.Field($1, $3);"}
             {"tableNameLiteral : expression", "$$ = yy.Field($1, $3);"}
+            {"tableNameLiteral = expression", "$$ = yy.Field($1, $3);"}
         }
         "function": {
             {"[ statementList ]", "$$ = yy.Lambda([], $2);"}
