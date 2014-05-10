@@ -36,9 +36,9 @@ rewrite = [ node |
     ret if (_.isArray node) [
         ret _.map node rewrite
     ] (is_instance node SyntaxNode) [
-        ret (rewrite@(node.type)) (node)
+        ret rewrite@(node.type) node
     ] (rewrite@(typeof node)) [
-        ret (rewrite@(typeof node)) (node)
+        ret rewrite@(typeof node) node
     ] else [
         ret node
     ]
