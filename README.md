@@ -4,17 +4,24 @@ aletheia
 Aletheia is an experimental compiled-to-javascript programming language.
 
 ##### The goals of aletheia are to:
- * encourage safety
- * be concise
- * interop with javascript seamlessly
+1. encourage safety
+2. be concise
+3. interop with javascript seamlessly
+
+For 1 and 2, Aletheia's philosopy is to "make correct things easy, but make
+incorrect things hard". For example, immutable variables require no prefix
+to declare them. However, mutable variables require a prefix for both
+declaration and mutation.
 
 ##### Language features:
  * variables are immutable and local by default
- * extremely concise lambda syntax to encourage a functional style
+ * extremely concise lambda syntax encourages a functional programming style
  * extensible control-flow structures
 
-##### Aletheia (and this page) is quite alpha. We're still missing some basic things:
- * one line array literals
+##### Aletheia is quite alpha.
+
+We're still missing some basic things, which we intend to implement in the
+future:
  * for loops (but you could write your own!)
  * compile time enforcement of immutability, references, or well, anything, yet :)
  * `return`ing from a function inside an if-block
@@ -60,9 +67,14 @@ Aletheia is an experimental compiled-to-javascript programming language.
         ret b
     ]
     
-## Setup
+## Setup / Installation
 
 Aletheia is quite unstable currently, but if you'd like to play with it (which I pretty much don't recommend at this point), the setup instructions are:
+
+To install the current semistable library version of the compiler
+
+    npm install -g aletheia
+    alc <input_file.al> <output_file.js>
 
 To install the current (unstable) library version of the compiler
 
