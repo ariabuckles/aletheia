@@ -89,6 +89,22 @@ describe "aletheia-in-aletheia" [
             exec prgm {callback: nop}
         ]
 
+        it "should parse regexes with modifiers" [
+            prgm = {
+                "callback /hi/g /hi/i /hi/m"
+            }
+            nop = [it | it]
+            exec prgm {callback: nop}
+        ]
+
+        it "should parse regexes with modifiers" [
+            prgm = {
+                "callback /hi/mig"
+            }
+            nop = [it | it]
+            exec prgm {callback: nop}
+        ]
+
         it "should test a simple regex" [
             mutable result = undefined
             callback = [ value |
