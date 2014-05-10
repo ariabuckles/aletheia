@@ -245,6 +245,10 @@ _.extend compile {
     "javascript": [ js |
         ret new SourceNode null null "source.al" js.source
     ]
+
+    regex: [ regexNode |
+        ret new SourceNode null null "source.al" regexNode.string
+    ]
 }
 
 compileWithPreamble = [ fileNode |

@@ -79,4 +79,26 @@ describe "aletheia-in-aletheia" [
             exec prgm {:}
         ]
     ]
+
+    describe "regexes" [
+        it "should parse a simple regex" [
+            prgm = {
+                "callback /hi/"
+            }
+            nop = [it | it]
+            exec prgm {callback: nop}
+        ]
+
+        it "should test a simple regex" [
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "callback (/hi/.test '-hi-')"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result true
+        ]
+    ]
 ]

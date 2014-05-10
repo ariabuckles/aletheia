@@ -577,5 +577,17 @@ describe("aletheia", function() {
             exec(prgm, {callback: callback});
             assert.strictEqual(result, '"');
         });
+
+        it("should be able to escape quotes", function() {
+            var result;
+            var callback = function(param) {
+                result = param;
+            };
+            var prgm = [
+                'callback "\\""'
+            ];
+            exec(prgm, {callback: callback});
+            assert.strictEqual(result, '"');
+        });
     });
 });
