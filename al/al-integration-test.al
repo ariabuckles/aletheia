@@ -117,4 +117,19 @@ describe "aletheia-in-aletheia" [
             assert.strictEqual result true
         ]
     ]
+
+    describe "newlines" [
+        it "should allow multi-line statement continuation inside parens" [
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "(callback"
+                "    true)"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result true
+        ]
+    ]
 ]

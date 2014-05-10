@@ -14,10 +14,23 @@ outputFile = [ args |
 
 grammar = {
     lex: {
+        startConditions: {
+            INSIDE_PARENS: 0 // 0 is inclusive; 1 is exclusive
+                             // (whatever that means... on a plane so I
+                             // can't look it up)
+        }
         rules: {
-            {"(\\r\\n?|\\n)",       'return "NEWLINE";'}
+            {"\\(",                 'this.pushState("INSIDE_PARENS"); return "(";'}
+            {"\\)",                 'this.popState(); return ")";'}
+            {"\\{",                 'this.pushState("INITIAL"); return "{";'}
+            {"\\}",                 'this.popState(); return "}";'}
+            {"\\[",                 'this.pushState("INITIAL"); return "[";'}
+            {"\\]",                 'this.popState(); return "]";'}
+            {"\\|",                 'return "|";'}
+
+            {"(\\r\\n?|\\n)",       'return YY_START === "INITIAL" ? "NEWLINE" : null;'}
             {"[^\\S\\r\\n]+",       '/* skip other whitespace */'}
-            {"\\/\\/.*?(\\r\\n?|\\n)",'return "NEWLINE"; /* skip comments */'}
+            {"\\/\\/.*?(\\r\\n?|\\n)",'return YY_START === "INITIAL" ? "NEWLINE" : null; /* skip comments */'}
 
             {"==|!=|<=|>=|<|>",     'return "SIGN";'}
 
@@ -37,14 +50,6 @@ grammar = {
             {"\\+",                 'return "+";'}
             {"\\%",                 'return "%";'}
             {"@",                   'return "@";'}
-
-            {"\\(",                 'return "(";'}
-            {"\\)",                 'return ")";'}
-            {"\\{",                 'return "{";'}
-            {"\\}",                 'return "}";'}
-            {"\\|",                 'return "|";'}
-            {"\\[",                 'return "[";'}
-            {"\\]",                 'return "]";'}
 
             {"=",                   'return "=";'}
             {"\\!",                 'return "!";'}

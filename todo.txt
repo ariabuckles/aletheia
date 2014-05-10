@@ -35,9 +35,9 @@ TODO to make usable
 [x] what to do about commas
 [x] regexes
 [x] `key = value` syntax instead of (or temporarily `or`) `:` in tables
+[x] multi-line statements (skip newline parse in `(`)
 [ ] have `if` check for `else` or `if` in incorrect positions
 [ ] preamble for
-[ ] multi-line statements (skip newline parse in `(`)
 [ ] what to do about multi-line function calls
 [ ] single line lambdas auto-return
 [ ] add an errors compiler pass
