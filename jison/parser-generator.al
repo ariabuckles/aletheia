@@ -197,9 +197,12 @@ grammar = {
             {"tableNameLiteral = expression", "$$ = yy.Field($1, $3);"}
         }
         "function": {
-            {"[ statementList ]", "$$ = yy.Lambda([], $2);"}
-            {"[ unitList | statementList ]", "$$ = yy.Lambda($2.units, $4);"}
-            {"[ unitExpression | statementList ]", "$$ = yy.Lambda([$2], $4);"}
+            {"[ statement ]", "$$ = yy.RetLambda([], $2);"}
+            {"[ unitList | statement ]", "$$ = yy.RetLambda($2.units, $4);"}
+            {"[ unitExpression | statement ]", "$$ = yy.RetLambda([$2], $4);"}
+            {"[ separator statementListBody separator ]", "$$ = yy.Lambda([], $3);"}
+            {"[ unitList | separator statementListBody separator ]", "$$ = yy.Lambda($2.units, $5);"}
+            {"[ unitExpression | separator statementListBody separator ]", "$$ = yy.Lambda([$2], $5);"}
         }
         "additive": {
             {"multiplicative", "$$ = $1;", {prec: "+"}}
