@@ -37,7 +37,6 @@ TODO to make usable
 [x] `key = value` syntax instead of (or temporarily `or`) `:` in tables
 [x] multi-line statements (skip newline parse in `(`)
 [x] single line lambdas auto-return
-[ ] multi-line inside parens is broken for `( cond1 and cond2 )`
 [ ] auto-return lambdas still force you to wrap a single result in parens
 [ ] have `if` check for `else` or `if` in incorrect positions
 [ ] preamble for
