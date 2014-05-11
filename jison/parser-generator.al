@@ -106,8 +106,7 @@ grammar = {
         "statement": {
             {"lvalue = expression", "$$ = yy.Declaration($1, $3);"}
             {"unitList = expression", "$$ = yy.Assignment($1, $3);"}
-            {"unitList", "$$ = $1;", {prec: "STATEMENT_BODY"}}
-            {"unitExpression", "$$ = $1;", {prec: "STATEMENT_BODY"}}
+            {"expression", "$$ = $1;", {prec: "STATEMENT_BODY"}}
         }
         "expression": {
             {"unitList", "$$ = $1;", {prec: "WRAP_EXPR"}}
