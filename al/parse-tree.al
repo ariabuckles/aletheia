@@ -76,7 +76,9 @@ ParseTree = {
 //        }
         // hackily do this inline:
         // TODO: move this to desugar.al
-        statement = if (expr.type == "unit-list" and (expr.units@0).type == "variable" and (expr.units@0).name == "ret") [
+        statement = if (expr.type == "unit-list" and
+                (expr.units@0).type == "variable" and
+                (expr.units@0).name == "ret") [
             ret expr
         ] else [
             ret ParseTree.UnitList {
