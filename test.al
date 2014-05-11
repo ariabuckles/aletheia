@@ -1,6 +1,7 @@
-mutable i = 0
-while [ret (i < 10)] [
-    callback i
-    mutate i = i + 1
+statement = if (expr.type == "unit-list" and
+        expr.units@0.type == "variable" and
+        expr.units@0.name == "ret") [
+    ret 5
+] else [
+    ret 6
 ]
-endCallback i

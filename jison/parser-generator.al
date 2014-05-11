@@ -37,9 +37,9 @@ grammar = {
             {"and",                 'return "AND";'}
             {"or",                  'return "OR";'}
 
-            {"-[0-9]+\\.?",         'return "NEG_NUMBER";'}
+            {"-[0-9]+",             'return "NEG_NUMBER";'}
             {"-([0-9]+)?\\.[0-9]+", 'return "NEG_NUMBER";'}
-            {"[0-9]+\\.?",          'return "NUMBER";'}
+            {"[0-9]+",              'return "NUMBER";'}
             {"([0-9]+)?\\.[0-9]+",  'return "NUMBER";'}
 
             {"\\/(\\\\.|[^\\/\\n])*\\/[gim]*", 'return "REGEX";'}
@@ -75,8 +75,7 @@ grammar = {
         {"left", "+", "-", "NEG_NUMBER"}
         {"left", "*", "/", "%"}
         {"precedence", "UMINUS"}
-        {"left", "@"}
-        {"left", "DOT"}
+        {"left", "DOT", "@"}
         {"left", "FUNC_CALL"}
         {"precedence", "(", "[", "{"}
         {"precedence", "WRAP_EXPR"}
