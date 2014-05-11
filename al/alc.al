@@ -28,8 +28,14 @@ parseTree = parser.parse program
 ast = normalize parseTree
 rewritten = rewrite ast
 gen = compile rewritten
-code = gen.toString undefined
+code = gen.toString()
 
 fs.writeFileSync output_file code {encoding: "utf8"}
-console.log ("Finished compiling '" + input_file + "' into '" + output_file + "'.")
+console.log (
+    "Finished compiling '" +
+    input_file +
+    "' into '" +
+    output_file +
+    "'."
+)
 

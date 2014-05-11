@@ -46,7 +46,7 @@ var parseTree = parser.parse(program);
 var ast = normalize(parseTree);
 var rewritten = rewrite(ast);
 var gen = compile(rewritten);
-var code = gen.toString(undefined);
+var code = gen.toString();
 fs.writeFileSync(output_file, code, {
 encoding: "utf8"
 });

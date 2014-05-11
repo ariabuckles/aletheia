@@ -84,21 +84,21 @@ _.extend compile {
             fields = _.map obj compile
             ret new SourceNode null null "source.al" (_.flatten {
                 "["
-                (interleave fields ",\n" false)
+                interleave fields ",\n" false
                 "]"
             })
         ] else [
             fields = _.map obj [ value key |
                 result = {
-                    (compile@("table-key") key)
+                    compile@("table-key") key
                     ": "
-                    (compile value)
+                    compile value
                 }
                 ret result
             ]
             ret new SourceNode null null "source.al" (_.flatten {
                 "{\n"
-                (interleave fields ",\n" false)
+                interleave fields ",\n" false
                 "\n}"
             })
         ]
@@ -108,7 +108,7 @@ _.extend compile {
         ret if (IDENTIFIER_REGEX.test key) [
             ret key
         ] else [
-            ret (strings.escape key)
+            ret strings.escape key
         ]
     ]
 
@@ -199,17 +199,18 @@ _.extend compile {
     ]
 
     "table-access": [ tableAccess |
-        ret if ((typeof tableAccess.key) == "string" and (IDENTIFIER_REGEX.test tableAccess.key)) [
+        ret if ((typeof tableAccess.key) == "string" and
+                (IDENTIFIER_REGEX.test tableAccess.key)) [
             ret new SourceNode null null "source.al" {
-                (compile tableAccess.table)
+                compile tableAccess.table
                 "."
                 tableAccess.key
             }
         ] else [
             ret new SourceNode null null "source.al" {
-                (compile tableAccess.table)
+                compile tableAccess.table
                 "["
-                (compile tableAccess.key)
+                compile tableAccess.key
                 "]"
             }
         ]
@@ -218,22 +219,24 @@ _.extend compile {
     "operation": [ comp |
         left = new SourceNode null null "source.al" (compile comp.left)
         right = new SourceNode null null "source.al" (compile comp.right)
-        mutable op = comp.operation
-        if (op == "==") [
-            mutate op = "==="
-        ] (op == "!=") [
-            mutate op = "!=="
+
+        op = if (comp.operation == "==") [
+            ret "==="
+        ] (comp.operation == "!=") [
+            ret "!=="
+        ] else [
+            ret comp.operation
         ]
 
         ret new SourceNode null null "source.al" {
             "("
             // TODO(jack) we'll need to use something other than null here so
             // that we can use a null literal for compile time macros
-            (if left [ret left] else [ret ""])
+            (if left [left] else [""])
             " "
             op
             " "
-            (if right [ret right] else [ret ""])
+            (if right [right] else [""])
             ")"
         }
     ]

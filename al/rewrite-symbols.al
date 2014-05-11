@@ -55,7 +55,7 @@ _.extend rewrite {
 
     variable: [ variable |
         optTranslate = translateSymbols@(variable.name)
-        name = if optTranslate [ret optTranslate] else [ret variable.name]
+        name = if optTranslate [optTranslate] else [variable.name]
         ret new SyntaxNode {
             type: "variable"
             name: name
@@ -128,7 +128,7 @@ _.extend rewrite {
         ret js
     ]
 
-    regex: [ regexNode | ret regexNode ]
+    regex: [ regexNode | regexNode ]
 }
 
 mutate module.exports = rewrite
