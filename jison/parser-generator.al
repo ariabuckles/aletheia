@@ -173,6 +173,7 @@ grammar = {
         "table": {
             {"{ }", "$$ = new yy.Table([], false);"}
             {"{ : }", "$$ = new yy.Table([], true);"}
+            {"{ = }", "$$ = new yy.Table([], true);"}
             {"{ fieldList }", "$$ = new yy.Table($2, false);"}
         }
         "fieldList": {
