@@ -46,10 +46,11 @@ TODO to make usable
 [ ] return from outer block
 [ ] keywords and/or useable as table keys
 [ ] `->` operator
-[ ] `<-` operator?
 
 TODO to make everyone happy
 ================
+[ ] ? operator
+[ ] `<-` operator?
 [ ] what to do about multi-line function calls
 [ ] a repl
 [ ] dashes in table field names?

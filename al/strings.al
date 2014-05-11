@@ -2,7 +2,7 @@
 // Takes a string beginning and ending with a quote mark
 unescape = [ escapedStr |
     jsonStr = if (escapedStr@0 == "'") [
-        ret ('"' + ((escapedStr.replace ```/"/g``` '\\"').slice 1 -1) + '"')
+        ret ('"' + ((escapedStr.replace /"/g '\\"').slice 1 -1) + '"')
     ] else [
         ret escapedStr
     ]
