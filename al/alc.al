@@ -3,7 +3,8 @@ path = require "path"
 _  = require "underscore"
 
 parser = require "./parser.js"
-normalize = require "./normalize.js"
+desugar = require "./desugar.js"
+primitivize = require "./primitivize.js"
 rewrite = require "./rewrite-symbols.js"
 compile = require "./code-gen.js"
 
@@ -25,8 +26,9 @@ console.log ("Compiling '" + input_file + "' into '" + output_file + "':")
 
 program = fs.readFileSync input_file {encoding: "utf8"}
 parseTree = parser.parse program
-ast = normalize parseTree
-rewritten = rewrite ast
+ast = desugar parseTree
+prim = primitivize ast
+rewritten = rewrite prim
 gen = compile rewritten
 code = gen.toString()
 

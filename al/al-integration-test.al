@@ -2,7 +2,8 @@ assert = require "assert"
 _ = require "underscore"
 
 parser = require "./parser.js"
-normalize = require "./normalize.js"
+desugar = require "./desugar.js"
+primitivize = require "./primitivize.js"
 rewrite = require "./rewrite-symbols.js"
 compile = require "./code-gen.js"
 
@@ -14,8 +15,9 @@ exec = [ source context |
     ]
 
     parseTree = parser.parse source_str
-    ast = normalize parseTree
-    rewritten = rewrite ast
+    ast = desugar parseTree
+    primitivized = primitivize ast
+    rewritten = rewrite primitivized 
     gen = compile rewritten
     js = gen.toString()
 
