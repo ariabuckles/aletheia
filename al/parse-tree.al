@@ -75,28 +75,10 @@ ParseTree = {
     ]
 
     RetLambda: [ args expr |
-//        ret new ParseNode {
-//            type: "ret-lambda"
-//            arguments: args
-//            result: statement
-//        }
-        // hackily do this inline:
-        // TODO: move this to desugar.al
-        statement = if (expr.type == "unit-list" and
-                (expr.units@0).type == "variable" and
-                (expr.units@0).name == "ret") [
-            ret expr
-        ] else [
-            ret ParseTree.UnitList {
-                ParseTree.Variable("ret")
-                expr
-            }
-        ]
-
         ret new ParseNode {
-            type: "lambda"
+            type: "ret-lambda"
             arguments: args
-            statements: {statement}
+            expression: expr
         }
     ]
 

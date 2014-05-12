@@ -52,6 +52,33 @@ _.extend desugar {
     javascript = syntaxWithSameFields
     regex = syntaxWithSameFields
 
+    "ret-lambda" = [ retlambda |
+        args = desugar retlambda.arguments
+        expr = retlambda.expression
+        statement = if (expr.type == "unit-list" and
+                (expr.units@0).type == "variable" and
+                (expr.units@0).name == "ret") [
+            ret desugar expr
+        ] else [
+            ret SyntaxNode {
+                type = 'unit-list'
+                units = {
+                    SyntaxNode {
+                        type = 'variable'
+                        name = "ret"
+                    }
+                    desugar expr
+                }
+            }
+        ]
+
+        ret SyntaxNode {
+            type: "lambda"
+            arguments: args
+            statements: {statement}
+        }
+    ]
+
     table = [ table |
         fields = table.fields
         forceObject = table.forceObject
