@@ -175,5 +175,17 @@ describe "aletheia-in-aletheia" [
             exec prgm {callback: callback}
             assert.strictEqual result 43
         ]
+        it "should call two function with a single arg each" [
+            mutable result = {}
+            callback = [ value |
+                result.push value
+            ]
+            prgm = {
+                "mylist = {1, 2, 3}"
+                "mylist -> _.map [x | x + 1] -> _.map callback"
+            }
+            exec prgm {callback: callback, _: _}
+            assert.deepEqual result {2, 3, 4}
+        ]
     ]
 ]

@@ -38,6 +38,8 @@ TODO to make usable
 [x] multi-line statements (skip newline parse in `(`)
 [x] single line lambdas auto-return
 [x] auto-return lambdas still force you to wrap a single result in parens
+[x] `->` operator
+[ ] implicit `it` parameter (only if used?) and explicit no-arg functions
 [ ] have `if` check for `else` or `if` in incorrect positions
 [ ] preamble for
 [ ] add an errors compiler pass
@@ -45,7 +47,6 @@ TODO to make usable
 [ ] enforce const
 [ ] return from outer block
 [ ] keywords and/or useable as table keys
-[ ] `->` operator
 
 TODO to make everyone happy
 ================
