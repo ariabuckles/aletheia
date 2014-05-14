@@ -75,9 +75,9 @@ grammar = {
         {"left", "+", "-", "NEG_NUMBER"}
         {"left", "*", "/", "%"}
         {"precedence", "UMINUS"}
-        {"left", "DOT", "@"}
         {"left", "FUNC_CALL"}
         {"precedence", "(", "[", "{"}
+        {"left", "DOT", "@"}
         {"precedence", "WRAP_EXPR"}
         {"precedence", "STMT"}
         {"precedence", "STMT_LIST"}
