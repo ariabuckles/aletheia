@@ -27,6 +27,8 @@ grammar = {
             {"\\[",                 'this.pushState("INITIAL"); return "[";'}
             {"\\]",                 'this.popState(); return "]";'}
             {"\\|",                 'return "|";'}
+            
+            {"->",                  'return "->";'}
 
             {"(\\r\\n?|\\n)",       'return YY_START === "INITIAL" ? "NEWLINE" : null;'}
             {"[^\\S\\r\\n]+",       '/* skip other whitespace */'}
@@ -76,6 +78,7 @@ grammar = {
         {"left", "*", "/", "%"}
         {"precedence", "UMINUS"}
         {"left", "FUNC_CALL"}
+        {"left", "->"}
         {"precedence", "(", "[", "{"}
         {"left", "DOT", "@"}
         {"precedence", "WRAP_EXPR"}
@@ -112,6 +115,7 @@ grammar = {
             {"unitList", "$$ = $1;", {prec: "WRAP_EXPR"}}
             {"additive", "$$ = $1;", {prec: "WRAP_EXPR"}}
             {"booleanOp", "$$ = $1", {prec: "WRAP_EXPR"}}
+            {"arrowExpr", "$$ = $1", {prec: "WRAP_EXPR"}}
         }
         "booleanOp": {
             {"comparison", "$$ = $1"}
@@ -155,6 +159,10 @@ grammar = {
         }
         "singleUnitList": {
             {"unitExpression ( )", "$$ = yy.UnitList([$1]);"}
+        }
+        "arrowExpr": {
+            {"expression -> unitList", "$$ = yy.ArrowApplication($1, $3);"}
+            {"expression -> unitExpression", "$$ = yy.ArrowApplication($1, yy.UnitList([$3]));"}
         }
         "tableaccess": {
             {"unitExpression DOT IDENTIFIER", "$$ = new yy.TableAccess($1, $3);", {prec: "DOT"}}

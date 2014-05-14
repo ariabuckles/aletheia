@@ -89,6 +89,14 @@ ParseTree = {
         }
     ]
 
+    ArrowApplication: [ leftArg rightUnitList |
+        ret new ParseNode {
+            type: "arrow"
+            left: leftArg
+            right: rightUnitList
+        }
+    ]
+
     Table: [ fields forceObject |
         ret new ParseNode {
             type: "table"
