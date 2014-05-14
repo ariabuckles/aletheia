@@ -39,6 +39,13 @@ describe("aletheia", function() {
             ];
             exec(prgm, {f: function() { }});
         });
+
+        it("calling a function with a table access and a parenthesized argument", function() {
+            var prgm = [
+                "f arr@(other.index) (1 + 2)",
+            ];
+            exec(prgm, {f: function() { }});
+        });
     });
 
     describe("if", function() {
