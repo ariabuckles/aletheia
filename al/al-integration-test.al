@@ -134,4 +134,46 @@ describe "aletheia-in-aletheia" [
             assert.strictEqual result true
         ]
     ]
+
+    describe "arrows" [
+        it "should call a function with a single arg" [
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "42 -> callback"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result 42
+        ]
+
+        it "should call a function with two args" [
+            mutable result1 = undefined
+            mutable result2 = undefined
+            callback = [ value1 value2 |
+                mutate result1 = value1
+                mutate result2 = value2
+            ]
+            prgm = {
+                "42 -> callback 6"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result1 42
+            assert.strictEqual result2 6
+        ]
+
+        it "should call two function with a single arg each" [
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "f = [x | x + 1]"
+                "42 -> f -> callback"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result 43
+        ]
+    ]
 ]
