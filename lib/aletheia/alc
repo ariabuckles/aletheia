@@ -35,7 +35,7 @@ return this_program_regex.test(arg);
 var input_file = process.argv[(exe_index + 1)];
 var output_file = process.argv[(exe_index + 2)];
 var debug = (process.argv[(exe_index + 3)] === "--debug");
-_if((((exe_index < 0) || (input_file === undefined)) || (output_file === undefined)), (function() {
+_if((((exe_index < 0) || (input_file === undefined)) || (output_file === undefined)), (function(_it) {
 console.log("usage: alc input_file.al output_file.js");
 process.exit(1);
 }));
