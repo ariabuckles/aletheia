@@ -29,9 +29,9 @@ exec = [ source context |
     jsFunc context
 ]
 
-describe "aletheia-in-aletheia" [
-    describe "function calls" [
-        it "should execute a zero-arg call" [
+describe "aletheia-in-aletheia" [|
+    describe "function calls" [|
+        it "should execute a zero-arg call" [|
             mutable called = undefined
             callback = [
                 mutate called = true
@@ -44,8 +44,50 @@ describe "aletheia-in-aletheia" [
         ]
     ]
 
-    describe "inline javascript" [
-        it "should be able to be used as a statement" [
+    describe "function definitions" [|
+        it "should work for a single param function" [|
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "f = [ a | a + 1 ]"
+                "callback (f 2)"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result 3
+        ]
+
+        it "should have an implicit `_it` param if none are declared" [|
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "f = [ _it + 1 ]"
+                "callback (f 2)"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result 3
+        ]
+
+        it "should have no parameters if explicitly declared as such" [|
+            mutable result = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "_it = 0"
+                "f = [ | _it + 1 ]" // should return 0 + 1
+                "callback (f 2)"  // even though we passed 2 as the first param
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result 1
+        ]
+    ]
+
+    describe "inline javascript" [|
+        it "should be able to be used as a statement" [|
             mutable result = undefined
             callback = [ value |
                 mutate result = value
@@ -57,7 +99,7 @@ describe "aletheia-in-aletheia" [
             assert.strictEqual result 5
         ]
 
-        it "should be able to be used in an expression" [
+        it "should be able to be used in an expression" [|
             mutable result = undefined
             callback = [ value |
                 mutate result = value
@@ -70,8 +112,8 @@ describe "aletheia-in-aletheia" [
         ]
     ]
 
-    describe "comments" [
-        it "should ignore comments in parsing" [
+    describe "comments" [|
+        it "should ignore comments in parsing" [|
             prgm = {
                 "// our first program!"
                 "a = 5"
@@ -82,8 +124,8 @@ describe "aletheia-in-aletheia" [
         ]
     ]
 
-    describe "regexes" [
-        it "should parse a simple regex" [
+    describe "regexes" [|
+        it "should parse a simple regex" [|
             prgm = {
                 "callback /hi/"
             }
@@ -91,7 +133,7 @@ describe "aletheia-in-aletheia" [
             exec prgm {callback: nop}
         ]
 
-        it "should parse regexes with modifiers" [
+        it "should parse regexes with modifiers" [|
             prgm = {
                 "callback /hi/g /hi/i /hi/m"
             }
@@ -99,7 +141,7 @@ describe "aletheia-in-aletheia" [
             exec prgm {callback: nop}
         ]
 
-        it "should parse regexes with modifiers" [
+        it "should parse regexes with modifiers" [|
             prgm = {
                 "callback /hi/mig"
             }
@@ -107,7 +149,7 @@ describe "aletheia-in-aletheia" [
             exec prgm {callback: nop}
         ]
 
-        it "should test a simple regex" [
+        it "should test a simple regex" [|
             mutable result = undefined
             callback = [ value |
                 mutate result = value
@@ -120,8 +162,8 @@ describe "aletheia-in-aletheia" [
         ]
     ]
 
-    describe "newlines" [
-        it "should allow multi-line statement continuation inside parens" [
+    describe "newlines" [|
+        it "should allow multi-line statement continuation inside parens" [|
             mutable result = undefined
             callback = [ value |
                 mutate result = value
@@ -135,8 +177,8 @@ describe "aletheia-in-aletheia" [
         ]
     ]
 
-    describe "arrows" [
-        it "should call a function with a single arg" [
+    describe "arrows" [|
+        it "should call a function with a single arg" [|
             mutable result = undefined
             callback = [ value |
                 mutate result = value
@@ -148,7 +190,7 @@ describe "aletheia-in-aletheia" [
             assert.strictEqual result 42
         ]
 
-        it "should call a function with two args" [
+        it "should call a function with two args" [|
             mutable result1 = undefined
             mutable result2 = undefined
             callback = [ value1 value2 |
@@ -163,7 +205,7 @@ describe "aletheia-in-aletheia" [
             assert.strictEqual result2 6
         ]
 
-        it "should call two function with a single arg each" [
+        it "should call two function with a single arg each" [|
             mutable result = undefined
             callback = [ value |
                 mutate result = value
@@ -175,7 +217,7 @@ describe "aletheia-in-aletheia" [
             exec prgm {callback: callback}
             assert.strictEqual result 43
         ]
-        it "should call two function with a single arg each" [
+        it "should call two function with a single arg each" [|
             mutable result = {}
             callback = [ value |
                 result.push value
