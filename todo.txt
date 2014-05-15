@@ -39,7 +39,7 @@ TODO to make a usable syntax
 [x] single line lambdas auto-return
 [x] auto-return lambdas still force you to wrap a single result in parens
 [x] `->` operator
-[ ] implicit `it` parameter (only if used?) and explicit no-arg functions
+[x] implicit `_it` parameter (only if used?) and explicit no-arg functions
 [ ] preamble for
 [ ] return from outer block
 [ ] keywords and/or useable as table keys
@@ -59,6 +59,7 @@ TODO for types
 
 TODO to make everyone happy
 ================
+[ ] better name for implicit `_it`
 [ ] ? operator
 [ ] `<-` operator?
 [ ] what to do about multi-line function calls
