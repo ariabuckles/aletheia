@@ -2,11 +2,7 @@ fs = require "fs"
 path = require "path"
 _  = require "underscore"
 
-parser = require "./parser.js"
-desugar = require "./desugar.js"
-primitivize = require "./primitivize.js"
-rewrite = require "./rewrite-symbols.js"
-compile = require "./code-gen.js"
+compile = require "./compile.js"
 
 this_program_filename = path.basename __filename
 this_program_regex = new RegExp (this_program_filename + "$")
@@ -25,11 +21,7 @@ if (exe_index < 0 or input_file == undefined or output_file == undefined) [
 console.log ("Compiling '" + input_file + "' into '" + output_file + "':")
 
 program = fs.readFileSync input_file {encoding: "utf8"}
-parseTree = parser.parse program
-ast = desugar parseTree
-prim = primitivize ast
-rewritten = rewrite prim
-gen = compile rewritten
+gen = compile program
 code = gen.toString()
 
 fs.writeFileSync output_file code {encoding: "utf8"}
