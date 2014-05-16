@@ -20,8 +20,7 @@
   },
   "devDependencies": {
     "jison": "~0.4.13",
-    "mocha": "~1.18.2",
-    "browserify": "~3.4.0"
+    "mocha": "~1.18.2"
   },
   "dependencies": {
     "underscore": ">=1.4.4",

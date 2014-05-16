@@ -5,9 +5,11 @@ build: build/alc jison copyjs compileal
 install:
 	npm install
 
+MOCHA := ./node_modules/.bin/mocha
+
 .PHONY: test
 test: build
-	mocha -R spec build/*-test.js
+	$(MOCHA) -R spec build/*-test.js
 
 .PHONY: clean
 clean:
