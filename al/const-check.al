@@ -22,7 +22,7 @@ _.extend Context.prototype {
     has: [ varname |
         mutable result = false
         _.each this.scopes [ scope |
-            if (_.has scope varname) [
+            if (scope -> _.has varname) [
                 mutate result = true
             ]
         ]
@@ -42,7 +42,7 @@ _.extend Context.prototype {
     ]
 
     pushScope: [
-        this.scopes.push {}
+        this.scopes.push {=}
     ]
 
     popScope: [
@@ -53,8 +53,7 @@ _.extend Context.prototype {
 
 check = [ node context |
     assert (is_instance context Context) (
-        "Prototype " + (JSON.stringify (Object.getPrototypeOf context)) +
-        " is not a Context"
+        "Not a Context: " + (JSON.stringify context)
     )
 
     res = if (is_instance node SyntaxNode) [
@@ -73,12 +72,11 @@ _.extend check {
     undefined = nop
     boolean = nop
     "table-key" = nop
-    "unit-list" = nop
     "table-access" = nop
-    "unit-list" = nop
     "operation" = nop
     "javascript" = nop
     "regex" = nop
+    "variable" = nop
 
     "statement-list": [ stmts context |
         stmts -> _.each [ stmt |
@@ -104,7 +102,7 @@ _.extend check {
             "ALC: Unrecognized modifier `" + modifier + "`"
         )
 
-        ret if (type == 'variable') [
+        if (type == 'variable') [
             if (modifier == null or modifier == 'mutable') [
                 if (not (context.may_declare left.name)) [
                     throw new SyntaxError (
@@ -124,6 +122,12 @@ _.extend check {
         ] else [
             throw new Error ("ALINTERNAL: Unrecognized lvalue type: " + type)
         ]
+
+        check assign.right context
+    ]
+
+    "unit-list" = [ unitList context |
+        unitList.units -> _.each [ check _it context ]
     ]
 
     // TODO: Declare these variables in the scope, and
@@ -131,13 +135,13 @@ _.extend check {
     lambda: [ lambda context |
         context.pushScope()
         lambda.arguments -> _.each [ arg |
-            if (not (context.may_be_param left.name)) [
+            if (not (context.may_be_param arg.name)) [
                 throw new SyntaxError (
-                    "ALC: Param shadowing `" + left.name + "`" +
+                    "ALC: Param shadowing `" + arg.name + "`" +
                     " not permitted. Use `mutate` to mutate."
                 )
             ] else [
-                context.declare left.name
+                context.declare arg.name
             ]
         ]
         lambda.statements -> _.each [ stmt |
