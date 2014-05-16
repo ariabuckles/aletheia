@@ -1,11 +1,7 @@
 assert = require "assert"
 _ = require "underscore"
 
-parser = require "./parser.js"
-desugar = require "./desugar.js"
-primitivize = require "./primitivize.js"
-rewrite = require "./rewrite-symbols.js"
-compile = require "./code-gen.js"
+compile = require "./compile.js"
 
 exec = [ source context |
     source_str = if (_.isArray source) [
@@ -14,11 +10,7 @@ exec = [ source context |
         ret source
     ]
 
-    parseTree = parser.parse source_str
-    ast = desugar parseTree
-    primitivized = primitivize ast
-    rewritten = rewrite primitivized 
-    gen = compile rewritten
+    gen = compile source_str
     js = gen.toString()
 
     prelude = (_.map context [value key |
@@ -116,9 +108,9 @@ describe "aletheia-in-aletheia" [|
         it "should ignore comments in parsing" [|
             prgm = {
                 "// our first program!"
-                "a = 5"
+                "mutable a = 5"
                 "b = a + a  // or something"
-                "a = b"
+                "mutate a = b"
             }
             exec prgm {:}
         ]
