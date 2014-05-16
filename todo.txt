@@ -44,12 +44,18 @@ TODO to make a usable syntax
 [ ] return from outer block
 [ ] keywords and/or useable as table keys
 
-TODO to make a usable compiler
-[ ] enforce const
+TODO for variables pass[es?]
+[x] add an errors compiler pass
+[x] enforce const
+    [x] enfoce no shadowing outside of `self` and `it`
+    [x] enforce mutable/mutate
+[ ] add tests for const
+[ ] check for undefined variables
+    [ ] make `global` refer to `window` or `global` in a prelude
+    [ ] add `global` as a special variable
+
+TODO misc to make a usable compiler
 [ ] have `if` check for `else` or `if` in incorrect positions
-[ ] add an errors compiler pass
-[ ] enforce mutable/mutate
-[ ] enfoce no shadowing outside of `self` and `it`
 [ ] escape javascript keywords used as variables/table keys
 
 TODO for types
