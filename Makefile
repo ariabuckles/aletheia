@@ -53,9 +53,9 @@ build/parser-generator.js: jison/parser-generator.al
 
 # Al meta-rule
 .PHONY: compileal
-compileal: $(AL_OUTPUT_FILES) $(AL_COMPILER)
+compileal: $(AL_OUTPUT_FILES)
 
-$(AL_OUTPUT_FILES): build/%.js: al/%.al
+$(AL_OUTPUT_FILES): build/%.js: al/%.al $(wildcard ./lib/aletheia/*)
 	@mkdir -p ./build
 	$(AL_COMPILER) $< $@
 
