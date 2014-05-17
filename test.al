@@ -1,4 +1,4 @@
-a = 5
+mutable a = 5
 if true [
-    mutate a = 6
+    a = 6
 ]
