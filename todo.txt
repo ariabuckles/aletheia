@@ -48,7 +48,7 @@ TODO for variables pass[es?]
 [x] add an errors compiler pass
 [x] enforce const
     [x] enfoce no shadowing outside of `self` and `it`
-    [x] enforce mutable/mutate
+    [x] enforce mutate can only be used on mutables
 [ ] add tests for const
 [ ] check for undefined variables
     [ ] make `global` refer to `window` or `global` in a prelude

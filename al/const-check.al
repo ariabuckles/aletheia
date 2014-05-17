@@ -19,33 +19,40 @@ Context = [
     }
 ]
 _.extend Context.prototype {
-    has: [ varname |
+    has = [ varname |
         mutable result = false
         _.each this.scopes [ scope |
             if (scope -> _.has varname) [
-                mutate result = true
+                mutate result = scope@varname
             ]
         ]
         ret result
     ]
 
-    may_declare: [ varname |
-        ret not (this.has varname)
+    may_declare = [ varname |
+        ret ((this.has varname) == false)
     ]
 
-    may_be_param: [ varname |
-        ret (((this.may_declare varname) or MAGIC@varname) == true)
+    may_be_param = [ varname |
+        ret (((this.may_declare varname) or MAGIC@varname) != false)
     ]
 
-    declare: [ varname |
-        mutate (_.last this.scopes)@varname = true
+    may_mutate = [ varname |
+        ret ((this.has varname) == 'mutable')
     ]
 
-    pushScope: [
+    declare = [ modifier varname |
+        actual_modifier = if (not modifier) ['const'] else [modifier]
+        assert actual_modifier
+        assert varname
+        mutate (_.last this.scopes)@varname = actual_modifier
+    ]
+
+    pushScope = [
         this.scopes.push {=}
     ]
 
-    popScope: [
+    popScope = [
         this.scopes.pop()
     ]
 }
@@ -78,7 +85,7 @@ _.extend check {
     "regex" = nop
     "variable" = nop
 
-    "statement-list": [ stmts context |
+    "statement-list" = [ stmts context |
         stmts -> _.each [ stmt |
             check stmt context
         ]
@@ -106,14 +113,22 @@ _.extend check {
             if (modifier == null or modifier == 'mutable') [
                 if (not (context.may_declare left.name)) [
                     throw new SyntaxError (
-                        "ALC: Shadowing `" + left.name + "`" +
-                        " not permitted. Use `mutate` to mutate."
+                        "ALC: Shadowing `" + left.name + "` is " +
+                        "not permitted. Use `mutate` to mutate."
                     )
                 ] else [
-                    context.declare left.name
+                    context.declare modifier left.name
                 ]
             ] (modifier == 'mutate') [
-                nop()
+                if (not (context.may_mutate left.name)) [
+                    declmodifiertype = context.has left.name
+                    throw new SyntaxError (
+                        "ALC: Mutating `" + left.name + "`, which has " +
+                        "modifier `" + declmodifiertype + "` is " +
+                        "not permitted. Declare with `mutable` " +
+                        "to allow mutation."
+                    )
+                ]
             ] else [
                 assert false ("Invalid modifier " + modifier)
             ]
@@ -141,7 +156,7 @@ _.extend check {
                     " not permitted. Use `mutate` to mutate."
                 )
             ] else [
-                context.declare arg.name
+                context.declare 'const' arg.name
             ]
         ]
         lambda.statements -> _.each [ stmt |
