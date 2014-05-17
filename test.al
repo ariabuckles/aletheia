@@ -1,4 +1,4 @@
-mutable a = 5
+mutable a::number = 5
 if true [
-    a = 6
+    mutate a = 6
 ]

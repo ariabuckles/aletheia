@@ -55,6 +55,7 @@ grammar = {
 
             {"=",                   'return "=";'}
             {"\\!",                 'return "!";'}
+            {"\\:\\:",              'return "TYPEDELIM";'}
             {"\\:",                 'return ":";'}
             {"\\.",                 'return "DOT";'}
             {",",                   'return ",";'}
@@ -151,6 +152,7 @@ grammar = {
         }
         "lvalue": {
             {"IDENTIFIER", "$$ = yy.Variable($1);", {prec: "WRAP_EXPR"}}
+            {"IDENTIFIER TYPEDELIM unitExpression", "$$ = yy.Variable($1, $3);", {prec: "WRAP_EXPR"}}
             {"tableaccess", "$$ = $1;"}
         }
         "unitList": {
