@@ -48,7 +48,7 @@ future:
 
 #### Shadowing is an error
 
-    a = 5
+    mutable a = 5
     if true [
         a = 6  // illegal! declaring a new variable
     ]
