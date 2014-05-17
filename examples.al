@@ -252,4 +252,17 @@ this.setState({
     console.log("string")
 ]
 
+{
+    ret = [ hi | bye ]
+    ret: [ hi | bye ]
+}
 
+a = 5
+a: 5
+
+if (a = 5) [
+    int b : 6
+    console.log b:int 
+]
+
+a ++ 5

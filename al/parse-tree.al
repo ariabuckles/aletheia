@@ -55,7 +55,8 @@ ParseTree = {
         ]
         if ((units@0).type != "variable") [
             throw new Error (
-                "Variable assignment may only have a word identifier"
+                "Variable assignment may only have a word identifier. " +
+                "Found `" + (units@0.type) + "`."
             )
         ]
         ret new ParseNode {
@@ -130,10 +131,11 @@ ParseTree = {
         }
     ]
 
-    Variable: [ name |
+    Variable: [ name type |
         ret new ParseNode {
             type: "variable"
             name: name
+            vartype: type
         }
     ]
 
