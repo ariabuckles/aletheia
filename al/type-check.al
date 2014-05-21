@@ -49,7 +49,15 @@ _.extend Context.prototype {
 
     get_type = [ varname |
         vardata = this.get varname
-        ret if vardata [ vardata.exprtype ]
+        ret if (not vardata) [
+            ret 'undeclared'
+        ] (vardata.exprtype) [
+            ret vardata.exprtype
+        ] else [
+            exprtype = get_type vardata.value this
+            mutate vardata.exprtype = exprtype
+            ret exprtype
+        ]
     ]
 
     may_declare = [ varname |
@@ -64,13 +72,13 @@ _.extend Context.prototype {
         ret ((this.get varname).modifier == 'mutable')
     ]
 
-    declare = [ modifier varname exprtype |
+    declare = [ modifier varname value |
         actual_modifier = if (not modifier) ['const'] else [modifier]
         assert actual_modifier
         assert varname
         mutate this.scope@varname = {
             modifier: actual_modifier
-            exprtype: exprtype
+            value: value
             context: this
         }
     ]
@@ -170,7 +178,7 @@ _.extend check {
                         "not permitted. Use `mutate` to mutate."
                     )
                 ] else [
-                    context.declare modifier left.name  // TODO: Get type here
+                    context.declare modifier left.name  assign.right
                 ]
             ] (modifier == 'mutate') [
                 if (not (context.may_mutate left.name)) [
@@ -217,7 +225,7 @@ _.extend check {
                     " not permitted. Use `mutate` to mutate."
                 )
             ] else [
-                innercontext.declare 'const' arg.name
+                innercontext.declare 'const' arg.name '?'
             ]
         ]
 
@@ -230,25 +238,48 @@ _.extend check {
 }
 
 check_program = [ node |
-    global_scope = _.extend (Object.create null) {
-        if: {
-            modifier: 'const'
-            exprtype: '?'
-        }
-        while: {
-            modifier: 'const'
-            exprtype: '?'
-        }
-        global: {
-            modifier 'const'
-            exprtype: '?'
-        }
-    }
     context = new Context { scope: null }
     context.declare 'const' 'global' '?'
     context.declare 'const' 'if' '?'
     context.declare 'const' 'while' '?'
     check@"statement-list" node context
 ]
+
+
+get_type = [ node context |
+    assert (is_instance context Context) (
+        "Not a Context: " + (JSON.stringify context)
+    )
+
+    res = if (is_instance node SyntaxNode) [
+        ret get_type@(node.type) node context
+    ] else [
+        // compile time constant
+        ret get_type@(typeof node) node context
+    ]
+    ret res
+]
+
+
+_.extend get_type {
+    number = [ {'number'} ]
+    string = [ {'string'} ]
+    undefined = [ {'undefined'} ]
+    boolean = [ {'boolean'} ]
+    "operation" = [ op context |
+        left = op.left
+        right = op.right
+        ret _.union (get_type op.left context) (get_type op.right context)
+    ]
+
+    "javascript" = [ '?' ]
+    "regex" = [ '?' ]
+
+    "table-access" = [ '?' ]
+
+    variable = [ variable context | context.get_type variable.name ]
+
+    // TODO: Finish this table
+}
 
 mutate module.exports = check_program
