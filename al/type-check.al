@@ -15,6 +15,7 @@
 
 DEBUG_TYPES = false
 
+SyntaxError = global.SyntaxError
 assert = require "assert"
 
 _ = require "underscore"
@@ -116,6 +117,11 @@ _.extend Context.prototype {
 }
 
 
+LambdaWithContext = [ lambda context |
+    mutate this.lambda = lambda
+    mutate this.context = context
+]
+
 union = [ typeA typeB |
     ret if (typeA == '?' or typeB == '?') [
         ret '?'
@@ -153,6 +159,23 @@ check = [ node context |
 
 nop = [ node | null ]
 
+enqueue_lambdas = [ queue lambda |
+    if (is_instance lambda LambdaWithContext) [
+        queue.push lambda
+    ] (_.isArray lambda) [
+        rlambdas = _.clone(lambda)
+        rlambdas.reverse()
+        _.each rlambdas [ each_lambda |
+            enqueue_lambdas queue each_lambda
+        ]
+    ] else [
+        throw new Error ("ALC-INTERNAL-ERROR: " +
+            "a non-lambda was passed to enqueue_lambdas: " +
+            lambda
+        )
+    ]
+]
+
 _.extend check {
     number = nop
     string = nop
@@ -176,27 +199,36 @@ _.extend check {
     ]
 
     "statement-list" = [ stmts context |
-        lambdas = stmts -> _.map [ stmt |
+        lambdas_with_contexts = stmts -> _.map [ stmt |
             ret check stmt context
         ] -> _.filter _.identity
 
-        lambdas -> _.each [ lambda |
-            check lambda context
+        // Here we make a stack of lambdas
+        // called a queue /sigh
+        mutable queue = {}
+        enqueue_lambdas queue lambdas_with_contexts
+
+        while [ lambdas_with_contexts.length != 0 ] [
+            lambda_with_context = queue.pop()
+            lambda = lambda_with_context.lambda
+            lambda_context = lambda_with_context.context
+            new_lambdas = check lambda lambda_context
+            enqueue_lambdas queue new_lambdas
         ]
 
         ret null
     ]
 
     object = [ obj context |
-        lambdas = obj -> _.map [ value key |
-            ret check value context
+        lambdas_with_contexts = obj -> _.map [ value key |
+            ret if (value.type == 'lambda') [
+                ret new LambdaWithContext value context
+            ] else [
+                ret check value context
+            ]
         ] -> _.filter _.identity
 
-        lambdas -> _.each [ lambda |
-            check lambda context
-        ]
-
-        ret null
+        ret lambdas_with_contexts
     ]
 
     assignment = [ assign context |
@@ -250,7 +282,7 @@ _.extend check {
         )
 
         ret if (assign.right.type == 'lambda') [
-            ret assign.right
+            ret new LambdaWithContext assign.right context
         ] else [
             ret check assign.right context
         ]
@@ -258,7 +290,11 @@ _.extend check {
 
     "unit-list" = [ unitList context |
         lambdas = unitList.units -> _.map [ unit |
-            ret check unit context
+            ret if (unit.type == 'lambda') [
+                ret new LambdaWithContext unit context
+            ] else [
+                ret check unit context
+            ]
         ] -> _.filter _.identity
 
         ret lambdas
@@ -279,11 +315,11 @@ _.extend check {
             ]
         ]
 
-        innerlambdas = lambda.statements -> _.map [ stmt |
+        inner_lambdas_with_contexts = lambda.statements -> _.map [ stmt |
             ret check stmt innercontext
         ] -> _.filter _.identity
 
-        ret null
+        ret inner_lambdas_with_contexts
     ]
 }
 
