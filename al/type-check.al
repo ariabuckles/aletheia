@@ -28,6 +28,8 @@ KEYWORD_VARIABLES = {
     not = true
     undefined = true
     null = true
+    throw = true
+    this = true
 }
 
 MAGIC = {
@@ -57,13 +59,17 @@ _.extend Context.prototype {
 
     get_modifier = [ varname |
         vardata = this.get varname
-        ret if vardata [ vardata.modifier ]
+        ret if vardata [ vardata.modifier ] else [ 'undeclared' ]
     ]
 
     get_type = [ varname |
         vardata = this.get varname
         thisref = this
         ret if (not vardata) [
+            console.warn (
+                "ALC INTERNAL-ERR: Variable `" + varname +
+                "` has not been declared."
+            )
             ret 'undeclared'
         ] else [
             ret if (vardata.exprtype) [
@@ -85,7 +91,7 @@ _.extend Context.prototype {
     ]
 
     may_mutate = [ varname |
-        ret ((this.get varname).modifier == 'mutable')
+        ret ((this.get_modifier varname) == 'mutable')
     ]
 
     declare = [ modifier varname exprtype value |
@@ -277,7 +283,7 @@ _.extend check {
             ret check stmt innercontext
         ] -> _.filter _.identity
 
-        ret innerlambdas
+        ret null
     ]
 }
 
@@ -331,9 +337,30 @@ check_program = [ node external_vars |
     context = new Context { scope: null }
     context.declare 'const' 'true' {'boolean'}
     context.declare 'const' 'false' {'boolean'}
-    context.declare 'const' 'global' '?'
+    context.declare 'const' 'undefined' {'undefined'}
+    context.declare 'const' 'null' {'null'}
+    context.declare 'const' 'not' '?'
+
+    context.declare 'const' 'this' '?'
+
     context.declare 'const' 'if' '?'
+    context.declare 'const' 'else' '?'
     context.declare 'const' 'while' '?'
+    context.declare 'const' 'throw' '?'
+    context.declare 'const' 'new' '?'
+    context.declare 'const' 'delete' '?'
+
+    context.declare 'const' 'global' '?'
+    context.declare 'const' 'require' '?'
+    context.declare 'const' '__filename' '?'
+
+    context.declare 'const' 'Error' '?'
+    context.declare 'const' 'String' '?'
+    context.declare 'const' 'Function' '?'
+    context.declare 'const' 'Object' '?'
+    context.declare 'const' 'Number' '?'
+    context.declare 'const' 'RegExp' '?'
+    
     _.each external_vars [ ext | context.declare 'const' ext '?' ]
     check@"statement-list" node context
 ]

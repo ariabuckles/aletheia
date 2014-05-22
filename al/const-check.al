@@ -1,3 +1,4 @@
+SyntaxError = global.SyntaxError
 assert = require "assert"
 
 _ = require "underscore"

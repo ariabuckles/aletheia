@@ -1,3 +1,6 @@
+describe = global.describe
+it = global.it
+
 assert = require "assert"
 _ = require "underscore"
 
