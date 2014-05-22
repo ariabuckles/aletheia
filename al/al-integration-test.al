@@ -27,7 +27,7 @@ exec = [ source context |
 describe "aletheia-in-aletheia" [|
     describe "function calls" [|
         it "should execute a zero-arg call" [|
-            mutable called = undefined
+            mutable called :: ? = undefined
             callback = [
                 mutate called = true
             ]
@@ -41,7 +41,7 @@ describe "aletheia-in-aletheia" [|
 
     describe "function definitions" [|
         it "should work for a single param function" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
@@ -54,7 +54,7 @@ describe "aletheia-in-aletheia" [|
         ]
 
         it "should have an implicit `_it` param if none are declared" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
@@ -67,7 +67,7 @@ describe "aletheia-in-aletheia" [|
         ]
 
         it "should have no parameters if explicitly declared as such" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
@@ -83,7 +83,7 @@ describe "aletheia-in-aletheia" [|
 
     describe "inline javascript" [|
         it "should be able to be used as a statement" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
@@ -95,7 +95,7 @@ describe "aletheia-in-aletheia" [|
         ]
 
         it "should be able to be used in an expression" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
@@ -124,7 +124,7 @@ describe "aletheia-in-aletheia" [|
             prgm = {
                 "callback /hi/"
             }
-            nop = [it | it]
+            nop = [a | a]
             exec prgm {callback: nop}
         ]
 
@@ -132,7 +132,7 @@ describe "aletheia-in-aletheia" [|
             prgm = {
                 "callback /hi/g /hi/i /hi/m"
             }
-            nop = [it | it]
+            nop = [a | a]
             exec prgm {callback: nop}
         ]
 
@@ -140,12 +140,12 @@ describe "aletheia-in-aletheia" [|
             prgm = {
                 "callback /hi/mig"
             }
-            nop = [it | it]
+            nop = [a | a]
             exec prgm {callback: nop}
         ]
 
         it "should test a simple regex" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
@@ -159,7 +159,7 @@ describe "aletheia-in-aletheia" [|
 
     describe "newlines" [|
         it "should allow multi-line statement continuation inside parens" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
@@ -174,7 +174,7 @@ describe "aletheia-in-aletheia" [|
 
     describe "arrows" [|
         it "should call a function with a single arg" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
@@ -186,8 +186,8 @@ describe "aletheia-in-aletheia" [|
         ]
 
         it "should call a function with two args" [|
-            mutable result1 = undefined
-            mutable result2 = undefined
+            mutable result1 :: ? = undefined
+            mutable result2 :: ? = undefined
             callback = [ value1 value2 |
                 mutate result1 = value1
                 mutate result2 = value2
@@ -201,7 +201,7 @@ describe "aletheia-in-aletheia" [|
         ]
 
         it "should call two function with a single arg each" [|
-            mutable result = undefined
+            mutable result :: ? = undefined
             callback = [ value |
                 mutate result = value
             ]
