@@ -10,7 +10,7 @@ exec = [ source context |
         ret source
     ]
 
-    gen = compile source_str
+    gen = compile source_str (_.keys context)
     js = gen.toString()
 
     prelude = (_.map context [value key |

@@ -3,9 +3,9 @@ checks = {
     require "./type-check.js"
 }
 
-error_check = [ ast |
+error_check = [ ast external_vars |
     checks -> _.map [ check |
-        check ast
+        check ast external_vars
     ]
 ]
 

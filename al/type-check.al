@@ -13,12 +13,22 @@
 // Mutually recursive functions can be resolved by making the type
 // of one of them dynamic.
 
+DEBUG_TYPES = false
+
 assert = require "assert"
 
 _ = require "underscore"
 SyntaxNode = (require "./syntax-tree").SyntaxNode
 
 is_instance = [a A | ret ```a instanceof A```]
+
+KEYWORD_VARIABLES = {
+    ret = true
+    new = true
+    not = true
+    undefined = true
+    null = true
+}
 
 MAGIC = {
     self = true
@@ -39,6 +49,9 @@ _.extend Context.prototype {
     ]
 
     has = [ varname |
+        assert (_.isString varname) (
+            "passed a non string to Context.has: " + varname
+        )
         ret ((this.get varname) != undefined)
     ]
 
@@ -146,10 +159,11 @@ _.extend check {
     "table-access" = nop
 
     "variable" = [ variable context |
-        if (not (context.has variable)) [
+        if ((not KEYWORD_VARIABLES@(variable.name)) and
+                (not (context.has variable.name))) [
             console.warn (
-                "Use of undeclared variable `" +
-                variable + "`."
+                "ALC: WARNING: Use of undeclared variable `" +
+                variable.name + "`."
             )
         ]
         ret null
@@ -280,7 +294,9 @@ get_type = [ node context |
         ret get_type@(typeof node) node context
     ]
 
-    console.log "get_type" res node
+    if DEBUG_TYPES [
+        console.log "get_type" res node
+    ]
 
     ret res
 ]
@@ -301,6 +317,8 @@ _.extend get_type {
 
     "table-access" = [ '?' ]
 
+    "unit-list" = [ '?' ]
+
     variable = [ variable context | context.get_type variable.name ]
 
     object = [ '?' ]
@@ -309,13 +327,14 @@ _.extend get_type {
 }
 
 
-check_program = [ node |
+check_program = [ node external_vars |
     context = new Context { scope: null }
     context.declare 'const' 'true' {'boolean'}
     context.declare 'const' 'false' {'boolean'}
     context.declare 'const' 'global' '?'
     context.declare 'const' 'if' '?'
     context.declare 'const' 'while' '?'
+    _.each external_vars [ ext | context.declare 'const' ext '?' ]
     check@"statement-list" node context
 ]
 
