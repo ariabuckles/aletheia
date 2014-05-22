@@ -208,7 +208,7 @@ _.extend check {
         mutable queue = {}
         enqueue_lambdas queue lambdas_with_contexts
 
-        while [ lambdas_with_contexts.length != 0 ] [
+        while [ queue.length != 0 ] [
             lambda_with_context = queue.pop()
             lambda = lambda_with_context.lambda
             lambda_context = lambda_with_context.context
@@ -253,7 +253,7 @@ _.extend check {
                         "not permitted. Use `mutate` to mutate."
                     )
                 ] else [
-                    context.declare modifier left.name assign.exprtype assign.right
+                    context.declare modifier left.name left.vartype assign.right
                 ]
             ] (modifier == 'mutate') [
                 if (not (context.may_mutate left.name)) [
