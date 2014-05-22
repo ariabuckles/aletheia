@@ -279,6 +279,9 @@ get_type = [ node context |
         // compile time constant
         ret get_type@(typeof node) node context
     ]
+
+    console.log "get_type" res node
+
     ret res
 ]
 
@@ -308,6 +311,8 @@ _.extend get_type {
 
 check_program = [ node |
     context = new Context { scope: null }
+    context.declare 'const' 'true' {'boolean'}
+    context.declare 'const' 'false' {'boolean'}
     context.declare 'const' 'global' '?'
     context.declare 'const' 'if' '?'
     context.declare 'const' 'while' '?'
