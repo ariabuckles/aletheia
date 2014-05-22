@@ -1,6 +1,6 @@
 _ = require "underscore"
 checks = {
-    require "./const-check.js"
+    require "./type-check.js"
 }
 
 error_check = [ ast |

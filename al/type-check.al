@@ -49,14 +49,17 @@ _.extend Context.prototype {
 
     get_type = [ varname |
         vardata = this.get varname
+        thisref = this
         ret if (not vardata) [
             ret 'undeclared'
-        ] (vardata.exprtype) [
-            ret vardata.exprtype
         ] else [
-            exprtype = get_type vardata.value this
-            mutate vardata.exprtype = exprtype
-            ret exprtype
+            ret if (vardata.exprtype) [
+                ret vardata.exprtype
+            ] else [
+                exprtype = get_type vardata.value thisref
+                mutate vardata.exprtype = exprtype
+                ret exprtype
+            ]
         ]
     ]
 
@@ -72,19 +75,20 @@ _.extend Context.prototype {
         ret ((this.get varname).modifier == 'mutable')
     ]
 
-    declare = [ modifier varname value |
+    declare = [ modifier varname exprtype value |
         actual_modifier = if (not modifier) ['const'] else [modifier]
         assert actual_modifier
         assert varname
         mutate this.scope@varname = {
             modifier: actual_modifier
+            exprtype: exprtype
             value: value
             context: this
         }
     ]
 
     pushScope = [
-        ret new Context this.scope
+        ret new Context this
     ]
 
     popScope = [
@@ -93,9 +97,28 @@ _.extend Context.prototype {
 }
 
 
+union = [ typeA typeB |
+    ret if (typeA == '?' or typeB == '?') [
+        ret '?'
+    ] else [
+        ret _.union typeA typeB
+    ]
+]
+
+// TODO: Use real sets to make this faster
+matchtypes = [ vartype exprtype |
+    assert vartype
+    ret if (vartype == '?' or exprtype == '?') [
+        ret true
+    ] else [
+        ret ((_.difference exprtype vartype).length == 0)
+    ]
+]
+
+
 check = [ node context |
     assert (is_instance context Context) (
-        "Not a Context: " + (JSON.stringify context)
+        "Not a Context: " + context
     )
 
     res = if (is_instance node SyntaxNode) [
@@ -178,7 +201,7 @@ _.extend check {
                         "not permitted. Use `mutate` to mutate."
                     )
                 ] else [
-                    context.declare modifier left.name  assign.right
+                    context.declare modifier left.name assign.exprtype assign.right
                 ]
             ] (modifier == 'mutate') [
                 if (not (context.may_mutate left.name)) [
@@ -199,6 +222,13 @@ _.extend check {
             throw new Error ("ALINTERNAL: Unrecognized lvalue type: " + type)
         ]
 
+        vartype = context.get_type left.name
+        righttype = get_type assign.right context
+        assert (matchtypes vartype righttype) (
+            "Type mismatch: `" + left.name + "` of type `" + (JSON.stringify vartype) +
+            "` is incompatible with expression of type `" + (JSON.stringify righttype) + "`."
+        )
+
         ret if (assign.right.type == 'lambda') [
             ret assign.right
         ] else [
@@ -209,7 +239,7 @@ _.extend check {
     "unit-list" = [ unitList context |
         lambdas = unitList.units -> _.map [ unit |
             ret check unit context
-        ] -> filter _.identity
+        ] -> _.filter _.identity
 
         ret lambdas
     ]
@@ -237,18 +267,10 @@ _.extend check {
     ]
 }
 
-check_program = [ node |
-    context = new Context { scope: null }
-    context.declare 'const' 'global' '?'
-    context.declare 'const' 'if' '?'
-    context.declare 'const' 'while' '?'
-    check@"statement-list" node context
-]
-
 
 get_type = [ node context |
     assert (is_instance context Context) (
-        "Not a Context: " + (JSON.stringify context)
+        "Not a Context: " + context
     )
 
     res = if (is_instance node SyntaxNode) [
@@ -260,7 +282,6 @@ get_type = [ node context |
     ret res
 ]
 
-
 _.extend get_type {
     number = [ {'number'} ]
     string = [ {'string'} ]
@@ -269,7 +290,7 @@ _.extend get_type {
     "operation" = [ op context |
         left = op.left
         right = op.right
-        ret _.union (get_type op.left context) (get_type op.right context)
+        ret union (get_type op.left context) (get_type op.right context)
     ]
 
     "javascript" = [ '?' ]
@@ -279,7 +300,18 @@ _.extend get_type {
 
     variable = [ variable context | context.get_type variable.name ]
 
-    // TODO: Finish this table
+    object = [ '?' ]
+
+    lambda = [ '?' ]
 }
+
+
+check_program = [ node |
+    context = new Context { scope: null }
+    context.declare 'const' 'global' '?'
+    context.declare 'const' 'if' '?'
+    context.declare 'const' 'while' '?'
+    check@"statement-list" node context
+]
 
 mutate module.exports = check_program
