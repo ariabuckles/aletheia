@@ -1,5 +1,5 @@
 it "should execute a zero-arg call" [|
-    mutable called = undefined
+    mutable called :: ? = undefined
     callback = [
         mutate called = true
     ]
