@@ -23,6 +23,15 @@ SyntaxNode = (require "./syntax-tree").SyntaxNode
 
 is_instance = [a A | ret ```a instanceof A```]
 
+mapObject = [ obj func |
+    mutable result = {:}
+    _.each obj [ value key |
+        mutate result@key = func value
+    ]
+    ret result
+]
+
+
 KEYWORD_VARIABLES = {
     ret = true
     new = true
@@ -130,13 +139,20 @@ union = [ typeA typeB |
     ]
 ]
 
+subtypein = [ subtype exprtype |
+    ret _.any exprtype [ subexprtype | _.isEqual subexprtype subtype ]
+]
+
 // TODO: Use real sets to make this faster
 matchtypes = [ vartype exprtype |
     assert vartype
     ret if (vartype == '?' or exprtype == '?') [
         ret true
     ] else [
-        ret ((_.difference exprtype vartype).length == 0)
+        result = _.all exprtype [ subexprtype |
+            ret subtypein subexprtype vartype
+        ]
+        ret result
     ]
 ]
 
@@ -363,7 +379,13 @@ _.extend get_type {
 
     variable = [ variable context | context.get_type variable.name ]
 
-    object = [ '?' ]
+    object = [ obj context |
+        ret if (obj == null) [
+            ret 'null'
+        ] else [
+            ret mapObject obj [ val | get_type val context ]
+        ]
+    ]
 
     lambda = [ '?' ]
 }
