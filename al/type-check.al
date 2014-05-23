@@ -290,12 +290,16 @@ _.extend check {
             throw new Error ("ALINTERNAL: Unrecognized lvalue type: " + type)
         ]
 
-        vartype = context.get_type left.name
-        righttype = get_type assign.right context
-        assert (matchtypes vartype righttype) (
-            "Type mismatch: `" + left.name + "` of type `" + (JSON.stringify vartype) +
-            "` is incompatible with expression of type `" + (JSON.stringify righttype) + "`."
-        )
+        if (type == 'variable') [  // disable type checking on table access for now; it's
+                                   // harder since we can't escape with `:: ?` yet
+            vartype = context.get_type left.name
+            righttype = get_type assign.right context
+            assert (matchtypes vartype righttype) (
+                "Type mismatch: `" + left.name + "` of type `" + (JSON.stringify vartype) +
+                "` is incompatible with expression of type `" + (JSON.stringify righttype) + "`." +
+                "assignment: " + (JSON.stringify assign)
+            )
+        ]
 
         ret if (assign.right.type == 'lambda') [
             ret new LambdaWithContext assign.right context
