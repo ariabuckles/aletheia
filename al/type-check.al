@@ -381,9 +381,9 @@ _.extend get_type {
 
     object = [ obj context |
         ret if (obj == null) [
-            ret 'null'
+            ret {'null'}
         ] else [
-            ret mapObject obj [ val | get_type val context ]
+            ret { mapObject obj [ val | get_type val context ] }
         ]
     ]
 
