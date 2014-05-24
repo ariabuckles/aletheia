@@ -201,7 +201,6 @@ _.extend check {
     "operation" = nop
     "javascript" = nop
     "regex" = nop
-    "table-access" = nop
 
     "variable" = [ variable context |
         if ((not KEYWORD_VARIABLES@(variable.name)) and
@@ -290,6 +289,12 @@ _.extend check {
             throw new Error ("ALINTERNAL: Unrecognized lvalue type: " + type)
         ]
 
+        right_side_lambdas = if (assign.right.type == 'lambda') [
+            ret new LambdaWithContext assign.right context
+        ] else [
+            ret check assign.right context
+        ]
+        
         if (type == 'variable') [  // disable type checking on table access for now; it's
                                    // harder since we can't escape with `:: ?` yet
             vartype = context.get_type left.name
@@ -301,11 +306,7 @@ _.extend check {
             )
         ]
 
-        ret if (assign.right.type == 'lambda') [
-            ret new LambdaWithContext assign.right context
-        ] else [
-            ret check assign.right context
-        ]
+        ret right_side_lambdas
     ]
 
     "unit-list" = [ unitList context |
@@ -340,6 +341,42 @@ _.extend check {
         ] -> _.filter _.identity
 
         ret inner_lambdas_with_contexts
+    ]
+
+    "table-access" = [ table_access context |
+        lambdas = check table_access.table context
+
+        key = table_access.key
+
+        if ((typeof key) != 'string') [
+            // TODO: Return the lambdas here; we're currently skipping
+            // type-checking them!!
+            check key context
+        ] else [
+            table_type = get_type table_access.table context
+            table_access_type = get_type table_access context
+
+            if (table_access_type == undefined) [
+                throw new Error (
+                    "Table of type `" +
+                    (JSON.stringify table_type) +
+                    "` does not have " +
+                    "a type for key `" + key + "`. "
+                )
+            ] else [
+                if (table_access_type == '?') [
+                    nop()
+                ] (table_access_type.length == 0) [
+                    throw new SyntaxError (
+                        "Table `" + (JSON.stringify table_access.table) +
+                        "` is of type empty-set, which is impossible to " +
+                        "access, but it was accessed."
+                    )
+                ]
+            ]
+        ]
+
+        ret lambdas
     ]
 }
 
@@ -377,7 +414,27 @@ _.extend get_type {
     "javascript" = [ '?' ]
     "regex" = [ '?' ]
 
-    "table-access" = [ '?' ]
+    "table-access" = [ table_access context |
+        key = table_access.key
+        ret if ((typeof key) != 'string') [
+            ret '?'
+        ] else [
+            table_type = get_type table_access.table context
+            ret if (table_type == '?') [
+                ret '?'
+            ] (table_type.length > 1) [
+                ret '?'  // give up on multi-typed tables
+            ] (table_type.length == 0) [
+                ret {}
+            ] else [
+                single_table_type = table_type@0
+                property_type = single_table_type@key
+                console.log "single_table_type" single_table_type
+                console.log "property_type" property_type
+                ret property_type
+            ]
+        ]
+    ]
 
     "unit-list" = [ '?' ]
 

@@ -62,6 +62,10 @@ TODO for types
 [ ] recognize type annotations in the grammar
 [ ] write a type theorem prover
 [x] add a type checker as a compiler pass
+[ ] we seem to be running `check` twice on
+        mutable a = {a: 5, b: 7}
+        mutable b = 1
+        mutate b = a.a
 
 TODO to make everyone happy
 ================
