@@ -144,15 +144,25 @@ subtypein = [ subtype exprtype |
 ]
 
 // TODO: Use real sets to make this faster
-matchtypes = [ vartype exprtype |
+// Returns true if exprtype < vartype (exprtype is convertible to vartype)
+matchtypes = [ exprtype vartype |
     assert vartype
     ret if (vartype == '?' or exprtype == '?') [
         ret true
+
+    ] (_.isArray exprtype) [
+        ret _.all exprtype [ subexprtype | matchtypes subexprtype vartype ]
+
+    ] (_.isArray vartype) [
+        ret _.any vartype [ subvartype | matchtypes exprtype subvartype ]
+    
+    ] (_.isObject exprtype) [
+        ret ((_.isObject vartype) and (_.all (_.keys exprtype) [ key |
+            ret matchtypes exprtype@key vartype@key
+        ]))
+
     ] else [
-        result = _.all exprtype [ subexprtype |
-            ret subtypein subexprtype vartype
-        ]
-        ret result
+        ret _.isEqual exprtype vartype
     ]
 ]
 
@@ -299,7 +309,7 @@ _.extend check {
                                    // harder since we can't escape with `:: ?` yet
             vartype = context.get_type left.name
             righttype = get_type assign.right context
-            assert (matchtypes vartype righttype) (
+            assert (matchtypes righttype vartype) (
                 "Type mismatch: `" + left.name + "` of type `" + (JSON.stringify vartype) +
                 "` is incompatible with expression of type `" + (JSON.stringify righttype) + "`." +
                 "assignment: " + (JSON.stringify assign)
