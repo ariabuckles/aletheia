@@ -1,2 +1,3 @@
-mutable a = {a: 5, b: 7}
-mutate a = {a: 6, c: 8}
+mutable a = {a: 5, b: true}
+mutable b = 1
+mutate b = a.b
