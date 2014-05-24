@@ -152,7 +152,7 @@ grammar = {
             {"JAVASCRIPT", "$$ = yy.Javascript($1.slice(3, -3));"}
         }
         "lvalue": {
-            {"IDENTIFIER", "$$ = yy.Variable($1);", {prec: "WRAP_EXPR"}}
+            {"IDENTIFIER", "$$ = yy.Variable($1, null);", {prec: "WRAP_EXPR"}}
             {"IDENTIFIER TYPEDELIM unitExpression", "$$ = yy.Variable($1, $3);", {prec: "WRAP_EXPR"}}
             {"IDENTIFIER TYPEDELIM ?", "$$ = yy.Variable($1, $3);", {prec: "WRAP_EXPR"}}
             {"tableaccess", "$$ = $1;"}
@@ -208,11 +208,11 @@ grammar = {
             {"tableNameLiteral = expression", "$$ = yy.Field($1, $3);"}
         }
         "function": {
-            {"[ statement ]", "$$ = yy.RetLambda([yy.Variable('_it')], $2);"}
+            {"[ statement ]", "$$ = yy.RetLambda([yy.Variable('_it', null)], $2);"}
             {"[ | statement ]", "$$ = yy.RetLambda([], $3);"}
             {"[ unitList | statement ]", "$$ = yy.RetLambda($2.units, $4);"}
             {"[ unitExpression | statement ]", "$$ = yy.RetLambda([$2], $4);"}
-            {"[ separator statementListBody separator ]", "$$ = yy.Lambda([yy.Variable('_it')], $3);"}
+            {"[ separator statementListBody separator ]", "$$ = yy.Lambda([yy.Variable('_it', null)], $3);"}
             {"[ | separator statementListBody separator ]", "$$ = yy.Lambda([], $4);"}
             {"[ unitList | separator statementListBody separator ]", "$$ = yy.Lambda($2.units, $5);"}
             {"[ unitExpression | separator statementListBody separator ]", "$$ = yy.Lambda([$2], $5);"}
