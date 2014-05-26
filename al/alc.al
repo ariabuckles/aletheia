@@ -8,7 +8,7 @@ repl = require "./repl"
 this_program_filename = path.basename __filename
 this_program_regex = new RegExp (this_program_filename + "$")
 exe_index = _.indexOf (_.map process.argv [ arg |
-    ret this_program_regex.test(arg)
+    ret this_program_regex.test arg
 ]) true
 input_file = process.argv @ (exe_index + 1)
 output_file = process.argv @ (exe_index + 2)
