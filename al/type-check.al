@@ -42,6 +42,31 @@ KEYWORD_VARIABLES = {
     this = true
 }
 
+ArrayType = {{
+    length: 'number'
+    concat: '?'
+    every: '?'
+    filter: '?'
+    forEach: '?'
+    indexOf: '?'
+    join: '?'
+    lastIndexOf: '?'
+    map: '?'
+    pop: '?'
+    push: '?'
+    reduce: '?'
+    reduceRight: '?'
+    reverse: '?'
+    shift: '?'
+    slice: '?'
+    some: '?'
+    sort: '?'
+    splice: '?'
+    toLocaleString: '?'
+    toString: '?'
+    unshift: '?'
+}}
+
 MAGIC = {
     self = true
     this = true
@@ -453,6 +478,8 @@ _.extend get_type {
     object = [ obj context |
         ret if (obj == null) [
             ret {'null'}
+        ] (_.isArray obj) [
+            ret ArrayType
         ] else [
             ret { mapObject obj [ val | get_type val context ] }
         ]
