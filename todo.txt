@@ -66,6 +66,7 @@ TODO for types
         mutable a = {a: 5, b: 7}
         mutable b = 1
         mutate b = a.a
+[ ] fix bug where it thinks lots of things are undefined (or is console...?)
 
 TODO to make everyone happy
 ================
