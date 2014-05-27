@@ -464,8 +464,6 @@ _.extend get_type {
             ] else [
                 single_table_type = table_type@0
                 property_type = single_table_type@key
-                console.log "single_table_type" single_table_type
-                console.log "property_type" property_type
                 ret property_type
             ]
         ]
