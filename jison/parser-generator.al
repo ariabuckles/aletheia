@@ -4,6 +4,11 @@
 fs = require "fs"
 path = require "path"
 jison = require "jison"
+
+process = global.process
+
+PARSER_DEBUG_MODE = false
+
 outputFile = [ args |
     index = (args.indexOf "-o") + 1
     if (index == 0 or index == args.length) [
@@ -238,7 +243,7 @@ grammar = {
 }
 
 prelude = ""
-parser = (new jison.Parser grammar {debug: true}).generate {moduleType: "js"}
+parser = (new jison.Parser grammar {debug: PARSER_DEBUG_MODE}).generate {moduleType: "js"}
 postlude = "\n\nparser.yy = require('./parse-tree.js');\nmodule.exports = parser;\n"
 
 fs.writeFileSync outputFile (prelude + parser + postlude)

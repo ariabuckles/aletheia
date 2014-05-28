@@ -15,6 +15,7 @@
 
 DEBUG_TYPES = false
 
+console = global.console
 SyntaxError = global.SyntaxError
 assert = require "assert"
 
@@ -503,9 +504,11 @@ check_program = [ node external_vars |
     context.declare 'const' 'throw' '?'
     context.declare 'const' 'new' '?'
     context.declare 'const' 'delete' '?'
+    context.declare 'const' 'typeof' '?'
 
     context.declare 'const' 'global' '?'
     context.declare 'const' 'require' '?'
+    context.declare 'const' 'module' '?'
     context.declare 'const' '__filename' '?'
 
     context.declare 'const' 'Error' '?'

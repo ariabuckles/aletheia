@@ -5,6 +5,9 @@ _  = require "underscore"
 compile = require "./compile"
 repl = require "./repl"
 
+console = global.console
+process = global.process
+
 this_program_filename = path.basename __filename
 this_program_regex = new RegExp (this_program_filename + "$")
 exe_index = _.indexOf (_.map process.argv [ arg |

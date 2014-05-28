@@ -50,7 +50,7 @@ TODO for variables pass[es?]
     [x] enfoce no shadowing outside of `self` and `it`
     [x] enforce mutate can only be used on mutables
 [ ] add tests for const
-[ ] check for undefined variables
+[x] check for undefined variables
     [ ] make `global` refer to `window` or `global` in a prelude
     [x] add `global` as a special variable
 
@@ -66,7 +66,7 @@ TODO for types
         mutable a = {a: 5, b: 7}
         mutable b = 1
         mutate b = a.a
-[ ] fix bug where it thinks lots of things are undefined (or is console...?)
+[x] fix bug where it thinks lots of things are undefined (or is console...?)
 
 TODO to make everyone happy
 ================
