@@ -67,9 +67,11 @@ TODO for types
         mutable b = 1
         mutate b = a.a
 [x] fix bug where it thinks lots of things are undefined (or is console...?)
+[ ] enforce using mutate to modify a table variable, so we don't get `var module.exports = {}` in js
 
 TODO to make everyone happy
 ================
+[ ] export function to set module.exports
 [ ] better name for implicit `_it`
 [ ] ? operator
 [ ] `<-` operator?
