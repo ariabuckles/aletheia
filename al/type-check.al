@@ -241,8 +241,8 @@ _.extend check {
     "variable" = [ variable context |
         if ((not KEYWORD_VARIABLES@(variable.name)) and
                 (not (context.has variable.name))) [
-            console.warn (
-                "ALC: WARNING: Use of undeclared variable `" +
+            throw new SyntaxError (
+                "ALC: Use of undeclared variable `" +
                 variable.name + "`."
             )
         ]
