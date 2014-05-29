@@ -4,25 +4,7 @@ it = global.it
 assert = require "assert"
 _ = require "underscore"
 
-compile = require "./compile.js"
-
-exec = [ source context |
-    source_str = if (_.isArray source) [
-        ret source.join "\n"
-    ] else [
-        ret source
-    ]
-
-    gen = compile source_str (_.keys context)
-    js = gen.toString()
-
-    prelude = (_.map context [value key |
-        ret ("var " + key + " = context." + key + ";\n")
-    ]).join ""
-
-    jsFunc = new Function "context" (prelude + js)
-    jsFunc context
-]
+exec = require "./exec-for-testing"
 
 describe "aletheia-in-aletheia" [|
     describe "function calls" [|
