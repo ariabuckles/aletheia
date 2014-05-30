@@ -335,11 +335,18 @@ _.extend check {
                                    // harder since we can't escape with `:: ?` yet
             vartype = context.get_type left.name
             righttype = get_type assign.right context
-            assert (matchtypes righttype vartype) (
-                "Type mismatch: `" + left.name + "` of type `" + (JSON.stringify vartype) +
-                "` is incompatible with expression of type `" + (JSON.stringify righttype) + "`." +
-                "assignment: " + (JSON.stringify assign)
-            )
+            if (not (matchtypes righttype vartype)) [
+                throw new SyntaxError (
+                    "Type mismatch: `" +
+                    left.name +
+                    "` of type `" +
+                    (JSON.stringify vartype) +
+                    "` is incompatible with expression of type `" +
+                    (JSON.stringify righttype) + "`." +
+                    "assignment: " +
+                    (JSON.stringify assign)
+                )
+            ]
         ]
 
         ret right_side_lambdas

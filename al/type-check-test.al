@@ -34,5 +34,32 @@ describe "type checking" [|
                 }
             ]
         ]
+
+        it "should allow mutating a variable with the same type" [|
+            assert.doesNotThrow [
+                compile {
+                    "mutable a = 5"
+                    "mutate a = 6"
+                }
+            ]
+        ]
+
+        it "should not allow mutating a variable with an incompatible type" [|
+            assert.throws [
+                compile {
+                    "mutable a = 5"
+                    "mutate a = true"
+                }
+            ] SyntaxError
+        ]
+
+        it "should allow mutating a ? type variable to any type" [|
+            assert.doesNotThrow [
+                compile {
+                    "mutable a :: ? = 5"
+                    "mutate a = true"
+                }
+            ]
+        ]
     ]
 ]
