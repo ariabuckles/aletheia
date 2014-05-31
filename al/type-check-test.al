@@ -61,5 +61,23 @@ describe "type checking" [|
                 }
             ]
         ]
+
+        it "should allow mutating a table field to a compatible value" [|
+            assert.doesNotThrow [
+                compile {
+                    "mutable t = {a: 5, b: 6}"
+                    "mutate t.a = t.b"
+                }
+            ]
+        ]
+
+        it "should not allow mutating a table field to an incompatible value" [|
+            assert.throws [
+                compile {
+                    "mutable t = {a: 5, b: 6}"
+                    "mutate t.a = true"
+                }
+            ]
+        ]
     ]
 ]
