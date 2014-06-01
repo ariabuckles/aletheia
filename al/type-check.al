@@ -296,6 +296,7 @@ _.extend check {
             "ALC: Unrecognized modifier `" + modifier + "`"
         )
 
+        // Checking for undefined, etc.
         if (type == 'variable') [
             if (modifier == null or modifier == 'mutable') [
                 if (not (context.may_declare left.name)) [
@@ -320,7 +321,7 @@ _.extend check {
                 assert false ("Invalid modifier " + modifier)
             ]
         ] (type == 'table-access') [
-            nop()  // TODO: Remove the necessity of an empty nop here?
+            nop()  // TODO: Make it so nop() isn't required here
         ] else [
             throw new Error ("ALINTERNAL: Unrecognized lvalue type: " + type)
         ]
@@ -331,8 +332,8 @@ _.extend check {
             ret check assign.right context
         ]
         
-        if (type == 'variable') [  // disable type checking on table access for now; it's
-                                   // harder since we can't escape with `:: ?` yet
+        // Checking types
+        if (type == 'variable') [
             vartype = context.get_type left.name
             righttype = get_type assign.right context
             if (not (matchtypes righttype vartype)) [
@@ -346,6 +347,37 @@ _.extend check {
                     "assignment: " +
                     (JSON.stringify assign)
                 )
+            ]
+        ] (type == 'table-access') [
+            key = left.key
+            if ((typeof key) == 'string') [
+                table_type = get_type left.table context
+                ret if (table_type == '?') [
+                    nop() // give up
+                ] (table_type.length > 1) [
+                    nop() // also give up
+                ] (table_type.length == 0) [
+                    throw new SyntaxError (
+                        "ALC: Mutating table key `" + key + "` which has " +
+                        "type empty-set, is impossible."
+                    )
+                ] else [
+                    single_table_type = table_type@0
+                    property_type = single_table_type@key
+                    righttype = get_type assign.right context
+                    if (not (matchtypes property_type righttype)) [
+                        throw new SyntaxError (
+                            "Type mismatch: table key `" +
+                            key +
+                            "` of type `" +
+                            (JSON.stringify property_type) +
+                            "` is incompatible with expression of type `" +
+                            (JSON.stringify righttype) + "`." +
+                            "assignment: " +
+                            (JSON.stringify assign)
+                        )
+                    ]
+                ]
             ]
         ]
 
