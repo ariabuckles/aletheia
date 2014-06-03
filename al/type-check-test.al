@@ -93,6 +93,24 @@ describe "type checking" [|
             ] SyntaxError
         ]
 
+        it "an object with more keys should be assignable to a fewer-keyed variable" [|
+            assert.doesNotThrow [
+                compile {
+                    "mutable t = {a: 1}"
+                    "mutate t = {a: 2, b: 3}"
+                }
+            ]
+        ]
+
+        it "an object with fewer keys should not be assignable to a more-keyed variable" [|
+            assert.throws [
+                compile {
+                    "mutable t = {a: 1, b: 2}"
+                    "mutate t = {a: 3}"
+                }
+            ] SyntaxError
+        ]
+
         it "an array and an object should be incompatible types" [|
             assert.throws [
                 compile {
