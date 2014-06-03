@@ -172,8 +172,21 @@ subtypein = [ subtype exprtype |
 // TODO: Use real sets to make this faster
 // Returns true if exprtype < vartype (exprtype is convertible to vartype)
 matchtypes = [ exprtype vartype |
-    assert vartype
-    ret if (vartype == '?' or exprtype == '?') [
+    ret if (vartype == undefined) [
+        assert false (
+            "adding an unspecified key to a var doesn't need to " +
+            "check the assignment... (this is safe to remove, but " +
+            "if you hit it, your understanding of this code needs " +
+            "improvement."
+        )
+        // Adding an unspecified key to a variable through object assignment
+        ret true
+
+    ] (exprtype == undefined) [
+        // Variable requires a key that is not present on the expression
+        ret false
+
+    ] (vartype == '?' or exprtype == '?') [
         ret true
 
     ] (_.isArray exprtype) [
@@ -183,9 +196,20 @@ matchtypes = [ exprtype vartype |
         ret _.any vartype [ subvartype | matchtypes exprtype subvartype ]
     
     ] (_.isObject exprtype) [
-        ret ((_.isObject vartype) and (_.all (_.keys exprtype) [ key |
-            ret matchtypes exprtype@key vartype@key
-        ]))
+        varIsArray = _.isEqual vartype ArrayType@0  // TODO: remove the @0 ugliness
+        exprIsArray = _.isEqual exprtype ArrayType@0
+        ret if (varIsArray or exprIsArray) [
+            // Treat arrays specially for now; they are incompatible with
+            // objects unless forced, since you probably don't want to assign
+            // an array to a normal map-type object.
+            //
+            // TODO: Re-evaluate whether this is the right decision
+            ret (varIsArray and exprIsArray)
+        ] else [
+            ret ((_.isObject vartype) and (_.all (_.keys vartype) [ key |
+                ret matchtypes exprtype@key vartype@key
+            ]))
+        ]
 
     ] else [
         ret _.isEqual exprtype vartype
