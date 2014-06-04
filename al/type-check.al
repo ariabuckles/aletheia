@@ -580,7 +580,33 @@ _.extend get_type {
         ]
     ]
 
-    "unit-list" = [ '?' ]
+    "unit-list" = [ unit_list context |
+        func = unit_list@0
+        func_type = context.get_type func
+        ret if (func_type == '?') [
+            ret '?'
+        ] (_.isArray func_type) [
+            ret if (func_type.length == 0) [
+                console.warn (
+                    "ALC: INTERNAL: Calling an empty-set type: `" +
+                    (JSON.stringify func) +
+                    "`."
+                )
+                ret '?'
+            ] (func_type.length > 1) [
+                ret '?'
+            ] else [
+                ret (func_type@0).resultType
+            ]
+        ] else [
+            console.warn (
+                "ALC: INTERNAL: Calling a non-function: `" +
+                (JSON.stringify func) +
+                "`."
+            )
+            ret '?'
+        ]
+    ]
 
     variable = [ variable context | context.get_type variable.name ]
 
