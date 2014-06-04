@@ -17,6 +17,7 @@ DEBUG_TYPES = false
 
 console = global.console
 SyntaxError = global.SyntaxError
+Math = global.Math
 assert = require "assert"
 
 _ = require "underscore"
@@ -42,6 +43,37 @@ KEYWORD_VARIABLES = {
     throw = true
     this = true
 }
+
+FunctionType = [ argTypes resultType |
+    self = this
+    ret if (not is_instance self FunctionType) [
+        ret new FunctionType argTypes resultType
+    ] else [
+        assert (_.isArray argTypes)
+        assert resultType
+        mutate self.argTypes = argTypes
+        mutate self.resultType = resultType
+        ret self
+    ]
+]
+
+randLetter = [|
+    letters = "abcdefghijklmnopqrstuvwxyz"
+    index = Math.floor (Math.random() * letters.length)
+    ret letters@index
+]
+
+randGenericName = [ _.uniqueId randLetter() ]
+
+Generic = [|
+    self = this
+    ret if (not is_instance self Generic) [
+        ret new Generic()
+    ] else [
+        mutate self.name = randGenericName()
+        ret self
+    ]
+]
 
 ArrayType = {{
     length: 'number'
@@ -195,7 +227,22 @@ matchtypes = [ exprtype vartype |
     ] (_.isArray vartype) [
         ret _.any vartype [ subvartype | matchtypes exprtype subvartype ]
     
-    ] (_.isObject exprtype) [
+    ] (is_instance vartype FunctionType) [
+        ret if (is_instance exprtype FunctionType) [
+            argsMatch = _.all vartype.argTypes [ varArgType i |
+                exprArgType = exprtype.argTypes@i
+                ret ((exprArgType == undefined) or (
+                    (varArgType != undefined)
+                    and
+                    (matchtypes exprArgType varArgType)
+                ))
+            ]
+            resultMatches = matchtypes exprtype.resultType vartype.resultType
+            ret (argsMatch and resultMatches)
+        ] else [
+            ret false
+        ]
+    ] (_.isObject vartype) [
         varIsArray = _.isEqual vartype ArrayType@0  // TODO: remove the @0 ugliness
         exprIsArray = _.isEqual exprtype ArrayType@0
         ret if (varIsArray or exprIsArray) [
@@ -206,7 +253,7 @@ matchtypes = [ exprtype vartype |
             // TODO: Re-evaluate whether this is the right decision
             ret (varIsArray and exprIsArray)
         ] else [
-            ret ((_.isObject vartype) and (_.all (_.keys vartype) [ key |
+            ret ((_.isObject exprtype) and (_.all (_.keys vartype) [ key |
                 ret matchtypes exprtype@key vartype@key
             ]))
         ]
@@ -557,7 +604,7 @@ check_program = [ node external_vars |
     context.declare 'const' 'false' {'boolean'}
     context.declare 'const' 'undefined' {'undefined'}
     context.declare 'const' 'null' {'null'}
-    context.declare 'const' 'not' '?'
+    context.declare 'const' 'not' (FunctionType {{'boolean'}} {'boolean'})
 
     context.declare 'const' 'this' '?'
 
