@@ -57,6 +57,7 @@ TODO for variables pass[es?]
 TODO misc to make a usable compiler
 [ ] have `if` check for `else` or `if` in incorrect positions
 [ ] escape javascript keywords used as variables/table keys
+[ ] change the syntax to look more like swift
 
 TODO for types
 [ ] recognize type annotations in the grammar
@@ -68,6 +69,8 @@ TODO for types
         mutate b = a.a
 [x] fix bug where it thinks lots of things are undefined (or is console...?)
 [ ] enforce using mutate to modify a table variable, so we don't get `var module.exports = {}` in js
+[ ] type inference on functions
+[ ] figure out type declarations
 
 TODO to make everyone happy
 ================
