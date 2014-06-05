@@ -13,7 +13,7 @@
 // Mutually recursive functions can be resolved by making the type
 // of one of them dynamic.
 
-DEBUG_TYPES = false
+DEBUG_TYPES = true
 
 console = global.console
 SyntaxError = global.SyntaxError
@@ -131,6 +131,7 @@ _.extend Context.prototype {
     ]
 
     get_type = [ varname |
+        assert (_.isString varname) ("varname is not a string: " + varname)
         vardata = this.get varname
         thisref = this
         ret if (not vardata) [
@@ -141,10 +142,13 @@ _.extend Context.prototype {
             ret 'undeclared'
         ] else [
             ret if (vardata.exprtype) [
+                console.log "cached type" varname vardata.exprtype
                 ret vardata.exprtype
             ] else [
                 exprtype = get_type vardata.value thisref
+                assert (exprtype == '?' or ((typeof exprtype) == 'object'))
                 mutate vardata.exprtype = exprtype
+                console.log "inferred" varname exprtype
                 ret exprtype
             ]
         ]
@@ -369,7 +373,7 @@ _.extend check {
 
         // Checking for undefined, etc.
         if (type == 'variable') [
-            if (modifier == null or modifier == 'mutable') [
+            if (modifier == null or modifier == 'const' or modifier == 'mutable') [
                 if (not (context.may_declare left.name)) [
                     throw new SyntaxError (
                         "ALC: Shadowing `" + left.name + "` is " +
@@ -405,19 +409,29 @@ _.extend check {
         
         // Checking types
         if (type == 'variable') [
-            vartype = context.get_type left.name
-            righttype = get_type assign.right context
-            if (not (matchtypes righttype vartype)) [
-                throw new SyntaxError (
-                    "Type mismatch: `" +
-                    left.name +
-                    "` of type `" +
-                    (JSON.stringify vartype) +
-                    "` is incompatible with expression of type `" +
-                    (JSON.stringify righttype) + "`." +
-                    "assignment: " +
-                    (JSON.stringify assign)
-                )
+            if (modifier == null or modifier == 'const' or modifier == 'mutable') [
+                // force evaluation of the variable's type
+                // TODO: Maybe we don't need to do this here
+                vartype = context.get_type left.name
+                assert (vartype != undefined)
+            ] (modifier == 'mutate') [
+                vartype = context.get_type left.name
+                righttype = get_type assign.right context
+                console.log "check var" vartype left.name assign.right
+                if (not (matchtypes righttype vartype)) [
+                    throw new SyntaxError (
+                        "Type mismatch: `" +
+                        left.name +
+                        "` of type `" +
+                        (JSON.stringify vartype) +
+                        "` is incompatible with expression of type `" +
+                        (JSON.stringify righttype) + "`." +
+                        "assignment: " +
+                        (JSON.stringify assign)
+                    )
+                ]
+            ] else [
+                assert false ("Invalid modifier " + modifier)
             ]
         ] (type == 'table-access') [
             key = left.key
@@ -542,6 +556,7 @@ get_type = [ node context |
     if DEBUG_TYPES [
         console.log "get_type" res node
     ]
+    assert (res != undefined)
 
     ret res
 ]
@@ -581,9 +596,9 @@ _.extend get_type {
     ]
 
     "unit-list" = [ unit_list context |
-        func = unit_list@0
-        func_type = context.get_type func
-        ret if (func_type == '?') [
+        func = unit_list.units@0
+        func_type = get_type func context
+        res = if (func_type == '?') [
             ret '?'
         ] (_.isArray func_type) [
             ret if (func_type.length == 0) [
@@ -596,7 +611,17 @@ _.extend get_type {
             ] (func_type.length > 1) [
                 ret '?'
             ] else [
-                ret (func_type@0).resultType
+                assert (func_type@0 != undefined)
+                assert (is_instance func_type@0 FunctionType) (
+                    "function is not a FunctionType: " +
+                    (JSON.stringify func_type@0)
+                )
+                func_result_type = (func_type@0).resultType
+                assert (func_result_type != undefined) (
+                    "no result defined for FunctionType: " +
+                    (JSON.stringify func_type@0)
+                )
+                ret func_result_type
             ]
         ] else [
             console.warn (
@@ -606,6 +631,8 @@ _.extend get_type {
             )
             ret '?'
         ]
+        assert (res != undefined)
+        ret res
     ]
 
     variable = [ variable context | context.get_type variable.name ]
