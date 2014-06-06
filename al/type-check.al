@@ -139,7 +139,8 @@ _.extend Context.prototype {
                 "ALC INTERNAL-ERR: Variable `" + varname +
                 "` has not been declared."
             )
-            ret 'undeclared'
+            throw new Error "internal"
+            ret {'undeclared'}
         ] else [
             ret if (vardata.exprtype) [
                 console.log "cached type" varname vardata.exprtype
@@ -492,6 +493,7 @@ _.extend check {
                     " not permitted. Use `mutate` to mutate."
                 )
             ] else [
+                console.log "declaring arg" arg.name "as '?'"
                 innercontext.declare 'const' arg.name '?'
             ]
         ]
@@ -626,7 +628,7 @@ _.extend get_type {
         ] else [
             console.warn (
                 "ALC: INTERNAL: Calling a non-function: `" +
-                (JSON.stringify func) +
+                (JSON.stringify func_type) +
                 "`."
             )
             ret '?'
@@ -647,7 +649,23 @@ _.extend get_type {
         ]
     ]
 
-    lambda = [ '?' ]
+    lambda = [ lambda context |
+        argTypes = _.map lambda.arguments [ arg |
+            assert (arg.type == 'variable')
+            ret arg.vartype
+        ]
+        
+        lastStatement = _.last lambda.statements
+        resultType = if ((lastStatement.type == 'unit-list') and
+                (lastStatement.units@0.type == 'variable') and
+                (lastStatement.units@0.name == 'ret')) [
+            ret get_type lastStatement.units@1 context
+        ] else [
+            ret {'undefined'}
+        ]
+
+        ret {FunctionType argTypes resultType}
+    ]
 }
 
 
