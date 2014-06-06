@@ -71,6 +71,7 @@ TODO for types
 [ ] enforce using mutate to modify a table variable, so we don't get `var module.exports = {}` in js
 [ ] type inference on functions
 [ ] figure out type declarations
+[ ] figure out how to unify contexts for lambda's `check` and `get_type` functions
 
 TODO to make everyone happy
 ================
