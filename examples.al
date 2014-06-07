@@ -266,3 +266,28 @@ if (a = 5) [
 ]
 
 a ++ 5
+
+
+
+===================================
+
+    moveHandler = if (options.onMouseMove) [
+        ret ($ document).bind "vmousemove" [ e |
+            if (isClickingCanvas) [
+                e.preventDefault()
+                options.onMouseMove (graph.getMouseCoord e)
+            ]
+        ]
+    ] else [undefined]
+
+    ///////
+    
+    moveHandler = if (options.onMouseMove) {
+        ret $(document).bind ("vmousemove") { e |
+            if (isClickingCanvas) {
+                e.preventDefault()
+                options.onMouseMove(graph.getMouseCoord(e))
+            }
+        }
+    } else { undefined }
+
