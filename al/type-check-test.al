@@ -57,6 +57,14 @@ describe "type checking" [|
             ]
         ]
 
+        it "should not allow assigning an incompatible type to a new var" [|
+            assert.throws [
+                compile {
+                    "a :: {'boolean'} = 5"
+                }
+            ] SyntaxError
+        ]
+
         it "should not allow mutating a variable with an incompatible type" [|
             assert.throws [
                 compile {
