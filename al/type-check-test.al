@@ -27,6 +27,28 @@ describe "type checking" [|
         ]
     ]
 
+    describe "shadowing" [|
+        it "should not allow shadowing at the same scope" [|
+            assert.throws [
+                compile {
+                    "a = 1"
+                    "a = 2"
+                }
+            ] SyntaxError
+        ]
+
+        it "should not allow shadowing at an inner scope" [|
+            assert.throws [
+                compile {
+                    "a = 1"
+                    "if false ["
+                    "    a = 2"
+                    "]"
+                }
+            ] SyntaxError
+        ]
+    ]
+
     describe "variable mutation" [|
         it "should throw for mutating a const var" [|
             assert.throws [
