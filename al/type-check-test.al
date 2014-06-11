@@ -47,6 +47,26 @@ describe "type checking" [|
                 }
             ] SyntaxError
         ]
+
+        it "should not allow shadowing a mutable at the same scope" [|
+            assert.throws [
+                compile {
+                    "mutable a = 1"
+                    "a = 2"
+                }
+            ] SyntaxError
+        ]
+
+        it "should not allow shadowing a mutable in an inner scope" [|
+            assert.throws [
+                compile {
+                    "mutable a = 1"
+                    "if false ["
+                    "    a = 2"
+                    "]"
+                }
+            ] SyntaxError
+        ]
     ]
 
     describe "variable mutation" [|
