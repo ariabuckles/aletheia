@@ -22,6 +22,7 @@ assert = require "assert"
 
 _ = require "underscore"
 SyntaxNode = (require "./syntax-tree").SyntaxNode
+Context = require "./context"
 
 is_instance = [a A | ret ```a instanceof A```]
 
@@ -99,98 +100,6 @@ ArrayType = {{
     toString: '?'
     unshift: '?'
 }}
-
-MAGIC = {
-    self = true
-    this = true
-    _it = true
-}
-
-// A context is an array of scopes of variables
-// TODO: Fix variables named __proto__
-Context = [ parentContext |
-    mutate this.parent = parentContext
-    mutate this.scope = Object.create parentContext.scope
-    delete this.scope.x  // Disable hidden classes for this.scope
-]
-_.extend Context.prototype {
-    get = [ varname |
-        ret this.scope@varname
-    ]
-
-    has = [ varname |
-        assert (_.isString varname) (
-            "passed a non string to Context.has: " + varname
-        )
-        ret ((this.get varname) != undefined)
-    ]
-
-    get_modifier = [ varname |
-        vardata = this.get varname
-        ret if vardata [ vardata.modifier ] else [ 'undeclared' ]
-    ]
-
-    get_type = [ varname |
-        assert (_.isString varname) ("varname is not a string: " + varname)
-        vardata = this.get varname
-        thisref = this
-        ret if (not vardata) [
-            console.warn (
-                "ALC INTERNAL-ERR: Variable `" + varname +
-                "` has not been declared."
-            )
-            //throw new Error "internal"
-            ret {'undeclared'}
-        ] else [
-            ret if (vardata.exprtype) [
-                if DEBUG_TYPES [
-                    console.log "cached type" varname vardata.exprtype
-                ]
-                ret vardata.exprtype
-            ] else [
-                exprtype = get_type vardata.value thisref
-                assert (exprtype == '?' or ((typeof exprtype) == 'object'))
-                mutate vardata.exprtype = exprtype
-                if DEBUG_TYPES [
-                    console.log "inferred" varname exprtype
-                ]
-                ret exprtype
-            ]
-        ]
-    ]
-
-    may_declare = [ varname |
-        ret ((this.get varname) == undefined)
-    ]
-
-    may_be_param = [ varname |
-        ret (((this.may_declare varname) or MAGIC@varname) == true)
-    ]
-
-    may_mutate = [ varname |
-        ret ((this.get_modifier varname) == 'mutable')
-    ]
-
-    declare = [ modifier varname exprtype value |
-        actual_modifier = if (not modifier) ['const'] else [modifier]
-        assert actual_modifier
-        assert varname
-        mutate this.scope@varname = {
-            modifier: actual_modifier
-            exprtype: exprtype
-            value: value
-            context: this
-        }
-    ]
-
-    pushScope = [
-        ret new Context this
-    ]
-
-    popScope = [
-        ret this.parent
-    ]
-}
 
 
 LambdaWithContext = [ lambda context |
@@ -672,7 +581,7 @@ _.extend get_type {
 
 
 check_program = [ node external_vars |
-    context = new Context { scope: null }
+    context = new Context { scope: null, getExprType = get_type }
     context.declare 'const' 'true' {'boolean'}
     context.declare 'const' 'false' {'boolean'}
     context.declare 'const' 'undefined' {'undefined'}
