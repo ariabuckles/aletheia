@@ -182,22 +182,6 @@ matchtypes = [ exprtype vartype |
 ]
 
 
-check = [ node context |
-    assert (is_instance context Context) (
-        "Not a Context: " + context
-    )
-
-    res = if (is_instance node SyntaxNode) [
-        ret check@(node.type) node context
-    ] (check@(typeof node)) [
-        // compile time constant
-        ret check@(typeof node) node context
-    ] else [
-        ret true
-    ]
-    ret res
-]
-
 nop = [ node | null ]
 
 enqueue_lambdas = [ queue lambda |
@@ -217,29 +201,28 @@ enqueue_lambdas = [ queue lambda |
     ]
 ]
 
-_.extend check {
+check_program = [ stmts context |
+    lambdas_with_contexts = stmts -> _.map [ stmt |
+        ret check stmt context
+    ] -> _.filter _.identity
 
-    "statement-list" = [ stmts context |
-        lambdas_with_contexts = stmts -> _.map [ stmt |
-            ret check stmt context
-        ] -> _.filter _.identity
+    // Here we make a stack of lambdas
+    // called a queue /sigh
+    mutable queue = {}
+    enqueue_lambdas queue lambdas_with_contexts
 
-        // Here we make a stack of lambdas
-        // called a queue /sigh
-        mutable queue = {}
-        enqueue_lambdas queue lambdas_with_contexts
-
-        while [ queue.length != 0 ] [
-            lambda_with_context = queue.pop()
-            lambda = lambda_with_context.lambda
-            lambda_context = lambda_with_context.context
-            new_lambdas = check lambda lambda_context
-            enqueue_lambdas queue new_lambdas
-        ]
-
-        ret null
+    while [ queue.length != 0 ] [
+        lambda_with_context = queue.pop()
+        lambda = lambda_with_context.lambda
+        lambda_context = lambda_with_context.context
+        new_lambdas = check lambda lambda_context
+        enqueue_lambdas queue new_lambdas
     ]
+]
 
+
+// TODO: Combine these into get_type
+_.extend check {
     assignment = [ assign context |
         assert (is_instance context Context) (
             (Object.getPrototypeOf context) +
@@ -599,11 +582,7 @@ check_program = [ stmts external_vars |
     
     _.each external_vars [ ext | context.declare 'const' ext '?' ]
 
-    get_type (SyntaxNode {
-        type: 'lambda'
-        arguments: {}
-        statements: stmts
-    }) context
+    check_program stmts context
 ]
 
 mutate module.exports = check_program
