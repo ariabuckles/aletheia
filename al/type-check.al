@@ -218,25 +218,6 @@ enqueue_lambdas = [ queue lambda |
 ]
 
 _.extend check {
-    number = nop
-    string = nop
-    undefined = nop
-    boolean = nop
-    "table-key" = nop
-    "operation" = nop
-    "javascript" = nop
-    "regex" = nop
-
-    "variable" = [ variable context |
-        if ((not KEYWORD_VARIABLES@(variable.name)) and
-                (not (context.has variable.name))) [
-            throw new SyntaxError (
-                "ALC: Use of undeclared variable `" +
-                variable.name + "`."
-            )
-        ]
-        ret null
-    ]
 
     "statement-list" = [ stmts context |
         lambdas_with_contexts = stmts -> _.map [ stmt |
@@ -257,18 +238,6 @@ _.extend check {
         ]
 
         ret null
-    ]
-
-    object = [ obj context |
-        lambdas_with_contexts = obj -> _.map [ value key |
-            ret if (value.type == 'lambda') [
-                ret new LambdaWithContext value context
-            ] else [
-                ret check value context
-            ]
-        ] -> _.filter _.identity
-
-        ret lambdas_with_contexts
     ]
 
     assignment = [ assign context |
@@ -376,78 +345,6 @@ _.extend check {
         ret right_side_lambdas
     ]
 
-    "unit-list" = [ unitList context |
-        lambdas = unitList.units -> _.map [ unit |
-            ret if (unit.type == 'lambda') [
-                ret new LambdaWithContext unit context
-            ] else [
-                ret check unit context
-            ]
-        ] -> _.filter _.identity
-
-        ret lambdas
-    ]
-
-    // TODO: Declare these variables in the scope, and
-    // later check for undefined variables
-    lambda = [ lambda context |
-        innercontext = context.pushScope()
-        lambda.arguments -> _.each [ arg |
-            if (not (innercontext.may_be_param arg.name)) [
-                throw new SyntaxError (
-                    "ALC: Param shadowing `" + arg.name + "`" +
-                    " not permitted. Use `mutate` to mutate."
-                )
-            ] else [
-                if DEBUG_TYPES [
-                    console.log "declaring arg" arg.name "as '?'"
-                ]
-                innercontext.declare 'const' arg.name '?'
-            ]
-        ]
-
-        inner_lambdas_with_contexts = lambda.statements -> _.map [ stmt |
-            ret check stmt innercontext
-        ] -> _.filter _.identity
-
-        ret inner_lambdas_with_contexts
-    ]
-
-    "table-access" = [ table_access context |
-        lambdas = check table_access.table context
-
-        key = table_access.key
-
-        if ((typeof key) != 'string') [
-            // TODO: Return the lambdas here; we're currently skipping
-            // type-checking them!!
-            check key context
-        ] else [
-            table_type = get_type table_access.table context
-            table_access_type = get_type table_access context
-
-            if (table_access_type == undefined) [
-                throw new Error (
-                    "Table of type `" +
-                    (JSON.stringify table_type) +
-                    "` does not have " +
-                    "a type for key `" + key + "`. "
-                )
-            ] else [
-                if (table_access_type == '?') [
-                    nop()
-                ] (table_access_type.length == 0) [
-                    throw new SyntaxError (
-                        "Table `" + (JSON.stringify table_access.table) +
-                        "` is of type empty-set, which is impossible to " +
-                        "access, but it was accessed."
-                    )
-                ]
-            ]
-        ]
-
-        ret lambdas
-    ]
 }
 
 
@@ -471,6 +368,17 @@ get_type = [ node context |
     ret res
 ]
 
+concat = [ lambdas1 lambdas2 |
+    assert (lambdas1 != undefined)
+    ret if (lambdas1 == null) [
+        ret lambdas2
+    ] (_.isArray lambdas1) [
+        ret lambdas1.concat (lambdas2 or {})
+    ] else [
+        ret {lambdas1}.concat (lambdas2 or {})
+    ]
+]
+
 _.extend get_type {
     number = [ {'number'} ]
     string = [ {'string'} ]
@@ -486,21 +394,39 @@ _.extend get_type {
     "regex" = [ '?' ]
 
     "table-access" = [ table_access context |
+        table_type_and_lambdas = get_type table_access.table context
+        table_type = table_type_and_lambdas@0
+        lambdas = table_type_and_lambdas@1
         key = table_access.key
+
         ret if ((typeof key) != 'string') [
-            ret '?'
+            // TODO: Verify that the returning the lambdas here is done
+            // correctly; this has not been tested
+            typeAndLambdas = get_type key context
+            ret {'?', (concat lambdas typeAndLambdas@1)}
+
         ] else [
-            table_type = get_type table_access.table context
-            ret if (table_type == '?') [
-                ret '?'
-            ] (table_type.length > 1) [
-                ret '?'  // give up on multi-typed tables
-            ] (table_type.length == 0) [
-                ret {}
+            table_access_type = get_type table_access context
+
+            ret if (table_access_type == undefined) [
+                throw new Error (
+                    "Table of type `" +
+                    (JSON.stringify table_type) +
+                    "` does not have " +
+                    "a type for key `" + key + "`. "
+                )
             ] else [
-                single_table_type = table_type@0
-                property_type = single_table_type@key
-                ret property_type
+                ret if (table_type == '?') [
+                    ret {'?', lambdas}
+                ] (table_type.length > 1) [
+                    ret {'?', lambdas}  // give up on multi-typed tables
+                ] (table_type.length == 0) [
+                    ret {{}, lambdas}
+                ] else [
+                    single_table_type = table_type@0
+                    property_type = single_table_type@key
+                    ret {property_type, lambdas}
+                ]
             ]
         ]
     ]
@@ -508,6 +434,18 @@ _.extend get_type {
     "unit-list" = [ unit_list context |
         func = unit_list.units@0
         func_type = get_type func context
+
+        // TODO: We shouldn't traverse these nodes
+        // twice, once for checking and once for actually
+        // getting the types
+        lambdas = unitList.units -> _.map [ unit |
+            ret if (unit.type == 'lambda') [
+                ret new LambdaWithContext unit context
+            ] else [
+                ret (get_type unit context)@1
+            ]
+        ] -> _.filter _.identity
+
         res = if (func_type == '?') [
             ret '?'
         ] (_.isArray func_type) [
@@ -542,27 +480,74 @@ _.extend get_type {
             ret '?'
         ]
         assert (res != undefined)
-        ret res
+        
+        ret {res, lambdas}
     ]
 
-    variable = [ variable context | context.get_type variable.name ]
+    variable = [ variable context |
+        ret if ((not KEYWORD_VARIABLES@(variable.name)) and
+                (not (context.has variable.name))) [
+            throw new SyntaxError (
+                "ALC: Use of undeclared variable `" +
+                variable.name + "`."
+            )
+        ] else [
+            ret context.get_type variable.name
+        ]
+    ]
 
     object = [ obj context |
-        ret if (obj == null) [
+        lambdas_with_contexts = obj -> _.map [ value key |
+            ret if (value.type == 'lambda') [
+                ret new LambdaWithContext value context
+            ] else [
+                ret check value context
+            ]
+        ] -> _.filter _.identity
+
+        typeObj = if (obj == null) [
             ret {'null'}
         ] (_.isArray obj) [
             ret ArrayType
         ] else [
             ret { mapObject obj [ val | get_type val context ] }
         ]
+        
+        ret {typeObj, lambdas_with_contexts}
     ]
 
     lambda = [ lambda context |
+        innercontext = context.pushScope()
+
         argTypes = _.map lambda.arguments [ arg |
             assert (arg.type == 'variable')
-            ret arg.vartype
+            ret if (arg.type != 'variable') [
+                throw new SyntaxError (
+                    "ALC: Param must be a valid variable name, " +
+                    "but got " + arg.type + ": " +
+                    (JSON.stringify arg)
+                )
+            ] else [
+                ret if (not (innercontext.may_be_param arg.name)) [
+                    throw new SyntaxError (
+                        "ALC: Param shadowing `" + arg.name + "`" +
+                        " not permitted. Use `mutate` to mutate."
+                    )
+                ] else [
+                    if DEBUG_TYPES [
+                        console.log "declaring arg" arg.name "as '?'"
+                    ]
+                    innercontext.declare 'const' arg.name '?'
+                    ret arg.vartype
+                ]
+            ]
         ]
         
+        inner_lambdas_with_contexts = lambda.statements -> _.map [ stmt |
+            ret check stmt innercontext
+        ] -> _.filter _.identity
+
+        // TODO: Re-enable this and actually get the result type
         if false [
             lastStatement = _.last lambda.statements
             _resultType = if ((lastStatement.type == 'unit-list') and
@@ -575,12 +560,14 @@ _.extend get_type {
         ]
         resultType = '?'
 
-        ret {FunctionType argTypes resultType}
+        // TODO: This is a bit ugly that we're returning this extra
+        // lambdas thing; we should clean this up and do a proper dfs
+        ret {{(FunctionType argTypes resultType)}, inner_lambdas_with_contexts}
     ]
 }
 
 
-check_program = [ node external_vars |
+check_program = [ stmts external_vars |
     context = new Context { scope: null, getExprType = get_type }
     context.declare 'const' 'true' {'boolean'}
     context.declare 'const' 'false' {'boolean'}
@@ -611,7 +598,12 @@ check_program = [ node external_vars |
     context.declare 'const' 'RegExp' '?'
     
     _.each external_vars [ ext | context.declare 'const' ext '?' ]
-    check@"statement-list" node context
+
+    get_type (SyntaxNode {
+        type: 'lambda'
+        arguments: {}
+        statements: stmts
+    }) context
 ]
 
 mutate module.exports = check_program
