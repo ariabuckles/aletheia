@@ -18,6 +18,7 @@ Context = [ parentContext |
     mutate this.scope = Object.create parentContext.scope
     delete this.scope.x  // Disable hidden classes for this.scope
 ]
+
 _.extend Context.prototype {
     get = [ varname |
         ret this.scope@varname
@@ -40,12 +41,12 @@ _.extend Context.prototype {
         assert (_.isString varname) ("varname is not a string: " + varname)
         vardata = this.get varname
         thisref = this
-        ret if (not vardata) [
+        res = if (not vardata) [
             console.warn (
                 "ALC INTERNAL-ERR: Variable `" + varname +
                 "` has not been declared."
             )
-            //throw new Error "internal"
+            throw new Error "internal"
             ret {'undeclared'}
         ] else [
             ret if (vardata.exprtype) [
@@ -63,6 +64,7 @@ _.extend Context.prototype {
                 ret exprtype
             ]
         ]
+        ret res
     ]
 
     may_declare = [ varname |
