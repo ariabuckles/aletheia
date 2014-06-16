@@ -296,59 +296,61 @@ _.extend get_type {
     ]
 
     "unit-list" = [ unitList context |
-        units = if (unitList.units@0.type == 'variable' and unitList.units@0.name == 'ret') [
-            ret _.rest unitList.units
-        ] else [ unitList.units ]
-        func = units@0
-        func_type = get_type func context
+        units = unitList.units
+        ret if (units@0.type == 'variable' and units@0.name == 'ret') [
+            ret get_type units@1 context
+        ] else [
+            func = units@0
+            func_type = get_type func context
 
-        // TODO: We shouldn't traverse these nodes
-        // twice, once for checking and once for actually
-        // getting the types
-        lambdas = units -> _.map [ unit |
-            ret if (unit.type == 'lambda') [
-                ret new LambdaWithContext unit context
+            // TODO: We shouldn't traverse these nodes
+            // twice, once for checking and once for actually
+            // getting the types
+            lambdas = units -> _.map [ unit |
+                ret if (unit.type == 'lambda') [
+                    ret new LambdaWithContext unit context
+                ] else [
+                    ret (get_type unit context)@1
+                ]
+            ] -> _.filter _.identity
+
+            res = if (func_type == '?') [
+                ret '?'
+            ] (_.isArray func_type) [
+                ret if (func_type.length == 0) [
+                    console.warn (
+                        "ALC: INTERNAL: Calling an empty-set type: `" +
+                        (JSON.stringify func) +
+                        "`."
+                    )
+                    ret '?'
+                ] (func_type.length > 1) [
+                    ret '?'
+                ] else [
+                    assert (func_type@0 != undefined)
+                    assert (is_instance func_type@0 FunctionType) (
+                        "function is not a FunctionType: " +
+                        (JSON.stringify func_type@0)
+                    )
+                    func_result_type = (func_type@0).resultType
+                    assert (func_result_type != undefined) (
+                        "no result defined for FunctionType: " +
+                        (JSON.stringify func_type@0)
+                    )
+                    ret func_result_type
+                ]
             ] else [
-                ret (get_type unit context)@1
-            ]
-        ] -> _.filter _.identity
-
-        res = if (func_type == '?') [
-            ret '?'
-        ] (_.isArray func_type) [
-            ret if (func_type.length == 0) [
                 console.warn (
-                    "ALC: INTERNAL: Calling an empty-set type: `" +
-                    (JSON.stringify func) +
+                    "ALC: INTERNAL: Calling a non-function: `" +
+                    (JSON.stringify func_type) +
                     "`."
                 )
                 ret '?'
-            ] (func_type.length > 1) [
-                ret '?'
-            ] else [
-                assert (func_type@0 != undefined)
-                assert (is_instance func_type@0 FunctionType) (
-                    "function is not a FunctionType: " +
-                    (JSON.stringify func_type@0)
-                )
-                func_result_type = (func_type@0).resultType
-                assert (func_result_type != undefined) (
-                    "no result defined for FunctionType: " +
-                    (JSON.stringify func_type@0)
-                )
-                ret func_result_type
             ]
-        ] else [
-            console.warn (
-                "ALC: INTERNAL: Calling a non-function: `" +
-                (JSON.stringify func_type) +
-                "`."
-            )
-            ret '?'
+            assert (res != undefined)
+            
+            ret {res, lambdas}
         ]
-        assert (res != undefined)
-        
-        ret {res, lambdas}
     ]
 
     variable = [ variable context |
