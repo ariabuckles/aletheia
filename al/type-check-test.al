@@ -8,6 +8,16 @@ it = global.it
 SyntaxError = global.SyntaxError
 
 describe "type checking" [|
+    describe "basic assignment" [|
+        it "should work for nested tables" [|
+            assert.doesNotThrow [
+                compile {
+                    "f = global.console.log"
+                }
+            ]
+        ]
+    ]
+
     describe "undeclared variables" [|
         it "use of an undeclared variable should throw a type error" [|
             assert.throws [
