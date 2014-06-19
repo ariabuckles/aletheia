@@ -490,8 +490,8 @@ _.extend get_type {
         
         // Checking types
         if (type == 'variable') [
-            vartype = context.get_type left.name
-            righttype = get_type assign.right context
+            vartype = (context.get_type left.name)@0
+            righttype = (get_type assign.right context)@0
             if DEBUG_TYPES [
                 console.log "check var" vartype left.name assign.right
             ]
