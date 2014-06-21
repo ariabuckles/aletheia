@@ -39,14 +39,14 @@ describe("aletheia", function() {
             exec(prgm, {f: function() { }, other: {}, arr: []});
         });
 
-        it("calling a function with a table access and a parenthesized argument", function() {
+        it("calling a function with an indexed table access and a parenthesized argument", function() {
             var prgm = [
                 "f arr@index (1 + 2)",
             ];
             exec(prgm, {f: function() { }, arr: [], index: 0});
         });
 
-        it("calling a function with a table access and a parenthesized argument", function() {
+        it("calling a function with a dot table access and a parenthesized argument", function() {
             var prgm = [
                 "f arr.index (1 + 2)",
             ];

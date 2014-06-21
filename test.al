@@ -1,4 +1,4 @@
-f = global.console.log
-//other = {index: 0}
-//arr = {1}
-//f arr@(other.index) (1 + 2)
+f = [ undefined ]
+arr = {}
+index = 0
+f arr@index (1 + 2)
