@@ -253,23 +253,26 @@ concat = [ lambdas1 lambdas2 |
 ]
 
 _.extend get_type {
-    number = [ {'number'} ]
-    string = [ {'string'} ]
-    undefined = [ {'undefined'} ]
-    boolean = [ {'boolean'} ]
+    number = [ {{'number'}, {}} ]
+    string = [ {{'string'}, {}} ]
+    undefined = [ {{'undefined'}, {}} ]
+    boolean = [ {{'boolean'}, {}} ]
     "operation" = [ op context |
         left = op.left
         right = op.right
-        ret union (get_type op.left context) (get_type op.right context)
+        leftType = get_type op.left context
+        rightType = get_type op.right context
+        ret {(union leftType@0 rightType@0), concat leftType@1 rightType@1}
     ]
 
-    "javascript" = [ '?' ]
-    "regex" = [ '?' ]
+    "javascript" = [ {'?', {}} ]
+    "regex" = [ {'?', {}} ]
 
     "table-access" = [ table_access context |
         table_type_and_lambdas = get_type table_access.table context
         table_type = table_type_and_lambdas@0
         lambdas = table_type_and_lambdas@1
+        assert (lambdas != undefined) "get_type.table did not return lambdas"
         key = table_access.key
 
         res = if ((typeof key) != 'string') [
@@ -364,7 +367,7 @@ _.extend get_type {
             if DEBUG_TYPES [
                 console.log "context.get_type" variable.name (context.has variable.name)
             ]
-            ret context.get_type variable.name
+            ret {context.get_type variable.name, {}}
         ]
     ]
 
@@ -386,6 +389,7 @@ _.extend get_type {
             ret { mapObject obj [ val | get_type val context ] }
         ]
         
+        assert lambdas_with_contexts "get_type.object not returning lambdas_with_contexts"
         ret {typeObj, lambdas_with_contexts}
     ]
 
@@ -428,7 +432,7 @@ _.extend get_type {
                     (lastStatement.units@0.name == 'ret')) [
                 ret get_type lastStatement.units@1 context  // need an inner context here
             ] else [
-                ret {'undefined'}
+                ret {'undefined', {}}
             ]
         ]
         resultType = '?'
