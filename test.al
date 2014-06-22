@@ -1,4 +1,2 @@
-f = [ undefined ]
-arr = {}
-index = 0
-f arr@index (1 + 2)
+mutable t = {a: 5, b: 6}
+mutate t.a = true
