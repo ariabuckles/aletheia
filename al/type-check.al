@@ -304,7 +304,7 @@ _.extend get_type {
             ret get_type units@1 context
         ] else [
             func = units@0
-            func_type = get_type func context
+            func_type = (get_type func context)@0
 
             // TODO: We shouldn't traverse these nodes
             // twice, once for checking and once for actually
@@ -386,7 +386,7 @@ _.extend get_type {
         ] (_.isArray obj) [
             ret ArrayType
         ] else [
-            ret { mapObject obj [ val | get_type val context ] }
+            ret { mapObject obj [ val | (get_type val context)@0 ] }
         ]
         
         assert lambdas_with_contexts "get_type.object not returning lambdas_with_contexts"
@@ -514,10 +514,12 @@ _.extend get_type {
         ] (type == 'table-access') [
             key = left.key
             if ((typeof key) == 'string') [
-                table_type = get_type left.table context
+                table_type = (get_type left.table context)@0
                 ret if (table_type == '?') [
+                    console.log "table access - giving up: type ?"
                     nop() // give up
                 ] (table_type.length > 1) [
+                    console.log "table access - giving up: length > 1" table_type
                     nop() // also give up
                 ] (table_type.length == 0) [
                     throw new SyntaxError (
@@ -527,7 +529,9 @@ _.extend get_type {
                 ] else [
                     single_table_type = table_type@0
                     property_type = single_table_type@key
-                    righttype = get_type assign.right context
+                    righttype = (get_type assign.right context)@0
+
+                    console.log "matching table types " property_type righttype
                     if (not (matchtypes property_type righttype)) [
                         throw new SyntaxError (
                             "Type mismatch: table key `" +
@@ -550,7 +554,7 @@ _.extend get_type {
 
 
 check_program = [ stmts external_vars |
-    context = new Context { scope: null, getExprType = get_type }
+    context = new Context { scope = null, getExprType = [expr context_ | (get_type expr context_)@0] }
     context.declare 'const' 'true' {'boolean'}
     context.declare 'const' 'false' {'boolean'}
     context.declare 'const' 'undefined' {'undefined'}
