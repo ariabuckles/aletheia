@@ -531,7 +531,6 @@ _.extend get_type {
                     property_type = single_table_type@key
                     righttype = (get_type assign.right context)@0
 
-                    console.log "matching table types " property_type righttype
                     if (not (matchtypes property_type righttype)) [
                         throw new SyntaxError (
                             "Type mismatch: table key `" +
@@ -559,7 +558,7 @@ check_program = [ stmts external_vars |
     context.declare 'const' 'false' {'boolean'}
     context.declare 'const' 'undefined' {'undefined'}
     context.declare 'const' 'null' {'null'}
-    context.declare 'const' 'not' (FunctionType {{'boolean'}} {'boolean'})
+    context.declare 'const' 'not' {(FunctionType {{'boolean'}} {'boolean'})}
 
     context.declare 'const' 'this' '?'
 
