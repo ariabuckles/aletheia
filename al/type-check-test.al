@@ -7,6 +7,18 @@ describe = global.describe
 it = global.it
 SyntaxError = global.SyntaxError
 
+compiles = [ prgm |
+    assert.doesNotThrow [
+        compile prgm
+    ]
+]
+
+doesNotCompile = [ prgm |
+    assert.throws [
+        compile prgm
+    ] SyntaxError
+]
+
 describe "type checking" [|
     describe "basic assignment" [|
         it "should work for nested tables" [|
@@ -215,6 +227,20 @@ describe "type checking" [|
                     "mutate c = {}"
                 }
             ] SyntaxError
+        ]
+    ]
+
+    describe "typed functions" [|
+        it "should figure out simple function types when arguments have declared types" [|
+            compiles {
+                "f = [ a::{'number'} | a + a ]"
+                "b::{'number'} = f 2"
+            }
+
+            doesNotCompile {
+                "f = [ a::{'number'} | a + a ]"
+                "b::{'boolean'} = f 2"
+            }
         ]
     ]
 ]

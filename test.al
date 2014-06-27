@@ -1,2 +1,2 @@
-mutable t = {a: 5, b: 6}
-mutate t.a = true
+f = [ a::{'number'} | a + a ]
+b::{'number'} = f 2

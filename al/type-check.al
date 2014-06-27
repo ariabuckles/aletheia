@@ -414,7 +414,7 @@ _.extend get_type {
                     if DEBUG_TYPES [
                         console.log "declaring arg" arg.name "as '?'"
                     ]
-                    innercontext.declare 'const' arg.name '?'
+                    innercontext.declare 'const' arg.name arg.vartype
                     ret arg.vartype
                 ]
             ]
@@ -425,21 +425,22 @@ _.extend get_type {
         ] -> _.filter _.identity
 
         // TODO: Re-enable this and actually get the result type
-        if false [
-            lastStatement = _.last lambda.statements
-            _resultType = if ((lastStatement.type == 'unit-list') and
-                    (lastStatement.units@0.type == 'variable') and
-                    (lastStatement.units@0.name == 'ret')) [
-                ret get_type lastStatement.units@1 context  // need an inner context here
-            ] else [
-                ret {'undefined', {}}
-            ]
+        lastStatement = _.last lambda.statements
+        resultType = if ((lastStatement.type == 'unit-list') and
+                (lastStatement.units@0.type == 'variable') and
+                (lastStatement.units@0.name == 'ret')) [
+            ret (get_type lastStatement.units@1 innercontext)@0
+        ] else [
+            ret {'undefined', {}}
         ]
-        resultType = '?'
 
         // TODO: This is a bit ugly that we're returning this extra
         // lambdas thing; we should clean this up and do a proper dfs
-        ret {{(FunctionType argTypes resultType)}, inner_lambdas_with_contexts}
+        res = {{(FunctionType argTypes resultType)}, inner_lambdas_with_contexts}
+        if DEBUG_TYPES [
+            console.log "function of type" (global.JSON.stringify res@0)
+        ]
+        ret res
     ]
 
     assignment = [ assign context |
