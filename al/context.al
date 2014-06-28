@@ -56,7 +56,10 @@ _.extend Context.prototype {
                 ret vardata.exprtype
             ] else [
                 exprtype = self.getExprType vardata.value thisref
-                assert (exprtype == '?' or ((typeof exprtype) == 'object'))
+                assert (exprtype == '?' or ((typeof exprtype) == 'object')) (
+                    "exprtype was not a valid expression type. instead, " +
+                    "found " + (JSON.stringify exprtype)
+                )
                 mutate vardata.exprtype = exprtype
                 if DEBUG_CONTEXT [
                     console.log "inferred" varname exprtype
