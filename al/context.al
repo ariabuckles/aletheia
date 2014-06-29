@@ -58,7 +58,8 @@ _.extend Context.prototype {
                 exprtype = self.getExprType vardata.value thisref
                 assert (exprtype == '?' or ((typeof exprtype) == 'object')) (
                     "exprtype was not a valid expression type. instead, " +
-                    "found " + (JSON.stringify exprtype)
+                    "found " + (JSON.stringify exprtype) + ";; for type " +
+                    (JSON.stringify vardata.value)
                 )
                 mutate vardata.exprtype = exprtype
                 if DEBUG_CONTEXT [
@@ -67,6 +68,7 @@ _.extend Context.prototype {
                 ret exprtype
             ]
         ]
+        assert (res != undefined) ("vardata error for `" + varname + "`")
         ret res
     ]
 
