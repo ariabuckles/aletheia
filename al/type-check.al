@@ -236,7 +236,14 @@ get_type = [ node context |
     if DEBUG_TYPES [
         console.log "get_type" res node
     ]
-    assert (res != undefined)
+    if (res.length != 2) [
+        console.log res
+        assert (res.length == 2) ("get_type returned a non-array:")
+    ]
+    assert (res@0 != undefined) ("could not find type of node: " +
+        (JSON.stringify node)
+    )
+    assert (res@1 != undefined)
 
     ret res
 ]
@@ -262,7 +269,9 @@ _.extend get_type {
         right = op.right
         leftType = get_type op.left context
         rightType = get_type op.right context
-        ret {(union leftType@0 rightType@0), concat leftType@1 rightType@1}
+        type = union leftType@0 rightType@0
+        lambdas = concat leftType@1 rightType@1
+        ret {type, lambdas}
     ]
 
     "javascript" = [ {'?', {}} ]
@@ -271,6 +280,9 @@ _.extend get_type {
     "table-access" = [ table_access context |
         table_type_and_lambdas = get_type table_access.table context
         table_type = table_type_and_lambdas@0
+        assert (table_type == '?' or (table_type.length > 0 and table_type@0 != undefined)) (
+            "bad type for table" + (JSON.stringify table_access.table)
+        )
         lambdas = table_type_and_lambdas@1
         assert (lambdas != undefined) "get_type.table did not return lambdas"
         key = table_access.key
@@ -291,6 +303,11 @@ _.extend get_type {
             ] else [
                 single_table_type = table_type@0
                 property_type = single_table_type@key
+                assert (property_type != undefined) ("table type not found for key: " +
+                    key + ", in: " +
+                    (JSON.stringify table_access.table) + ";; of type: " +
+                    (JSON.stringify table_type)
+                )
                 ret {property_type, lambdas}
             ]
         ]
