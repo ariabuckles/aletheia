@@ -61,6 +61,20 @@ describe "aletheia-in-aletheia" [|
             exec prgm {callback: callback}
             assert.strictEqual result 1
         ]
+
+        it "should work with a table param" [|
+            mutable result :: ? = undefined
+            callback = [ value |
+                mutate result = value
+            ]
+            prgm = {
+                "f = [ a | a.a ]"
+                "callback (f {a: 5})"
+            }
+            exec prgm {callback: callback}
+            assert.strictEqual result 5
+        ]
+
     ]
 
     describe "inline javascript" [|

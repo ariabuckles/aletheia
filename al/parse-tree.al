@@ -132,6 +132,7 @@ ParseTree = {
     ]
 
     Variable: [ name type |
+        assert (type != undefined)
         ret new ParseNode {
             type: "variable"
             name: name
