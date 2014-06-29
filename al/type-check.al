@@ -431,7 +431,11 @@ _.extend get_type {
                     if DEBUG_TYPES [
                         console.log "declaring arg" arg.name "as '?'"
                     ]
-                    innercontext.declare 'const' arg.name arg.vartype
+                    // if no type is provided for an argument, we currently
+                    // don't try to infer it, but imply it could be anything
+                    // TODO: type inference for argument types
+                    argtype = if (arg.vartype != null) [arg.vartype] else ['?']
+                    innercontext.declare 'const' arg.name argtype
                     ret arg.vartype
                 ]
             ]
