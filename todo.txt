@@ -72,6 +72,8 @@ TODO for types
 [ ] type inference on functions
 [ ] figure out type declarations
 [ ] figure out how to unify contexts for lambda's `check` and `get_type` functions
+[ ] The current problem in test.al is caused by a recursive lookup of the type of ParseNode while
+    we're in the ParseNode variable.
 
 TODO to make everyone happy
 ================
