@@ -12,7 +12,7 @@ MAGIC = {
 
 // A context is an array of scopes of variables
 // TODO: Fix variables named __proto__
-Context = [ parentContext |
+Context :: ? = [ parentContext |
     mutate this.parent = parentContext
     mutate this.getExprType = this.parent.getExprType
     mutate this.scope = Object.create parentContext.scope
