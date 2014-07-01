@@ -5,6 +5,8 @@ strings = require "./strings"
 
 is_instance = [a A | ret ```a instanceof A```]
 
+JSON = global.JSON
+
 ParseNode = [ options |
     self = this
     res = if (not (is_instance self ParseNode)) [
