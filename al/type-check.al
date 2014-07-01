@@ -26,6 +26,8 @@ Context = require "./context"
 
 is_instance = [a A | ret ```a instanceof A```]
 
+JSON = global.JSON
+
 mapObject = [ obj func |
     mutable result = {:}
     _.each obj [ value key |
