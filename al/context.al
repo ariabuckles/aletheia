@@ -74,7 +74,9 @@ _.extend Context.prototype {
     ]
 
     may_declare = [ varname |
-        console.log "may_declare" varname (this.get varname) ((this.get varname) == undefined)
+        if DEBUG_CONTEXT [
+            console.log "may_declare" varname (this.get varname) ((this.get varname) == undefined)
+        ]
         ret ((this.get varname) == undefined)
     ]
 
