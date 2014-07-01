@@ -53,8 +53,9 @@ _.extend Context.prototype {
                 if DEBUG_CONTEXT [
                     console.log "cached type" varname vardata.exprtype
                 ]
-                ret vardata.exprtype
+                ret if (vardata.exprtype == '::TRAVERSING::') ['?'] else [vardata.exprtype]
             ] else [
+                mutate vardata.exprtype = '::TRAVERSING::'
                 exprtype = self.getExprType vardata.value thisref
                 assert (exprtype == '?' or ((typeof exprtype) == 'object')) (
                     "exprtype was not a valid expression type. instead, " +
