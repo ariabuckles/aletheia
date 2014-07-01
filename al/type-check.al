@@ -413,10 +413,8 @@ _.extend get_type {
     lambda = [ lambda context |
         innercontext = context.pushScope()
 
-        console.log "declaring multi:" (_.map lambda.arguments [a | a.name])
         argTypes = _.map lambda.arguments [ arg |
             assert (arg.type == 'variable')
-            console.log "try declare param" arg.name
             ret if (arg.type != 'variable') [
                 throw new SyntaxError (
                     "ALC: Param must be a valid variable name, " +
@@ -446,8 +444,6 @@ _.extend get_type {
         inner_lambdas_with_contexts = lambda.statements -> _.map [ stmt |
             ret (get_type stmt innercontext)@1
         ] -> _.filter _.identity
-
-        console.log "inner_lambdas_with_contexts" inner_lambdas_with_contexts
 
         // TODO: Re-enable this and actually get the result type
         lastStatement = _.last lambda.statements
