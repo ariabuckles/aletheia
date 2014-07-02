@@ -242,5 +242,16 @@ describe "type checking" [|
                 "b::{'boolean'} = f 2"
             }
         ]
+
+        it "should not crash on a recursive function" [|
+            compiles {
+                "f = [ a::{'number'} |"
+                "   ret if (a < 1) [a] else ["
+                "       ret ((f (a - 1)) + (f (a - 2)))"
+                "   ]"
+                "]"
+                "b::{'number'} = f 2"
+            }
+        ]
     ]
 ]
