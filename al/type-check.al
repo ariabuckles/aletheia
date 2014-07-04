@@ -36,6 +36,17 @@ mapObject = [ obj func |
     ret result
 ]
 
+at_loc = [ loc |
+    ret if (loc == undefined) [
+        ret 'at location unknown'
+    ] else [
+        line = loc.first_line
+        // jison seems to be reporting one column to the left for us,
+        // so we hackily correct it:
+        column = loc.first_column + 1
+        ret ('at line ' + line + ', col ' + column)
+    ]
+]
 
 KEYWORD_VARIABLES = {
     ret = true
@@ -380,7 +391,7 @@ _.extend get_type {
                 (not (context.has variable.name))) [
             throw new SyntaxError (
                 "ALC: Use of undeclared variable `" +
-                variable.name + "`."
+                variable.name + "` " + (at_loc variable.loc) + "."
             )
         ] else [
             if DEBUG_TYPES [
@@ -427,6 +438,7 @@ _.extend get_type {
                 ret if (not (innercontext.may_be_param arg.name)) [
                     throw new SyntaxError (
                         "ALC: Param shadowing `" + arg.name + "`" +
+                        (at_loc arg.loc) +
                         " not permitted. Use `mutate` to mutate."
                     )
                 ] else [
@@ -485,8 +497,9 @@ _.extend get_type {
             if (modifier == null or modifier == 'const' or modifier == 'mutable') [
                 if (not (context.may_declare left.name)) [
                     throw new SyntaxError (
-                        "ALC: Shadowing `" + left.name + "` is " +
-                        "not permitted. Use `mutate` to mutate."
+                        "ALC: Shadowing `" + left.name + "` " +
+                        (at_loc left.loc) +
+                        " is not permitted. Use `mutate` to mutate."
                     )
                 ] else [
                     context.declare modifier left.name left.vartype assign.right
@@ -496,8 +509,9 @@ _.extend get_type {
                     declmodifiertype = context.get_modifier left.name
                     throw new SyntaxError (
                         "ALC: Mutating `" + left.name + "`, which has " +
-                        "modifier `" + declmodifiertype + "` is " +
-                        "not permitted. Declare with `mutable` " +
+                        "modifier `" + declmodifiertype + "` " +
+                        (at_loc left.loc) +
+                        "is not permitted. Declare with `mutable` " +
                         "to allow mutation."
                     )
                 ]
@@ -530,9 +544,8 @@ _.extend get_type {
                     "` of type `" +
                     (JSON.stringify vartype) +
                     "` is incompatible with expression of type `" +
-                    (JSON.stringify righttype) + "`." +
-                    "assignment: " +
-                    (JSON.stringify assign)
+                    (JSON.stringify righttype) + "` " +
+                    (at_loc assign.loc) + "."
                 )
             ]
         ] (type == 'table-access') [

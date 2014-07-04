@@ -37,16 +37,17 @@ ParseTree = {
         }
     ]
 
-    Declaration: [ left right |
+    Declaration: [ left right loc |
         ret new ParseNode {
             type: "assignment"
             modifier: null
             left: left
             right: right
+            loc: loc
         }
     ]
 
-    Assignment: [ leftUnitList right |
+    Assignment: [ leftUnitList right loc |
         units = leftUnitList.units
         if (units.length != 2) [
             throw new Error (
@@ -66,6 +67,7 @@ ParseTree = {
             modifier: (units@0).name
             left: units@1
             right: right
+            loc: loc
         }
     ]
 
@@ -116,36 +118,40 @@ ParseTree = {
         }
     ]
 
-    TableAccess: [ table key |
+    TableAccess: [ table key loc |
         ret new ParseNode {
             type: "table-access"
             table: table
             key: key
+            loc: loc
         }
     ]
 
-    Operation: [ left op right |
+    Operation: [ left op right loc |
         ret new ParseNode {
             type: "operation"
             left: left
             operation: op
             right: right
+            loc: loc
         }
     ]
 
-    Variable: [ name type |
+    Variable: [ name type loc |
         assert (type != undefined)
         ret new ParseNode {
             type: "variable"
             name: name
             vartype: type
+            loc: loc
         }
     ]
 
-    Javascript: [ source |
+    Javascript: [ source loc |
         ret new ParseNode {
             type: "javascript"
             source: source
+            loc: loc
         }
     ]
 }
