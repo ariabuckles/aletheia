@@ -114,8 +114,8 @@ grammar = {
             {"separator NEWLINE", "", {prec: "_separator"}}
         }
         "statement": {
-            {"lvalue = expression", "$$ = yy.Declaration($1, $3);"}
-            {"unitList = expression", "$$ = yy.Assignment($1, $3);"}
+            {"lvalue = expression", "$$ = yy.Declaration($1, $3, @2);"}
+            {"unitList = expression", "$$ = yy.Assignment($1, $3, @2);"}
             {"expression", "$$ = $1;", {prec: "STATEMENT_BODY"}}
         }
         "expression": {
