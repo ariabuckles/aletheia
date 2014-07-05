@@ -431,8 +431,7 @@ _.extend get_type {
             ret if (arg.type != 'variable') [
                 throw new SyntaxError (
                     "ALC: Param must be a valid variable name, " +
-                    "but got " + arg.type + ": " +
-                    (JSON.stringify arg)
+                    "but got `" + arg.type + "` " + (at_loc arg.loc)
                 )
             ] else [
                 ret if (not (innercontext.may_be_param arg.name)) [
@@ -510,8 +509,8 @@ _.extend get_type {
                     throw new SyntaxError (
                         "ALC: Mutating `" + left.name + "`, which has " +
                         "modifier `" + declmodifiertype + "` " +
-                        (at_loc left.loc) +
-                        "is not permitted. Declare with `mutable` " +
+                        (at_loc assign.loc) +
+                        " is not permitted. Declare with `mutable` " +
                         "to allow mutation."
                     )
                 ]
@@ -561,7 +560,8 @@ _.extend get_type {
                 ] (table_type.length == 0) [
                     throw new SyntaxError (
                         "ALC: Mutating table key `" + key + "` which has " +
-                        "type empty-set, is impossible."
+                        "type empty-set, is impossible, " +
+                        (at_loc assign.loc) + "."
                     )
                 ] else [
                     single_table_type = table_type@0
@@ -575,9 +575,8 @@ _.extend get_type {
                             "` of type `" +
                             (JSON.stringify property_type) +
                             "` is incompatible with expression of type `" +
-                            (JSON.stringify righttype) + "`." +
-                            "assignment: " +
-                            (JSON.stringify assign)
+                            (JSON.stringify righttype) + "` " +
+                            (at_loc assign.loc)
                         )
                     ]
                 ]
