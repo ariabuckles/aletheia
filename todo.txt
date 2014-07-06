@@ -73,6 +73,7 @@ TODO for types
 [ ] figure out type declarations
 [x] figure out how to unify contexts for lambda's `check` and `get_type` functions
 [x] problem caused by a recursive lookup of the type of ParseNode while we're in the ParseNode variable.
+[ ] fix "at location unknown" error for using an undeclared variable
 
 TODO to make everyone happy
 ================
