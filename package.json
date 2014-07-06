@@ -1,7 +1,7 @@
 {
   "name": "aletheia",
-  "version": "0.0.3-alpha",
-  "description": "aletheia ========",
+  "version": "0.0.4",
+  "description": "An experimental compile-to-js programming language",
   "bin": {
     "alc": "./lib/aletheia/alc"
   },
@@ -23,7 +23,7 @@
     "mocha": "~1.18.2"
   },
   "dependencies": {
-    "underscore": ">=1.4.4",
+    "underscore": "^1.4.4",
     "source-map": "~0.1.33"
   }
 }
