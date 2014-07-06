@@ -518,7 +518,12 @@ _.extend get_type {
                 assert false ("Invalid modifier " + modifier)
             ]
         ] (type == 'table-access') [
-            nop()  // TODO: Make it so nop() isn't required here
+            if (modifier != 'mutate') [
+                throw new SyntaxError (
+                    "Mutating a table requires the keyword `mutate` " +
+                    (at_loc assign.loc) + "."
+                )
+            ]
         ] else [
             throw new Error ("ALINTERNAL: Unrecognized lvalue type: " + type)
         ]

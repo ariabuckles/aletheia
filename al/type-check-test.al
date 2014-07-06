@@ -111,6 +111,20 @@ describe "type checking" [|
         ]
     ]
 
+    describe "table mutation" [|
+        it "should require a `mutate` modifier" [|
+            doesNotCompile {
+                "t = {a: 5, b: 6}"
+                "t.a = 6"
+            }
+
+            compiles {
+                "t = {a: 5, b: 6}"
+                "mutate t.a = 6"
+            }
+        ]
+    ]
+
     describe "variable types" [|
         it "should allow mutating a variable with the same type" [|
             assert.doesNotThrow [
