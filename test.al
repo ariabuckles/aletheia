@@ -1,2 +1,5 @@
-mutable t = {a: 5, b: 6}
-t.a = 7
+f = [
+    mutate a = a + 1
+]
+mutable a
+f()
