@@ -455,6 +455,8 @@ _.extend get_type {
         ]
         
         inner_lambdas_with_contexts = lambda.statements -> _.map [ stmt |
+            // TODO: This line is causing us to evaluate the function
+            // prematurely; forcing all declarations to be above
             ret (get_type stmt innercontext)@1
         ] -> _.filter _.identity
 

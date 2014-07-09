@@ -75,6 +75,7 @@ TODO for types
 [x] problem caused by a recursive lookup of the type of ParseNode while we're in the ParseNode variable.
 [ ] fix "at location unknown" error for using an undeclared variable
 [ ] in viridium, we're seeing "use of undeclared variable" for a var declared later :(
+	see al/type-check.al:458
 
 TODO to make everyone happy
 ================
