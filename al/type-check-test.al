@@ -49,6 +49,27 @@ describe "type checking" [|
         ]
     ]
 
+    describe "variable ~hoisting" [|
+        it "compiles without hoisting" [|
+            compiles {
+                "mutable a = 0"
+                "f = ["
+                "    mutate a = a + 1"
+                "]"
+                "f()"
+            }
+        ]
+        it "compiles with hoisting" [|
+            compiles {
+                "f = ["
+                "    mutate a = a + 1"
+                "]"
+                "mutable a = 0"
+                "f()"
+            }
+        ]
+    ]
+
     describe "shadowing" [|
         it "should not allow shadowing at the same scope" [|
             assert.throws [
