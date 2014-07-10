@@ -47,6 +47,14 @@ describe "type checking" [|
                 }
             ]
         ]
+
+        it "use of an undeclared variable inside a function should throw" [|
+            doesNotCompile {
+                "f = ["
+                "    a = b"
+                "]"
+            }
+        ]
     ]
 
     describe "variable ~hoisting" [|
