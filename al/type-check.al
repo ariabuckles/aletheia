@@ -198,8 +198,10 @@ matchtypes = [ exprtype vartype |
 nop = [ node | null ]
 
 enqueue_lambdas = [ queue lambda |
-    if (is_instance lambda LambdaWithContext) [
-        queue.push lambda
+    if (_.isFunction lambda) [
+        queue.back.push lambda
+    ] (is_instance lambda LambdaWithContext) [
+        queue.back.push lambda
     ] (_.isArray lambda) [
         rlambdas = _.clone(lambda)
         rlambdas.reverse()
@@ -214,6 +216,15 @@ enqueue_lambdas = [ queue lambda |
     ]
 ]
 
+dequeue_lambda = [ queue |
+    ret if (queue.front.length != 0) [
+        ret queue.front.pop()
+    ] else [
+        results = queue.back.pop();
+        if 
+    ]
+]
+
 check_statements = [ stmts context |
     lambdas_with_contexts = stmts -> _.map [ stmt |
         ret (get_type stmt context)@1
@@ -221,11 +232,16 @@ check_statements = [ stmts context |
 
     // Here we make a stack of lambdas
     // called a queue /sigh
-    mutable queue = {}
+    mutable queue = {front: {}, back: {}}
     enqueue_lambdas queue lambdas_with_contexts
 
     while [ queue.length != 0 ] [
-        lambda_with_context = queue.pop()
+        lambda_with_context_f = dequeue_lambda queue
+        lambda_with_context = if (_.isFunction lambda_with_context_f) [
+            ret lambda_with_context_f()
+        ] else [
+            ret lambda_with_context_f
+        ]
         lambda = lambda_with_context.lambda
         lambda_context = lambda_with_context.context
         new_lambdas = (get_type lambda lambda_context)@1
@@ -454,11 +470,11 @@ _.extend get_type {
             ]
         ]
         
-        inner_lambdas_with_contexts = lambda.statements -> _.map [ stmt |
+        inner_lambdas_with_contexts = [ lambda.statements -> _.map [ stmt |
             // TODO: This line is causing us to evaluate the function
             // prematurely; forcing all declarations to be above
             ret (get_type stmt innercontext)@1
-        ] -> _.filter _.identity
+        ] -> _.filter _.identity ]
 
         // TODO: Re-enable this and actually get the result type
         lastStatement = _.last lambda.statements
