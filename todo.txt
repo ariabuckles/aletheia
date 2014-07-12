@@ -75,13 +75,17 @@ TODO for types
 [x] problem caused by a recursive lookup of the type of ParseNode while we're in the ParseNode variable.
 [ ] fix "at location unknown" error for using an undeclared variable
 [ ] in viridium, we're seeing "use of undeclared variable" for a var declared later :(
-	see al/type-check.al:458
-	 - one solution is to have the lambda_with_context be a function itself, but this
-	   starts to get messy with dequeuing things
-	 - another solution is to be able to pass a flag to all of the things to do a "lambda search"
-	   without type checking
-	 - maybe another solution is to not search your sub-statements for lambdas when inside a lambda,
-	   but to just return yourself? and then search the statements in the lambda search loop?
+    see al/type-check.al:458
+     - one solution is to have the lambda_with_context be a function itself, but this
+       starts to get messy with dequeuing things
+     - another solution is to be able to pass a flag to all of the things to do a "lambda search"
+       without type checking
+     - maybe another solution is to not search your sub-statements for lambdas when inside a lambda,
+       but to just return yourself? and then search the statements in the lambda search loop?
+     - maybe instead of separating "check" and "get_type" functions, we should separate
+       "get_type+check" and "find_lambdas", because currently we're conflating all three (
+       we conflate the first two because they both need the lambda's innercontext, but
+       "find_lambdas" shouldn't need that).
 
 TODO to make everyone happy
 ================
