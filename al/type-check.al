@@ -234,6 +234,358 @@ check_statements = [ stmts context |
 ]
 
 
+get_lambdas = [ node |
+
+    res = if (is_instance node SyntaxNode) [
+        ret get_lambdas@(node.type) node context
+    ] else [
+        // compile time constant
+        ret get_lambdas@(typeof node) node context
+    ]
+
+    assert (res != undefined) ("could not find type of node: " +
+        (JSON.stringify node)
+    )
+
+    ret res
+]
+
+concat = [ lambdas1 lambdas2 |
+    assert (lambdas1 != undefined)
+    ret if (lambdas1 == null) [
+        ret lambdas2
+    ] (_.isArray lambdas1) [
+        ret lambdas1.concat (lambdas2 or {})
+    ] else [
+        ret {lambdas1}.concat (lambdas2 or {})
+    ]
+]
+
+_.extend get_lambdas {
+    number = [ {{'number'}, {}} ]
+    string = [ {{'string'}, {}} ]
+    undefined = [ {{'undefined'}, {}} ]
+    boolean = [ {{'boolean'}, {}} ]
+    "operation" = [ op context |
+        left = op.left
+        right = op.right
+        leftType = get_type op.left context
+        rightType = get_type op.right context
+        type = union leftType@0 rightType@0
+        lambdas = concat leftType@1 rightType@1
+        ret {type, lambdas}
+    ]
+
+    "javascript" = [ {'?', {}} ]
+    "regex" = [ {'?', {}} ]
+
+    "table-access" = [ table_access context |
+        table_type_and_lambdas = get_type table_access.table context
+        table_type = table_type_and_lambdas@0
+        assert (table_type == '?' or (table_type.length > 0 and table_type@0 != undefined)) (
+            "bad type for table" + (JSON.stringify table_access.table)
+        )
+        lambdas = table_type_and_lambdas@1
+        assert (lambdas != undefined) "get_type.table did not return lambdas"
+        key = table_access.key
+
+        res = if ((typeof key) != 'string') [
+            // TODO: Verify that the returning the lambdas here is done
+            // correctly; this has not been tested
+            typeAndLambdas = get_type key context
+            ret {'?', (concat lambdas typeAndLambdas@1)}
+
+        ] else [
+            ret if (table_type == '?') [
+                ret {'?', lambdas}
+            ] (table_type.length > 1) [
+                ret {'?', lambdas}  // give up on multi-typed tables
+            ] (table_type.length == 0) [
+                ret {{}, lambdas}
+            ] else [
+                single_table_type = table_type@0
+                property_type = single_table_type@key
+                assert (property_type != undefined) ("table type not found for key: " +
+                    key + ", in: " +
+                    (JSON.stringify table_access.table) + ";; of type: " +
+                    (JSON.stringify table_type)
+                )
+                ret {property_type, lambdas}
+            ]
+        ]
+
+        ret res
+    ]
+
+    "unit-list" = [ unitList context |
+        units = unitList.units
+        ret if (units@0.type == 'variable' and units@0.name == 'ret') [
+            ret get_type units@1 context
+        ] else [
+            func = units@0
+            func_type = (get_type func context)@0
+
+            // TODO: We shouldn't traverse these nodes
+            // twice, once for checking and once for actually
+            // getting the types
+            lambdas = units -> _.map [ unit |
+                ret if (unit.type == 'lambda') [
+                    ret new LambdaWithContext unit context
+                ] else [
+                    ret (get_type unit context)@1
+                ]
+            ] -> _.filter _.identity
+
+            res = if (func_type == '?') [
+                ret '?'
+            ] (_.isArray func_type) [
+                ret if (func_type.length == 0) [
+                    console.warn (
+                        "ALC: INTERNAL: Calling an empty-set type: `" +
+                        (JSON.stringify func) +
+                        "`."
+                    )
+                    ret '?'
+                ] (func_type.length > 1) [
+                    ret '?'
+                ] else [
+                    assert (func_type@0 != undefined)
+                    assert (is_instance func_type@0 FunctionType) (
+                        "function is not a FunctionType: " +
+                        (JSON.stringify func_type@0)
+                    )
+                    func_result_type = (func_type@0).resultType
+                    assert (func_result_type != undefined) (
+                        "no result defined for FunctionType: " +
+                        (JSON.stringify func_type@0)
+                    )
+                    ret func_result_type
+                ]
+            ] else [
+                console.warn (
+                    "ALC: INTERNAL: Calling a non-function: `" +
+                    (JSON.stringify func_type) +
+                    "`."
+                )
+                ret '?'
+            ]
+            assert (res != undefined)
+            
+            ret {res, lambdas}
+        ]
+    ]
+
+    variable = [ variable context |
+        ret if ((not KEYWORD_VARIABLES@(variable.name)) and
+                (not (context.has variable.name))) [
+            throw new SyntaxError (
+                "ALC: Use of undeclared variable `" +
+                variable.name + "` " + (at_loc variable.loc) + "."
+            )
+        ] else [
+            if DEBUG_TYPES [
+                console.log "context.get_type" variable.name (context.has variable.name)
+            ]
+            ret {context.get_type variable.name, {}}
+        ]
+    ]
+
+    object = [ obj context |
+        // TODO: use _.keys since _.map breaks on objs with .length
+        lambdas_with_contexts = obj -> _.map [ value key |
+            ret if (value.type == 'lambda') [
+                ret new LambdaWithContext value context
+            ] else [
+                ret (get_type value context)@1
+            ]
+        ] -> _.filter _.identity
+
+        typeObj = if (obj == null) [
+            ret {'null'}
+        ] (_.isArray obj) [
+            ret ArrayType
+        ] else [
+            ret { mapObject obj [ val | (get_type val context)@0 ] }
+        ]
+        
+        assert lambdas_with_contexts "get_type.object not returning lambdas_with_contexts"
+        ret {typeObj, lambdas_with_contexts}
+    ]
+
+    lambda = [ lambda context |
+        innercontext = context.pushScope()
+
+        argTypes = _.map lambda.arguments [ arg |
+            assert (arg.type == 'variable')
+            ret if (arg.type != 'variable') [
+                throw new SyntaxError (
+                    "ALC: Param must be a valid variable name, " +
+                    "but got `" + arg.type + "` " + (at_loc arg.loc)
+                )
+            ] else [
+                ret if (not (innercontext.may_be_param arg.name)) [
+                    throw new SyntaxError (
+                        "ALC: Param shadowing `" + arg.name + "`" +
+                        (at_loc arg.loc) +
+                        " not permitted. Use `mutate` to mutate."
+                    )
+                ] else [
+                    if DEBUG_TYPES [
+                        console.log "declaring arg" arg.name "as '?'"
+                    ]
+                    // if no type is provided for an argument, we currently
+                    // don't try to infer it, but imply it could be anything
+                    // TODO: type inference for argument types
+                    argtype = if (arg.vartype != null) [arg.vartype] else ['?']
+                    innercontext.declare 'const' arg.name argtype
+                    ret arg.vartype
+                ]
+            ]
+        ]
+        
+        inner_lambdas_with_contexts = lambda.statements -> _.map [ stmt |
+            // TODO: This line is causing us to evaluate the function
+            // prematurely; forcing all declarations to be above
+            ret (get_type stmt innercontext)@1
+        ] -> _.filter _.identity
+
+        // TODO: Re-enable this and actually get the result type
+        lastStatement = _.last lambda.statements
+        resultType = if ((lastStatement.type == 'unit-list') and
+                (lastStatement.units@0.type == 'variable') and
+                (lastStatement.units@0.name == 'ret')) [
+            ret (get_type lastStatement.units@1 innercontext)@0
+        ] else [
+            ret {'undefined', {}}
+        ]
+
+        // TODO: This is a bit ugly that we're returning this extra
+        // lambdas thing; we should clean this up and do a proper dfs
+        res = {{(FunctionType argTypes resultType)}, inner_lambdas_with_contexts}
+        if DEBUG_TYPES [
+            console.log "function of type" (global.JSON.stringify res@0)
+        ]
+        ret res
+    ]
+
+    assignment = [ assign context |
+        assert (is_instance context Context) (
+            (Object.getPrototypeOf context) +
+            " is not a Context"
+        )
+
+        modifier = assign.modifier
+        left = assign.left
+        type = left.type
+
+        assert ({null, 'mutable', 'mutate'} -> _.contains modifier) (
+            "ALC: Unrecognized modifier `" + modifier + "`"
+        )
+
+        // Checking for undefined, etc.
+        if (type == 'variable') [
+            if (modifier == null or modifier == 'const' or modifier == 'mutable') [
+                if (not (context.may_declare left.name)) [
+                    throw new SyntaxError (
+                        "ALC: Shadowing `" + left.name + "` " +
+                        (at_loc left.loc) +
+                        " is not permitted. Use `mutate` to mutate."
+                    )
+                ] else [
+                    context.declare modifier left.name left.vartype assign.right
+                ]
+            ] (modifier == 'mutate') [
+                if (not (context.may_mutate left.name)) [
+                    declmodifiertype = context.get_modifier left.name
+                    throw new SyntaxError (
+                        "ALC: Mutating `" + left.name + "`, which has " +
+                        "modifier `" + declmodifiertype + "` " +
+                        (at_loc assign.loc) +
+                        " is not permitted. Declare with `mutable` " +
+                        "to allow mutation."
+                    )
+                ]
+            ] else [
+                assert false ("Invalid modifier " + modifier)
+            ]
+        ] (type == 'table-access') [
+            if (modifier != 'mutate') [
+                throw new SyntaxError (
+                    "Mutating a table requires the keyword `mutate` " +
+                    (at_loc assign.loc) + "."
+                )
+            ]
+        ] else [
+            throw new Error ("ALINTERNAL: Unrecognized lvalue type: " + type)
+        ]
+
+        right_side_lambdas = if (assign.right.type == 'lambda') [
+            ret new LambdaWithContext assign.right context
+        ] else [
+            ret (get_type assign.right context)@1
+        ]
+        
+        // Checking types
+        if (type == 'variable') [
+            vartype = (context.get_type left.name)@0
+            righttype = (get_type assign.right context)@0
+            if DEBUG_TYPES [
+                console.log "check var" vartype left.name assign.right
+            ]
+            if (not (matchtypes righttype vartype)) [
+                throw new SyntaxError (
+                    "Type mismatch: `" +
+                    left.name +
+                    "` of type `" +
+                    (JSON.stringify vartype) +
+                    "` is incompatible with expression of type `" +
+                    (JSON.stringify righttype) + "` " +
+                    (at_loc assign.loc) + "."
+                )
+            ]
+        ] (type == 'table-access') [
+            key = left.key
+            if ((typeof key) == 'string') [
+                table_type = (get_type left.table context)@0
+                ret if (table_type == '?') [
+                    console.log "table access - giving up: type ?"
+                    nop() // give up
+                ] (table_type.length > 1) [
+                    console.log "table access - giving up: length > 1" table_type
+                    nop() // also give up
+                ] (table_type.length == 0) [
+                    throw new SyntaxError (
+                        "ALC: Mutating table key `" + key + "` which has " +
+                        "type empty-set, is impossible, " +
+                        (at_loc assign.loc) + "."
+                    )
+                ] else [
+                    single_table_type = table_type@0
+                    property_type = single_table_type@key
+                    righttype = (get_type assign.right context)@0
+
+                    if (not (matchtypes property_type righttype)) [
+                        throw new SyntaxError (
+                            "Type mismatch: table key `" +
+                            key +
+                            "` of type `" +
+                            (JSON.stringify property_type) +
+                            "` is incompatible with expression of type `" +
+                            (JSON.stringify righttype) + "` " +
+                            (at_loc assign.loc)
+                        )
+                    ]
+                ]
+            ]
+        ]
+
+        ret {{}, right_side_lambdas}
+    ]
+}
+
+
+
+
 get_type = [ node context |
     assert (is_instance context Context) (
         "Not a Context: " + context
@@ -259,17 +611,6 @@ get_type = [ node context |
     assert (res@1 != undefined)
 
     ret res
-]
-
-concat = [ lambdas1 lambdas2 |
-    assert (lambdas1 != undefined)
-    ret if (lambdas1 == null) [
-        ret lambdas2
-    ] (_.isArray lambdas1) [
-        ret lambdas1.concat (lambdas2 or {})
-    ] else [
-        ret {lambdas1}.concat (lambdas2 or {})
-    ]
 ]
 
 _.extend get_type {
