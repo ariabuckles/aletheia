@@ -217,6 +217,8 @@ enqueue_lambdas = [ queue lambda |
 
 check_statements = [ stmts context |
     lambdas_with_contexts = stmts -> _.map [ stmt |
+        // check top level statements
+        get_type stmt context
         ret (get_lambdas stmt context)
     ] -> _.filter _.identity
 
@@ -244,9 +246,7 @@ get_lambdas = [ node context |
         ret get_lambdas@(typeof node) node context
     ]
 
-    assert (res != undefined) ("could not find type of node: " +
-        (JSON.stringify node)
-    )
+    assert (res != undefined) ("could not find lambdas of " + node.type)
 
     ret res
 ]
@@ -388,14 +388,7 @@ mutate get_type = [ node context |
     if DEBUG_TYPES [
         console.log "get_type" res node
     ]
-    if (res.length != 2) [
-        console.log res
-        assert (res.length == 2) ("get_type returned a non-array:")
-    ]
-    assert (res@0 != undefined) ("could not find type of node: " +
-        (JSON.stringify node)
-    )
-    assert (res@1 != undefined)
+    assert (res != undefined) ("could not find type of node: " + node.type)
 
     ret res
 ]
