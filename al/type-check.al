@@ -27,6 +27,7 @@ Context = require "./context"
 is_instance = [a A | ret ```a instanceof A```]
 
 JSON = global.JSON
+mutable get_type :: ? = null
 
 mapObject = [ obj func |
     mutable result = {:}
@@ -586,7 +587,7 @@ _.extend get_lambdas {
 
 
 
-get_type = [ node context |
+mutate get_type = [ node context |
     assert (is_instance context Context) (
         "Not a Context: " + context
     )
