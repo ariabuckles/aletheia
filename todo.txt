@@ -86,6 +86,9 @@ TODO for types
        "get_type+check" and "find_lambdas", because currently we're conflating all three (
        we conflate the first two because they both need the lambda's innercontext, but
        "find_lambdas" shouldn't need that).
+        - but to do find_lambdas correctly, we need to return the contexts with the lambdas, which
+          needs the contexts above. maybe we can create the contexts for each lambda on access and
+          store it on the syntax tree
 
 TODO to make everyone happy
 ================
