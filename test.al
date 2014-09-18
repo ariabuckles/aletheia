@@ -1,5 +1,2 @@
-f = [
-    mutate a = a + 1
-]
-mutable a
-f()
+f = [ a | a + 1 ]
+global.console.log (f 2)

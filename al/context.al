@@ -60,7 +60,8 @@ _.extend Context.prototype {
                 assert (exprtype == '?' or ((typeof exprtype) == 'object')) (
                     "exprtype was not a valid expression type. instead, " +
                     "found " + (JSON.stringify exprtype) + ";; for type " +
-                    (JSON.stringify vardata.value)
+                    //(JSON.stringify vardata.value)
+                    "unknown" // replace with sys.inspect
                 )
                 mutate vardata.exprtype = exprtype
                 if DEBUG_CONTEXT [
