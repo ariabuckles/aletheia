@@ -92,6 +92,12 @@ TODO for types
         - we added a stupid hack to ignore lambdas on the right hand side. this should really be
           a multi pass thing where we collect all variables first, then type check things using
           dfs on those variables.
+[ ] shadowing when referencing non-forward declared vars
+     - happening from mis-sending the inner context as the outer context of the callee
+     - we should have a 'init_contexts' pass before check_lambdas or well, anything.
+     - then everything can have a context attached so when we're looking for a variable's
+       type we know in what context its rhs was defined.
+     - how will these hacky hash tables work with macros? afterwards i assume?
 
 TODO to make everyone happy
 ================
