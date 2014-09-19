@@ -556,6 +556,11 @@ _.extend get_type {
                 ]
             ]
         ]
+
+        // Check function validity
+        _.each lambda.statements [ stmt |
+            get_type stmt innercontext
+        ]
         
         // TODO: Re-enable this and actually get the result type
         lastStatement = _.last lambda.statements
