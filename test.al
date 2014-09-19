@@ -1,3 +1,2 @@
-t = {a: 5, b: 6}
-mutable c = t.a
-mutate c = {}
+f = [ a | g a ]
+g = [ a | a + 1 ]
