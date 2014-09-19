@@ -13,7 +13,7 @@
 // Mutually recursive functions can be resolved by making the type
 // of one of them dynamic.
 
-DEBUG_TYPES = true
+DEBUG_TYPES = false
 
 console = global.console
 SyntaxError = global.SyntaxError
@@ -380,6 +380,9 @@ mutate get_type = [ node context |
     )
 
     res = if (is_instance node SyntaxNode) [
+        if DEBUG_TYPES [
+            console.log " > call get_type" node.type
+        ]
         ret if (node.inferred_type) [ node.inferred_type ] else [
             mutate node.inferred_type = get_type@(node.type) node context
             ret node.inferred_type
@@ -390,11 +393,17 @@ mutate get_type = [ node context |
     ]
 
     if DEBUG_TYPES [
-        console.log "get_type" res node
+        console.log " < return get_type" node.type res //node
     ]
     assert (res != undefined) ("could not find type of node: " + node.type)
 
     ret res
+]
+
+is_lambda = [ node |
+    ret if (is_instance node SyntaxNode) [
+        ret (node.type == 'lambda')
+    ] else [ false ]
 ]
 
 _.extend get_type {
@@ -633,21 +642,27 @@ _.extend get_type {
 
         // Checking types
         if (type == 'variable') [
-            vartype = (context.get_type left.name)
-            righttype = (get_type assign.right context)
-            if DEBUG_TYPES [
-                console.log "check var" vartype left.name assign.right
-            ]
-            if (not (matchtypes righttype vartype)) [
-                throw new SyntaxError (
-                    "Type mismatch: `" +
-                    left.name +
-                    "` of type `" +
-                    (JSON.stringify vartype) +
-                    "` is incompatible with expression of type `" +
-                    (JSON.stringify righttype) + "` " +
-                    (at_loc assign.loc) + "."
-                )
+            // TODO: check matching of function assignments later
+            // This is super hacky and won't work with lambdas inside things
+            // We really need a full on dfs to evaluate types with hoisting
+            if (not (is_lambda assign.right)) [
+                vartype = (context.get_type left.name)
+                console.log "RIGHT SIDE NOT A LAMBDA"
+                righttype = (get_type assign.right context)
+                if DEBUG_TYPES [
+                    console.log "check var" vartype left.name assign.right
+                ]
+                if (not (matchtypes righttype vartype)) [
+                    throw new SyntaxError (
+                        "Type mismatch: `" +
+                        left.name +
+                        "` of type `" +
+                        (JSON.stringify vartype) +
+                        "` is incompatible with expression of type `" +
+                        (JSON.stringify righttype) + "` " +
+                        (at_loc assign.loc) + "."
+                    )
+                ]
             ]
         ] (type == 'table-access') [
             key = left.key

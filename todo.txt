@@ -89,6 +89,9 @@ TODO for types
         - but to do find_lambdas correctly, we need to return the contexts with the lambdas, which
           needs the contexts above. maybe we can create the contexts for each lambda on access and
           store it on the syntax tree
+        - we added a stupid hack to ignore lambdas on the right hand side. this should really be
+          a multi pass thing where we collect all variables first, then type check things using
+          dfs on those variables.
 
 TODO to make everyone happy
 ================
