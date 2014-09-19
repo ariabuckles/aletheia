@@ -1,6 +1,9 @@
 console = global.console
 assert = require "assert"
+nodeUtil = require "util"
 _ = require "underscore"
+
+inspect = nodeUtil.inspect
 
 DEBUG_CONTEXT = false
 
@@ -58,10 +61,11 @@ _.extend Context.prototype {
                 mutate vardata.exprtype = '::TRAVERSING::'
                 exprtype = self.getExprType vardata.value thisref
                 assert (exprtype == '?' or ((typeof exprtype) == 'object')) (
-                    "exprtype was not a valid expression type. instead, " +
-                    "found " + (JSON.stringify exprtype) + ";; for type " +
-                    //(JSON.stringify vardata.value)
-                    "unknown" // replace with sys.inspect
+                    "exprtype was not a valid expression type " +
+                    "(should be '?' or an array). instead, " +
+                    "found " + (JSON.stringify exprtype) + ";" + (typeof exprtype) +
+                    ";; for type " +
+                    (inspect vardata.value)
                 )
                 mutate vardata.exprtype = exprtype
                 if DEBUG_CONTEXT [

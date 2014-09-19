@@ -396,6 +396,11 @@ mutate get_type = [ node context |
         console.log " < return get_type" node.type res //node
     ]
     assert (res != undefined) ("could not find type of node: " + node.type)
+    assert ((res == '?') or ((typeof res) == 'object')) (
+        "get_type result for " +
+        (node.type or (typeof node)) +
+        " should be '?' or an array"
+    )
 
     ret res
 ]
@@ -525,7 +530,7 @@ _.extend get_type {
         ] (_.isArray obj) [
             ret ArrayType
         ] else [
-            ret { mapObject obj [ val | (get_type val context)@0 ] }
+            ret { mapObject obj [ val | get_type val context ] }
         ]
         
         ret typeObj
