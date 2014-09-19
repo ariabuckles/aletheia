@@ -67,6 +67,7 @@ describe "type checking" [|
                 "f()"
             }
         ]
+
         it "compiles with hoisting" [|
             compiles {
                 "f = ["
@@ -74,6 +75,13 @@ describe "type checking" [|
                 "]"
                 "mutable a = 0"
                 "f()"
+            }
+        ]
+
+        it "doesn't have shadow errors on hoisting" [|
+            compiles {
+                "f = [ a | g a ]"
+                "g = [ a | a + 1 ]"
             }
         ]
     ]
