@@ -1,6 +1,10 @@
 # Meta-commands
 build: build/alc jison copyjs compileal
 
+.PHONY: parsetest
+parsetest: build
+	node --stack-trace-limit=1000 parsetest.js
+
 .PHONY: install
 install:
 	npm install
