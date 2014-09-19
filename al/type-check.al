@@ -231,6 +231,7 @@ check_statements = [ stmts context |
         lambda_with_context = queue.pop()
         lambda = lambda_with_context.lambda
         lambda_context = lambda_with_context.context
+        get_type lambda lambda_context
         new_lambdas = (get_lambdas lambda lambda_context)
         enqueue_lambdas queue new_lambdas
     ]
