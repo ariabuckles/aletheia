@@ -1,5 +1,3 @@
-f = [
-    mutate a = a + 1
-]
-mutable a = 0
-f()
+t = {a: 5, b: 6}
+mutable c = t.a
+mutate c = {}
