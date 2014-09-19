@@ -239,15 +239,21 @@ check_statements = [ stmts context |
 
 
 get_lambdas = [ node context |
+    assert (node != undefined) "get_lambdas called on undefined"
 
-    res = if (is_instance node SyntaxNode) [
+    res = if (node == null) [
+        // for left hand sides of unary operators
+        ret {}
+    ] (is_instance node SyntaxNode) [
         ret get_lambdas@(node.type) node context
     ] else [
         // compile time constant
         ret get_lambdas@(typeof node) node context
     ]
 
-    assert (res != undefined) ("could not find lambdas of " + node.type)
+    assert (res != undefined) ("could not find lambdas of " +
+        (node and node.type)
+    )
 
     ret res
 ]
@@ -652,7 +658,6 @@ _.extend get_type {
             // We really need a full on dfs to evaluate types with hoisting
             if (not (is_lambda assign.right)) [
                 vartype = (context.get_type left.name)
-                console.log "RIGHT SIDE NOT A LAMBDA"
                 righttype = (get_type assign.right context)
                 if DEBUG_TYPES [
                     console.log "check var" vartype left.name assign.right
