@@ -13,7 +13,7 @@
 // Mutually recursive functions can be resolved by making the type
 // of one of them dynamic.
 
-DEBUG_TYPES = false
+DEBUG_TYPES = true
 
 console = global.console
 SyntaxError = global.SyntaxError
@@ -379,7 +379,10 @@ mutate get_type = [ node context |
     )
 
     res = if (is_instance node SyntaxNode) [
-        ret get_type@(node.type) node context
+        ret if (node.inferred_type) [ node.inferred_type ] else [
+            mutate node.inferred_type = get_type@(node.type) node context
+            ret node.inferred_type
+        ]
     ] else [
         // compile time constant
         ret get_type@(typeof node) node context
