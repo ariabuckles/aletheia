@@ -91,7 +91,7 @@ Generic = [|
 ]
 
 ArrayType = {{
-    length: 'number'
+    length: {'number'}
     concat: '?'
     every: '?'
     filter: '?'
