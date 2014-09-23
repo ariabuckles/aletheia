@@ -63,7 +63,7 @@ future:
 
 #### function declarations
 
-    f = [ n | ret (n + 1) ]
+    f = [ n | n + 1 ]
     console.log (f 4)  // prints 5
 
 
@@ -77,7 +77,7 @@ future:
 #### While loops are function calls
 
     mutable i = 0
-    while [ret (i < 10)] [  // this is not the final syntax
+    while [ i < 10 ] [  // this is not the final syntax
         console.log i
         mutate i = i + 1
     ]
@@ -89,7 +89,7 @@ future:
         mutable a = 1
         mutable b = 0
         mutable i = 0
-        while [ret (i < n)] [
+        while [ i < n ] [
             old_b = b
             mutate b = a + b
             mutate a = old_b
@@ -110,17 +110,17 @@ To install the current semistable library version of the compiler
 
 To install the current (unstable) library version of the compiler
 
-    npm install -g git://github.com/jacktoole1/aletheia.git
+    npm install -g git://github.com/ariabuckles/aletheia.git
     alc <input_file.al> <output_file.js>
 
 To run the library compiler from the git repo:
 
-    git clone https://github.com/jacktoole1/aletheia.git
+    git clone https://github.com/ariabuckles/aletheia.git
     ./aletheia/lib/aletheia/alc <source .al input file> <destination .js output file>
 
 To create the latest bootstrapped compiler:
 
-    git clone https://github.com/jacktoole1/aletheia.git
+    git clone https://github.com/ariabuckles/aletheia.git
     cd aletheia/
     npm install
     make build
