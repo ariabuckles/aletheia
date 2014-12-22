@@ -1,2 +1,2 @@
 f = [ a | g a ]
-g = [ a | a + 1 ]
+g = [ a | null ]
