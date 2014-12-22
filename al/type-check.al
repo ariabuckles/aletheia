@@ -13,7 +13,7 @@
 // Mutually recursive functions can be resolved by making the type
 // of one of them dynamic.
 
-DEBUG_TYPES = false
+DEBUG_TYPES = true
 
 console = global.console
 SyntaxError = global.SyntaxError
@@ -346,6 +346,10 @@ _.extend get_lambdas {
         innercontext = if lambda.context [
             ret lambda.context
         ] else [
+            // Ugh this next line is so hacky
+            mutate lambda.outerContext = context
+            console.log "setting lambda outerContext to" context.id()
+
             mutate lambda.context = context.pushScope()
             ret lambda.context
         ]
@@ -387,7 +391,7 @@ mutate get_type = [ node context |
 
     res = if (is_instance node SyntaxNode) [
         if DEBUG_TYPES [
-            console.log " > call get_type" node.type
+            console.log " > call get_type" node.type context.id()
         ]
         ret if (node.inferred_type) [ node.inferred_type ] else [
             mutate node.inferred_type = get_type@(node.type) node context

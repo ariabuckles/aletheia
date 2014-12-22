@@ -114,3 +114,6 @@ TODO to make everyone happy
 [ ] pattern matching
 [ ] figure out what to do with all the parens?
 [ ] alformat / alc -f
+[ ] make an `alj` program to do json manipulation:
+    alj items.json _.filter [ item | (_.has item.question.widgets 'interactive-graph') ]
+

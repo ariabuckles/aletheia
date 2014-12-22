@@ -20,9 +20,12 @@ Context :: ? = [ parentContext |
     mutate this.getExprType = this.parent.getExprType
     mutate this.scope = Object.create parentContext.scope
     delete this.scope.x  // Disable hidden classes for this.scope
+    mutate this._id = _.uniqueId "context_"
 ]
 
 _.extend Context.prototype {
+    id = [ this._id ]
+
     get = [ varname |
         ret this.scope@varname
     ]
@@ -59,7 +62,8 @@ _.extend Context.prototype {
                 ret if (vardata.exprtype == '::TRAVERSING::') ['?'] else [vardata.exprtype]
             ] else [
                 mutate vardata.exprtype = '::TRAVERSING::'
-                exprtype = self.getExprType vardata.value thisref
+                // Soooo hacky :'(
+                exprtype = self.getExprType vardata.value (vardata.value.outerContext or thisref)
                 assert (exprtype == '?' or ((typeof exprtype) == 'object')) (
                     "exprtype was not a valid expression type " +
                     "(should be '?' or an array). instead, " +
