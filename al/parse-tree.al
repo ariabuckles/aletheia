@@ -23,10 +23,11 @@ ParseTree = {
     ParseNode: ParseNode
     String: [ escapedStr | strings.unescape escapedStr ]
 
-    Regex: [ str |
+    Regex: [ str loc |
         ret new ParseNode {
             type: "regex"
             string: str
+            loc: loc
         }
     ]
 
@@ -71,11 +72,12 @@ ParseTree = {
         }
     ]
 
-    Lambda: [ args statements |
+    Lambda: [ args statements loc |
         ret new ParseNode {
             type: "lambda"
             arguments: args
             statements: statements
+            loc: loc
         }
     ]
 
