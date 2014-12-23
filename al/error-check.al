@@ -1,11 +1,15 @@
 _ = require "underscore"
+
+contextualize = require "./contextualize"
+
 checks = {
-    require "./type-check.js"
+    require "./type-check"
 }
 
 error_check = [ ast external_vars |
+    contextualizedAst = contextualize ast external_vars
     checks -> _.map [ check |
-        check ast external_vars
+        check contextualizedAst.statements contextualizedAst.context
     ]
 ]
 

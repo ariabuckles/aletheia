@@ -610,61 +610,20 @@ _.extend get_type {
             " is not a Context"
         )
 
-        modifier = assign.modifier
         left = assign.left
+        right = assign.right
         type = left.type
-
-        assert ({null, 'mutable', 'mutate'} -> _.contains modifier) (
-            "ALC: Unrecognized modifier `" + modifier + "`"
-        )
-
-        // Checking for undefined, etc.
-        if (type == 'variable') [
-            if (modifier == null or modifier == 'const' or modifier == 'mutable') [
-                if (not (context.may_declare left.name)) [
-                    throw new SyntaxError (
-                        "ALC: Shadowing `" + left.name + "` " +
-                        (at_loc left.loc) +
-                        " is not permitted. Use `mutate` to mutate."
-                    )
-                ] else [
-                    context.declare modifier left.name left.vartype assign.right
-                ]
-            ] (modifier == 'mutate') [
-                if (not (context.may_mutate left.name)) [
-                    declmodifiertype = context.get_modifier left.name
-                    throw new SyntaxError (
-                        "ALC: Mutating `" + left.name + "`, which has " +
-                        "modifier `" + declmodifiertype + "` " +
-                        (at_loc assign.loc) +
-                        " is not permitted. Declare with `mutable` " +
-                        "to allow mutation."
-                    )
-                ]
-            ] else [
-                assert false ("Invalid modifier " + modifier)
-            ]
-        ] (type == 'table-access') [
-            if (modifier != 'mutate') [
-                throw new SyntaxError (
-                    "Mutating a table requires the keyword `mutate` " +
-                    (at_loc assign.loc) + "."
-                )
-            ]
-        ] else [
-            throw new Error ("ALINTERNAL: Unrecognized lvalue type: " + type)
-        ]
 
         // Checking types
         if (type == 'variable') [
             // TODO: check matching of function assignments later
             // This is super hacky and won't work with lambdas inside things
             // We really need a full on dfs to evaluate types with hoisting
-            if (not (is_lambda assign.right)) [
+            if (not (is_lambda right)) [
                 vartype = (context.get_type left.name)
-                righttype = (get_type assign.right context)
+                righttype = (get_type right context)
                 if DEBUG_TYPES [
-                    console.log "check var" vartype left.name assign.right
+                    console.log "check var" vartype left.name right
                 ]
                 if (not (matchtypes righttype vartype)) [
                     throw new SyntaxError (
@@ -697,7 +656,7 @@ _.extend get_type {
                 ] else [
                     single_table_type = table_type@0
                     property_type = single_table_type@key
-                    righttype = (get_type assign.right context)
+                    righttype = (get_type right context)
 
                     if (not (matchtypes property_type righttype)) [
                         throw new SyntaxError (
@@ -719,38 +678,7 @@ _.extend get_type {
 }
 
 
-check_program = [ stmts external_vars |
-    context = new Context { scope = null, getExprType = [expr context_ | (get_type expr context_)] }
-    context.declare 'const' 'true' {'boolean'}
-    context.declare 'const' 'false' {'boolean'}
-    context.declare 'const' 'undefined' {'undefined'}
-    context.declare 'const' 'null' {'null'}
-    context.declare 'const' 'not' {(FunctionType {{'boolean'}} {'boolean'})}
-
-    context.declare 'const' 'this' '?'
-
-    context.declare 'const' 'if' '?'
-    context.declare 'const' 'else' '?'
-    context.declare 'const' 'while' '?'
-    context.declare 'const' 'throw' '?'
-    context.declare 'const' 'new' '?'
-    context.declare 'const' 'delete' '?'
-    context.declare 'const' 'typeof' '?'
-
-    context.declare 'const' 'global' '?'
-    context.declare 'const' 'require' '?'
-    context.declare 'const' 'module' '?'
-    context.declare 'const' '__filename' '?'
-
-    context.declare 'const' 'Error' '?'
-    context.declare 'const' 'String' '?'
-    context.declare 'const' 'Function' '?'
-    context.declare 'const' 'Object' '?'
-    context.declare 'const' 'Number' '?'
-    context.declare 'const' 'RegExp' '?'
-    
-    _.each external_vars [ ext | context.declare 'const' ext '?' ]
-
+check_program = [ stmts context |
     check_statements stmts context
 ]
 
