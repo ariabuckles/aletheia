@@ -561,12 +561,7 @@ _.extend get_type {
             // This is super hacky and won't work with lambdas inside things
             // We really need a full on dfs to evaluate types with hoisting
             if (not (is_lambda assign.right)) [
-                vartype = (context.get_type left.name)
-                righttype = (get_type assign.right context)
-                if DEBUG_TYPES [
-                    console.log "check var" vartype left.name assign.right
-                ]
-                
+                get_type assign.right context
             ]
         ] (type == 'table-access') [
             key = left.key
