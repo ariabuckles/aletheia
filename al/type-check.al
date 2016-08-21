@@ -425,17 +425,12 @@ _.extend get_type {
     ]
 
     variable = [ variable context |
-        ret if ((not KEYWORD_VARIABLES@(variable.name)) and
+        if ((not KEYWORD_VARIABLES@(variable.name)) and
                 (not (context.has variable.name))) [
             throw new SyntaxError (
                 "ALC: Use of undeclared variable `" +
                 variable.name + "` " + (at_loc variable.loc) + "."
             )
-        ] else [
-            if DEBUG_TYPES [
-                console.log "context.get_type" variable.name (context.has variable.name)
-            ]
-            ret context.get_type variable.name
         ]
     ]
 
