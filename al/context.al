@@ -17,7 +17,6 @@ MAGIC = {
 // TODO: Fix variables named __proto__
 Context :: ? = [ parentContext |
     mutate this.parent = parentContext
-    mutate this.getExprType = this.parent.getExprType
     mutate this.scope = Object.create parentContext.scope
     delete this.scope.x  // Disable hidden classes for this.scope
 ]
@@ -37,34 +36,6 @@ _.extend Context.prototype {
     get_modifier = [ varname |
         vardata = this.get varname
         ret if vardata [ vardata.modifier ] else [ 'undeclared' ]
-    ]
-
-    get_type = [ varname |
-        self = this
-        assert (_.isString varname) ("varname is not a string: " + varname)
-        vardata = this.get varname
-        thisref = this
-        res = if (not vardata) [
-            console.warn (
-                "ALC INTERNAL-ERR: Variable `" + varname +
-                "` has not been declared."
-            )
-            throw new Error "internal"
-            ret {'undeclared'}
-        ] else [
-            ret if (vardata.exprtype) [
-                if DEBUG_CONTEXT [
-                    console.log "cached type" varname vardata.exprtype
-                ]
-                ret if (vardata.exprtype == '::TRAVERSING::') ['?'] else [vardata.exprtype]
-            ] else [
-                mutate vardata.exprtype = '::TRAVERSING::'
-                exprtype = self.getExprType vardata.value thisref
-                mutate vardata.exprtype = exprtype
-                ret exprtype
-            ]
-        ]
-        ret res
     ]
 
     may_declare = [ varname |

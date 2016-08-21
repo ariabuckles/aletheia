@@ -585,7 +585,7 @@ _.extend get_type {
 
 
 check_program = [ stmts external_vars |
-    context = new Context { scope = null, getExprType = [expr context_ | (get_type expr context_)] }
+    context = new Context { scope = null }
     context.declare 'const' 'true' {'boolean'}
     context.declare 'const' 'false' {'boolean'}
     context.declare 'const' 'undefined' {'undefined'}
