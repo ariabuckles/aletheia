@@ -60,21 +60,10 @@ _.extend Context.prototype {
             ] else [
                 mutate vardata.exprtype = '::TRAVERSING::'
                 exprtype = self.getExprType vardata.value thisref
-                assert (exprtype == '?' or ((typeof exprtype) == 'object')) (
-                    "exprtype was not a valid expression type " +
-                    "(should be '?' or an array). instead, " +
-                    "found " + (JSON.stringify exprtype) + ";" + (typeof exprtype) +
-                    ";; for type " +
-                    (inspect vardata.value)
-                )
                 mutate vardata.exprtype = exprtype
-                if DEBUG_CONTEXT [
-                    console.log "inferred" varname exprtype
-                ]
                 ret exprtype
             ]
         ]
-        assert (res != undefined) ("vardata error for `" + varname + "`")
         ret res
     ]
 

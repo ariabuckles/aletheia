@@ -65,7 +65,6 @@ FunctionType = [ argTypes resultType |
         ret new FunctionType argTypes resultType
     ] else [
         assert (_.isArray argTypes)
-        assert resultType
         mutate self.argTypes = argTypes
         mutate self.resultType = resultType
         ret self
@@ -131,68 +130,6 @@ union = [ typeA typeB |
 
 subtypein = [ subtype exprtype |
     ret _.any exprtype [ subexprtype | _.isEqual subexprtype subtype ]
-]
-
-// TODO: Use real sets to make this faster
-// Returns true if exprtype < vartype (exprtype is convertible to vartype)
-matchtypes = [ exprtype vartype |
-    ret if (vartype == undefined) [
-        assert false (
-            "adding an unspecified key to a var doesn't need to " +
-            "check the assignment... (this is safe to remove, but " +
-            "if you hit it, your understanding of this code needs " +
-            "improvement."
-        )
-        // Adding an unspecified key to a variable through object assignment
-        ret true
-
-    ] (exprtype == undefined) [
-        // Variable requires a key that is not present on the expression
-        ret false
-
-    ] (vartype == '?' or exprtype == '?') [
-        ret true
-
-    ] (_.isArray exprtype) [
-        ret _.all exprtype [ subexprtype | matchtypes subexprtype vartype ]
-
-    ] (_.isArray vartype) [
-        ret _.any vartype [ subvartype | matchtypes exprtype subvartype ]
-    
-    ] (is_instance vartype FunctionType) [
-        ret if (is_instance exprtype FunctionType) [
-            argsMatch = _.all vartype.argTypes [ varArgType i |
-                exprArgType = exprtype.argTypes@i
-                ret ((exprArgType == undefined) or (
-                    (varArgType != undefined)
-                    and
-                    (matchtypes exprArgType varArgType)
-                ))
-            ]
-            resultMatches = matchtypes exprtype.resultType vartype.resultType
-            ret (argsMatch and resultMatches)
-        ] else [
-            ret false
-        ]
-    ] (_.isObject vartype) [
-        varIsArray = _.isEqual vartype ArrayType@0  // TODO: remove the @0 ugliness
-        exprIsArray = _.isEqual exprtype ArrayType@0
-        ret if (varIsArray or exprIsArray) [
-            // Treat arrays specially for now; they are incompatible with
-            // objects unless forced, since you probably don't want to assign
-            // an array to a normal map-type object.
-            //
-            // TODO: Re-evaluate whether this is the right decision
-            ret (varIsArray and exprIsArray)
-        ] else [
-            ret ((_.isObject exprtype) and (_.all (_.keys vartype) [ key |
-                ret matchtypes exprtype@key vartype@key
-            ]))
-        ]
-
-    ] else [
-        ret _.isEqual exprtype vartype
-    ]
 ]
 
 
@@ -275,8 +212,6 @@ _.extend get_lambdas {
     undefined = [ {} ]
     boolean = [ {} ]
     "operation" = [ op context |
-        left = op.left
-        right = op.right
         leftLambdas = get_lambdas op.left context
         rightLambdas = get_lambdas op.right context
         lambdas = concat leftLambdas rightLambdas
@@ -385,30 +320,15 @@ mutate get_type = [ node context |
         "Not a Context: " + context
     )
 
-    res = if (is_instance node SyntaxNode) [
-        if DEBUG_TYPES [
-            console.log " > call get_type" node.type
-        ]
-        ret if (node.inferred_type) [ node.inferred_type ] else [
+    if (is_instance node SyntaxNode) [
+        if (node.inferred_type) [ node.inferred_type ] else [
             mutate node.inferred_type = get_type@(node.type) node context
             ret node.inferred_type
         ]
     ] else [
         // compile time constant
-        ret get_type@(typeof node) node context
+        get_type@(typeof node) node context
     ]
-
-    if DEBUG_TYPES [
-        console.log " < return get_type" node.type res //node
-    ]
-    assert (res != undefined) ("could not find type of node: " + node.type)
-    assert ((res == '?') or ((typeof res) == 'object')) (
-        "get_type result for " +
-        (node.type or (typeof node)) +
-        " should be '?' or an array"
-    )
-
-    ret res
 ]
 
 is_lambda = [ node |
@@ -436,9 +356,6 @@ _.extend get_type {
 
     "table-access" = [ table_access context |
         table_type = get_type table_access.table context
-        assert (table_type == '?' or (table_type.length > 0 and table_type@0 != undefined)) (
-            "bad type for table" + (JSON.stringify table_access.table)
-        )
         key = table_access.key
 
         res = if ((typeof key) != 'string') [
@@ -447,12 +364,9 @@ _.extend get_type {
             ret '?'
 
         ] else [
-            ret if (table_type == '?') [
+            // TODO(aria): um
+            ret if (true or table_type == '?') [
                 ret '?'
-            ] (table_type.length > 1) [
-                ret '?'  // give up on multi-typed tables
-            ] (table_type.length == 0) [
-                ret {}
             ] else [
                 single_table_type = table_type@0
                 property_type = single_table_type@key
@@ -502,11 +416,6 @@ _.extend get_type {
                     ret func_result_type
                 ]
             ] else [
-                console.warn (
-                    "ALC: INTERNAL: Calling a non-function: `" +
-                    (JSON.stringify func_type) +
-                    "`."
-                )
                 ret '?'
             ]
             assert (res != undefined)
@@ -662,50 +571,20 @@ _.extend get_type {
                 if DEBUG_TYPES [
                     console.log "check var" vartype left.name assign.right
                 ]
-                if (not (matchtypes righttype vartype)) [
-                    throw new SyntaxError (
-                        "Type mismatch: `" +
-                        left.name +
-                        "` of type `" +
-                        (JSON.stringify vartype) +
-                        "` is incompatible with expression of type `" +
-                        (JSON.stringify righttype) + "` " +
-                        (at_loc assign.loc) + "."
-                    )
-                ]
+                
             ]
         ] (type == 'table-access') [
             key = left.key
             if ((typeof key) == 'string') [
                 table_type = (get_type left.table context)
-                ret if (table_type == '?') [
+                ret if (true) [
+                    // TODO(aria): what is this?
                     console.log "table access - giving up: type ?"
                     nop() // give up
-                ] (table_type.length > 1) [
-                    console.log "table access - giving up: length > 1" table_type
-                    nop() // also give up
-                ] (table_type.length == 0) [
-                    throw new SyntaxError (
-                        "ALC: Mutating table key `" + key + "` which has " +
-                        "type empty-set, is impossible, " +
-                        (at_loc assign.loc) + "."
-                    )
                 ] else [
                     single_table_type = table_type@0
                     property_type = single_table_type@key
                     righttype = (get_type assign.right context)
-
-                    if (not (matchtypes property_type righttype)) [
-                        throw new SyntaxError (
-                            "Type mismatch: table key `" +
-                            key +
-                            "` of type `" +
-                            (JSON.stringify property_type) +
-                            "` is incompatible with expression of type `" +
-                            (JSON.stringify righttype) + "` " +
-                            (at_loc assign.loc)
-                        )
-                    ]
                 ]
             ]
         ]
